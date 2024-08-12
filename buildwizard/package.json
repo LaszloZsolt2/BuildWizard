@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "rebuildcss": "npx tailwindcss -i ./src/assets/style.css -o ./src/assets/output.css --minify",
+    "dev": "npx tailwindcss -i ./src/assets/style.css -o ./src/assets/output.css --minify && vue-cli-service serve"
   },
   "dependencies": {
     "autoprefixer": "^10.4.20",
