@@ -11,6 +11,11 @@
   },
   "dependencies": {
     "@primevue/themes": "^4.0.4",
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-brands-svg-icons": "^6.6.0",
+    "@fortawesome/free-regular-svg-icons": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/vue-fontawesome": "^3.0.8",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.3",
     "core-js": "^3.8.3",
