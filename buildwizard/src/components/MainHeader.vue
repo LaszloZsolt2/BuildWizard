@@ -31,7 +31,7 @@
           Completed Builds
         </router-link>
         <SvgIcon
-          @click="isNavbarOpen = !isNavbarOpen"
+          @click="toggleNavbar"
           name="bars"
           id="menu-icon"
           class="navbar-icon block md:hidden cursor-pointer ml-auto mt-4 mr-1"
@@ -42,11 +42,7 @@
       <transition name="opacity-slide-top">
         <div v-if="isNavbarOpen" class="block md:hidden absolute top-24">
           <div class="my-4">
-            <router-link
-              to="/"
-              @click="isNavbarOpen = !isNavbarOpen"
-              class="navbar-button"
-            >
+            <router-link to="/" @click="toggleNavbar" class="navbar-button">
               <SvgIcon name="build" class="navbar-icon inline-flex" />
               Builder
             </router-link>
@@ -54,7 +50,7 @@
           <div class="my-4">
             <router-link
               to="/builds"
-              @click="isNavbarOpen = !isNavbarOpen"
+              @click="toggleNavbar"
               class="navbar-button"
             >
               <SvgIcon
@@ -83,6 +79,10 @@ const navbarHeight = computed(() => {
 
 function handleResize(): void {
   isNavbarOpen.value = isNavbarOpen.value && window.innerWidth < 768;
+}
+
+function toggleNavbar(): void {
+  isNavbarOpen.value = !isNavbarOpen.value;
 }
 
 onMounted(() => {
