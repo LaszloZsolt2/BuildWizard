@@ -19,13 +19,4 @@ import "./assets/output.css";
 body {
   @apply bg-neutral-900;
 }
-#app {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.content {
-  flex: 1;
-}
 </style>
