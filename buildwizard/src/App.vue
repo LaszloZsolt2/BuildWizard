@@ -1,7 +1,16 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
+  <!-- TODO: put MainHeader in MainLayout.vue -->
+  <MainHeader />
   <router-view />
 </template>
+
+<script setup lang="ts">
+import MainHeader from "./components/MainHeader.vue";
+import "./assets/output.css";
+</script>
+
+<style>
+body {
+  @apply bg-neutral-900;
+}
+</style>
