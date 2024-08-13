@@ -1,13 +1,11 @@
 <template>
-  <a :href="href" target="_blank" rel="noopener noreferrer">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 512 512"
-      fill="currentColor"
-    >
-      <path :d="icons[props.name]" />
-    </svg>
-  </a>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 512 512"
+    fill="currentColor"
+  >
+    <path :d="icons[props.name]" />
+  </svg>
 </template>
 
 <script setup lang="ts">
