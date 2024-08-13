@@ -7,25 +7,34 @@
         <p>&copy; 2024 BuildWizard. Your guide to compatible PC components.</p>
       </div>
       <nav class="flex space-x-4">
-        <SvgIcon
-          name="facebook"
+        <a
           href="https://www.facebook.com"
-          class="w-6 h-6 text-white"
-        />
-        <SvgIcon
-          name="email"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <SvgIcon name="facebook" class="w-6 h-6 text-white" />
+        </a>
+        <a
           href="https://www.gmail.com"
-          class="w-6 h-6 text-white"
-        />
-        <SvgIcon
-          name="linkedin"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <SvgIcon name="email" class="w-6 h-6 text-white" />
+        </a>
+        <a
           href="https://www.linkedin.com"
-          class="w-6 h-6 text-white"
-        />
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <SvgIcon name="linkedin" class="w-6 h-6 text-white" />
+        </a>
       </nav>
     </div>
   </footer>
 </template>
-<script setup lang="ts">
+
+<script lang="ts">
+import { defineComponent } from "vue";
+
 import SvgIcon from "@/components/SvgIcon.vue";
 </script>

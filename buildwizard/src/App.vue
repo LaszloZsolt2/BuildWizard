@@ -3,7 +3,7 @@
     <div class="flex-1">
       <MainHeader />
 
-      <router-view />
+      <RouterView />
     </div>
     <MainFooter />
   </div>
