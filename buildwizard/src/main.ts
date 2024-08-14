@@ -7,6 +7,7 @@ import Checkbox from "primevue/checkbox";
 import Message from "primevue/message";
 import InputText from "primevue/inputtext";
 import ToggleSwitch from "primevue/toggleswitch";
+import Button from "primevue/button";
 import Aura from "@primevue/themes/aura";
 import "./assets/output.css";
 import { setTheme } from "./utils/primeVueTheme";
