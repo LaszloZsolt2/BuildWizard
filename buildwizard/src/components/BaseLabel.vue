@@ -1,22 +1,16 @@
 <template>
-  <Message
-    :severity="props.severity"
-    :closable="props.closable"
-    :life="props.disappearAfter"
-    @close="props.onClose"
-  >
-    <slot></slot>
+  <Message>
+    <slot />
   </Message>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
-interface MessageProps {
-  severity?: "info" | "warn" | "error" | "success" | "secondary";
-  closable?: boolean;
-  disappearAfter?: number; // number of milliseconds before the message disappears
-  onClose?: () => void;
-}
+import Message, {
+  type MessageEmits,
+  type MessageProps,
+  MessageSlots,
+} from "primevue/message";
+import { defineComponent } from "vue";
 
-const props = defineProps<MessageProps>();
+defineComponent<MessageProps, MessageEmits, MessageSlots>({});
 </script>

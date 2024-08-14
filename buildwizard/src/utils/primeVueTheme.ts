@@ -27,6 +27,12 @@ const colors = {
     "color-mix(in srgb, var(--p-violet-700), transparent 64%)",
   "--p-message-info-color": "var(--p-violet-500)",
   "--p-message-info-shadow": "var(--p-violet-500)",
+
+  "--p-message-contrast-background": "var(--p-neutral-600)",
+  "--p-message-contrast-border-color":
+    "color-mix(in srgb, var(--p-neutral-700), transparent 64%)",
+  "--p-message-contrast-color": "var(--p-neutral-300)",
+  "--p-message-contrast-shadow": "var(--p-neutral-500)",
 };
 
 export function setTheme() {
