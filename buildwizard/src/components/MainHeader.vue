@@ -8,28 +8,28 @@
     >
       <!-- Logo -->
       <div class="flex-10 md:flex md:ml-auto items-start justify-start">
-        <router-link to="/">
+        <RouterLink to="/">
           <img
             src="../assets/logo.png"
             alt="logo"
             class="h-12 ml-2 mt-1 md:mt-0 block object-cover"
           />
-        </router-link>
+        </RouterLink>
       </div>
 
       <!-- Navigation buttons -->
       <div class="flex-1 h-20 md:flex md:ml-auto justify-end">
-        <router-link to="/" class="navbar-button hidden md:block">
+        <RouterLink to="/" class="navbar-button hidden md:block">
           <SvgIcon name="build" class="navbar-icon inline-flex" />
           Builder
-        </router-link>
-        <router-link to="/builds" class="navbar-button hidden md:block">
+        </RouterLink>
+        <RouterLink to="/builds" class="navbar-button hidden md:block">
           <SvgIcon
             name="completedBuilds"
             class="navbar-icon inline-flex mr-1"
           />
           Completed Builds
-        </router-link>
+        </RouterLink>
         <SvgIcon
           @click="toggleNavbar"
           name="bars"
@@ -42,13 +42,13 @@
       <transition name="opacity-slide-top">
         <div v-if="isNavbarOpen" class="block md:hidden absolute top-24">
           <div class="my-4">
-            <router-link to="/" @click="toggleNavbar" class="navbar-button">
+            <RouterLink to="/" @click="toggleNavbar" class="navbar-button">
               <SvgIcon name="build" class="navbar-icon inline-flex" />
               Builder
-            </router-link>
+            </RouterLink>
           </div>
           <div class="my-4">
-            <router-link
+            <RouterLink
               to="/builds"
               @click="toggleNavbar"
               class="navbar-button"
@@ -58,7 +58,7 @@
                 class="navbar-icon inline-flex mr-1"
               />
               Completed Builds
-            </router-link>
+            </RouterLink>
           </div>
         </div>
       </transition>
