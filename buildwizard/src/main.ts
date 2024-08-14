@@ -22,9 +22,5 @@ createApp(App)
       },
     },
   })
-  .component("Checkbox", Checkbox)
-  .component("Message", Message)
-  .component("InputText", InputText)
-  .component("ToggleSwitch", ToggleSwitch)
   .mount("#app")
   .$nextTick(setTheme);
