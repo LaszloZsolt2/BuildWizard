@@ -1,11 +1,10 @@
 <template>
-  <div class="home">
-    <Checkbox v-model="checked" @change="console.log(checked)" :binary="true" />
-  </div>
+  <div class="home"></div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
+import MainLayout from "../layouts/MainLayout.vue";
 
 const checked = ref(false);
 </script>
