@@ -4,6 +4,7 @@ import router from "./router";
 import axios from "axios";
 import PrimeVue from "primevue/config";
 import Checkbox from "primevue/checkbox";
+import Message from "primevue/message";
 import Aura from "@primevue/themes/aura";
 import "./assets/output.css";
 import { setTheme } from "./utils/primeVueTheme";
@@ -19,5 +20,6 @@ createApp(App)
     },
   })
   .component("Checkbox", Checkbox)
+  .component("Message", Message)
   .mount("#app")
   .$nextTick(setTheme);

@@ -19,6 +19,14 @@ const colors = {
   "--p-primary-800": "var(--p-violet-800)",
   "--p-primary-900": "var(--p-violet-900)",
   "--p-primary-950": "var(--p-violet-950)",
+
+  // Message colors
+  "--p-message-info-background":
+    "color-mix(in srgb, var(--p-violet-500), transparent 84%)",
+  "--p-message-info-border-color":
+    "color-mix(in srgb, var(--p-violet-700), transparent 64%)",
+  "--p-message-info-color": "var(--p-violet-500)",
+  "--p-message-info-shadow": "var(--p-violet-500)",
 };
 
 export function setTheme() {
