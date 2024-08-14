@@ -3,6 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import axios from "axios";
 import PrimeVue from "primevue/config";
+import Dialog from "primevue/dialog";
 import Checkbox from "primevue/checkbox";
 import Message from "primevue/message";
 import InputText from "primevue/inputtext";
