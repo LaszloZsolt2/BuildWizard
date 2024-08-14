@@ -48,6 +48,33 @@
     <BaseButton label="Warn button" severity="warn" class="m-4" />
     <BaseButton label="Danger button" severity="danger" class="m-4" />
     <BaseButton label="Contrast button" severity="contrast" class="m-4" />
+
+    <br />
+    <BaseButton
+      @click="isModalOpen = !isModalOpen"
+      label="Open modal"
+      class="m-4"
+    />
+    <Modal
+      v-model="isModalOpen"
+      :breakpoints="{ '1199px': '50vw', '575px': '75vw' }"
+    >
+      <template #header><h1 class="text-2xl">Test modal</h1></template>
+      <div>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore modi
+        adipisci dolores optio cupiditate vel quia, error placeat ullam, eaque
+        itaque quis blanditiis? Veniam adipisci saepe facilis quasi assumenda.
+        Nisi?
+      </div>
+      <template #footer>
+        <BaseButton label="Accept" @click="isModalOpen = false" />
+        <BaseButton
+          severity="secondary"
+          label="Close"
+          @click="isModalOpen = false"
+        />
+      </template>
+    </Modal>
   </div>
 </template>
 
@@ -56,11 +83,13 @@ import BaseLabel from "@/components/BaseLabel.vue";
 import BaseInput from "@/components/BaseInput.vue";
 import BaseToggle from "@/components/BaseToggle.vue";
 import BaseButton from "@/components/BaseButton.vue";
+import Modal from "@/components/Modal.vue";
 import { ref } from "vue";
 
 const inputValue = ref("");
 const isToggled = ref(false);
 const isLoading = ref(true);
+const isModalOpen = ref(false);
 
 setInterval(() => {
   isLoading.value = !isLoading.value;
