@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
-const caseFan = new mongoose.Schema({
-  _id: { type: String, required: true, unique: true },
+const caseFanSchema = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, required: false },
   size: { type: Number, required: true },
@@ -12,6 +11,6 @@ const caseFan = new mongoose.Schema({
   pwm: { type: Boolean, required: true },
 });
 
-const CaseFan = mongoose.model("CaseFan", caseFan);
+const CaseFan = mongoose.model("CaseFan", caseFanSchema, "case-fans");
 
 export default CaseFan;

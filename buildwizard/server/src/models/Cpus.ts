@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const cpus = new mongoose.Schema({
-  _id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   price: { type: Number, required: false },
   core_count: { type: Number, required: true },
@@ -14,6 +13,6 @@ const cpus = new mongoose.Schema({
   socket: { type: String, required: true },
 });
 
-const Cpus = mongoose.model("Cpus", cpus);
+const Cpus = mongoose.model("Cpus", cpus, "cpus");
 
 export default Cpus;

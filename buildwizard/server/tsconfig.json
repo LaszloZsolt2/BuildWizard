@@ -12,6 +12,6 @@
     "types": ["node"],
     "lib": ["ES2020"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/routes", "src/models"],
   "exclude": ["node_modules"]
 }

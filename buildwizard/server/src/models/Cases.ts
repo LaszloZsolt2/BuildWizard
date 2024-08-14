@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
-const cases = new mongoose.Schema({
-  _id: { type: String, required: true, unique: true },
+const casesShema = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, required: false },
   type: { type: String, required: true },
@@ -12,6 +11,6 @@ const cases = new mongoose.Schema({
   internal_35_bays: { type: Number, required: true },
 });
 
-const Cases = mongoose.model("Cases", cases);
+const Cases = mongoose.model("Cases", casesShema, "cases");
 
 export default Cases;

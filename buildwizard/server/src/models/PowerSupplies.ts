@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const powerSupplies = new mongoose.Schema({
-  _id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   price: { type: Number, required: false },
   type: { type: String, required: true },
@@ -11,6 +10,10 @@ const powerSupplies = new mongoose.Schema({
   color: { type: String, required: false },
 });
 
-const PowerSupplies = mongoose.model("PowerSupplies", powerSupplies);
+const PowerSupplies = mongoose.model(
+  "PowerSupplies",
+  powerSupplies,
+  "power-supplies"
+);
 
 export default PowerSupplies;

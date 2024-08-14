@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const memories = new mongoose.Schema({
-  _id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   price: { type: Number, required: false },
   speed: { type: Number, required: true },
@@ -12,6 +11,6 @@ const memories = new mongoose.Schema({
   cas_latency: { type: Number, required: true },
 });
 
-const Memories = mongoose.model("Memories", memories);
+const Memories = mongoose.model("Memories", memories, "memories");
 
 export default Memories;

@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const hardDrives = new mongoose.Schema({
-  _id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   price: { type: Number, required: false },
   capacity: { type: Number, required: true },
@@ -12,6 +11,6 @@ const hardDrives = new mongoose.Schema({
   interface: { type: String, required: true },
 });
 
-const HardDrives = mongoose.model("HardDrives", hardDrives);
+const HardDrives = mongoose.model("HardDrives", hardDrives, "hard-drives");
 
 export default HardDrives;

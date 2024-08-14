@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const systemRequirements = new mongoose.Schema({
-  _id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   type: { type: String, required: true },
   minimum: {
@@ -33,7 +32,8 @@ const systemRequirements = new mongoose.Schema({
 
 const SystemRequirements = mongoose.model(
   "SystemRequirements",
-  systemRequirements
+  systemRequirements,
+  "system-requirements"
 );
 
 export default SystemRequirements;
