@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 
 import caseFanRouter from "./routes/CaseFans";
 import caseRouter from "./routes/Cases";
@@ -12,18 +13,21 @@ import motherBoardRouter from "./routes/MotherBoards";
 import powerSuppliesRouter from "./routes/CaseFans";
 import systemRequirementRouter from "./routes/SystemRequirements";
 
+dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/default";
 
 app.use(express.json());
 
 mongoose
-  .connect("mongodb://192.168.2.4:27017/json")
+  .connect(MONGO_URI)
   .then(() => {
-    console.log("Sikeresen csatlakozva a MongoDB-hez");
+    console.log("Successfully connected to MongoDB");
   })
   .catch((err) => {
-    console.error("Hiba történt a MongoDB-hez való csatlakozás során:", err);
+    console.error("Error occurred while connecting to MongoDB:", err);
   });
 const db = mongoose.connection;
 
@@ -37,7 +41,7 @@ db.on("error", (err) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("MongoDB kapcsolat sikeres!");
+  res.send("MongoDB connection successful!");
 });
 
 app.use("/api/case-fans", caseFanRouter);

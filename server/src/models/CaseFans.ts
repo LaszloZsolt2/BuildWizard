@@ -5,9 +5,9 @@ const caseFanSchema = new mongoose.Schema({
   price: { type: Number, required: false },
   size: { type: Number, required: true },
   color: { type: String, required: true },
-  rpm: { type: Number, required: false },
-  airflow: { type: Number, required: false },
-  noise_level: { type: Number, required: false },
+  rpm: [{ type: Number, required: false }],
+  airflow: [{ type: Number, required: false }],
+  noise_level: [{ type: Number, required: false }],
   pwm: { type: Boolean, required: true },
 });
 

@@ -6,9 +6,9 @@ const systemRequirements = new mongoose.Schema({
   minimum: {
     type: new mongoose.Schema(
       {
-        cpu: { type: String, required: true },
+        cpu: [{ type: String, required: true }],
         ram: { type: String, required: true },
-        gpu: { type: Number, required: false },
+        gpu: [{ type: Number, required: false }],
         vram: { type: Number, required: false },
       },
       { _id: false }
