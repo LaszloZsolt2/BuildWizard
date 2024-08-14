@@ -33,6 +33,9 @@ const colors = {
     "color-mix(in srgb, var(--p-neutral-700), transparent 64%)",
   "--p-message-contrast-color": "var(--p-neutral-300)",
   "--p-message-contrast-shadow": "var(--p-neutral-500)",
+
+  // ToggleSwitch colors
+  "--p-toggleswitch-handle-disabled-background": "var(--p-neutral-600)",
 };
 
 export function setTheme() {
