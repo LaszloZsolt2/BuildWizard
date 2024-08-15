@@ -22,13 +22,11 @@
 import { defineProps, defineEmits } from "vue";
 import Dialog from "primevue/dialog";
 
-const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    required: true,
-  },
-});
+type Props = {
+  modelValue: boolean;
+};
 
+const props = defineProps<Props>();
 const emit = defineEmits(["update:modelValue"]);
 
 function updateVisibility(value: boolean) {
