@@ -68,7 +68,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
-import "../assets/output.css";
 import SvgIcon from "./SvgIcon.vue";
 
 const isNavbarOpen = ref(false);

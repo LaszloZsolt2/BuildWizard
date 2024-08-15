@@ -4,7 +4,6 @@
 
 <script setup lang="ts">
 import MainLayout from "./layouts/MainLayout.vue";
-import "./assets/output.css";
 </script>
 
 <style>
