@@ -20,19 +20,15 @@
       <!-- Navigation buttons -->
       <div class="flex-1 h-20 md:flex md:ml-auto justify-end">
         <RouterLink to="/" class="navbar-button hidden md:block">
-          <SvgIcon name="build" class="navbar-icon inline-flex" />
+          <BuildIcon class="navbar-icon inline-flex" />
           Builder
         </RouterLink>
         <RouterLink to="/builds" class="navbar-button hidden md:block">
-          <SvgIcon
-            name="completedBuilds"
-            class="navbar-icon inline-flex mr-1"
-          />
+          <CompletedBuildsIcon class="navbar-icon inline-flex mr-1" />
           Completed Builds
         </RouterLink>
-        <SvgIcon
+        <BarsIcon
           @click="toggleNavbar"
-          name="bars"
           id="menu-icon"
           class="navbar-icon block md:hidden cursor-pointer ml-auto mt-4 mr-1"
         />
@@ -43,7 +39,7 @@
         <div v-if="isNavbarOpen" class="block md:hidden absolute top-24">
           <div class="my-4">
             <RouterLink to="/" @click="toggleNavbar" class="navbar-button">
-              <SvgIcon name="build" class="navbar-icon inline-flex" />
+              <BuildIcon class="navbar-icon inline-flex" />
               Builder
             </RouterLink>
           </div>
@@ -53,10 +49,7 @@
               @click="toggleNavbar"
               class="navbar-button"
             >
-              <SvgIcon
-                name="completedBuilds"
-                class="navbar-icon inline-flex mr-1"
-              />
+              <CompletedBuildsIcon class="navbar-icon inline-flex mr-1" />
               Completed Builds
             </RouterLink>
           </div>
@@ -68,7 +61,9 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
-import SvgIcon from "./SvgIcon.vue";
+import BarsIcon from "@/assets/icons/bars.svg";
+import CompletedBuildsIcon from "@/assets/icons/completedBuilds.svg";
+import BuildIcon from "@/assets/icons/build.svg";
 
 const isNavbarOpen = ref(false);
 
