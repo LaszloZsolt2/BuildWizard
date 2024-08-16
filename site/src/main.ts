@@ -1,11 +1,11 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import router from "./router";
+import router from "../../site/src/router";
 import axios from "axios";
 import PrimeVue from "primevue/config";
 import Aura from "@primevue/themes/aura";
-import "./assets/output.css";
-import { setTheme } from "./utils/primeVueTheme";
+import { setTheme } from "../../site/src/utils/primeVueTheme";
+import "./style.css";
 
 createApp(App)
   .use(router)
