@@ -12,21 +12,21 @@
           target="_blank"
           rel="noopener noreferrer"
         >
-          <SvgIcon name="facebook" class="w-6 h-6 text-white" />
+          <FacebookIcon class="w-6 h-6 text-white" />
         </a>
         <a
           href="https://www.gmail.com"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <SvgIcon name="email" class="w-6 h-6 text-white" />
+          <EmailIcon class="w-6 h-6 text-white" />
         </a>
         <a
           href="https://www.linkedin.com"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <SvgIcon name="linkedin" class="w-6 h-6 text-white" />
+          <LinkedinIcon class="w-6 h-6 text-white" />
         </a>
       </nav>
     </div>
@@ -34,5 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import SvgIcon from "@/components/SvgIcon.vue";
+import LinkedinIcon from "@/assets/icons/linkedin.svg";
+import FacebookIcon from "@/assets/icons/facebook.svg";
+import EmailIcon from "@/assets/icons/email.svg";
 </script>
