@@ -7,10 +7,12 @@ interface Item {
   value: any;
 }
 
-const props = defineProps<{
+interface Props {
   items: Item[];
   modelValue: Item | null;
-}>();
+}
+
+const props = defineProps<Props>();
 
 const emit = defineEmits(["update:modelValue"]);
 
