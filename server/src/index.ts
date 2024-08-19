@@ -56,5 +56,5 @@ app.use("/api/power-supplies", powerSuppliesRouter);
 app.use("/api/system-requirements", systemRequirementRouter);
 
 app.listen(PORT, () => {
-  console.log(`A szerver a ${PORT} porton fut.`);
+  console.log(`Server port: ${PORT} `);
 });

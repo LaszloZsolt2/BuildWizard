@@ -31,6 +31,12 @@
     />
     <BaseInput type="text" v-model="inputValue" disabled class="block m-4" />
 
+    <SearchableSelector
+      v-model="selectedItem"
+      :items="items"
+      class="block m-4"
+    />
+
     <br />
     <BaseToggle v-model="isToggled" class="m-4" />
     <BaseToggle v-model="isToggled" :invalid="!isToggled" class="m-4" />
@@ -84,12 +90,20 @@ import BaseInput from "@/components/BaseInput.vue";
 import BaseToggle from "@/components/BaseToggle.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import Modal from "@/components/Modal.vue";
+import SearchableSelector from "@/components/SearchableSelector.vue";
+
 import { ref } from "vue";
+const items = ref([
+  { label: "Apple", value: "apple" },
+  { label: "Banana", value: "banana" },
+  { label: "Cherry", value: "cherry" },
+]);
 
 const inputValue = ref("");
 const isToggled = ref(false);
 const isLoading = ref(true);
 const isModalOpen = ref(false);
+const selectedItem = ref(null);
 
 setInterval(() => {
   isLoading.value = !isLoading.value;
