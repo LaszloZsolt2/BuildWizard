@@ -1,6 +1,6 @@
-export interface HardDrive {
-  _id: string;
-  name: string;
+import { ComponentBase } from "./componentBase";
+
+export interface HardDrive extends ComponentBase {
   price?: number;
   capacity: number;
   price_per_gb?: number;

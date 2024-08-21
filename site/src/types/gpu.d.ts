@@ -1,6 +1,6 @@
-export interface Gpu {
-  _id: string;
-  name: string;
+import { ComponentBase } from "./componentBase";
+
+export interface Gpu extends ComponentBase {
   price: number;
   chipset: string;
   memory: number;

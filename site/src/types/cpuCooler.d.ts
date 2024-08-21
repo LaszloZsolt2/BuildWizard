@@ -1,6 +1,6 @@
-export interface CpuCooler {
-  _id: string;
-  name: string;
+import { ComponentBase } from "./componentBase";
+
+export interface CpuCooler extends ComponentBase {
   price?: number;
   rpm: number[];
   noise_level: number[];

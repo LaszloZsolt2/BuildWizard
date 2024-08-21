@@ -1,6 +1,5 @@
-export interface PowerSupply {
-  _id: string;
-  name: string;
+import { ComponentBase } from "./componentBase";
+export interface PowerSupply extends ComponentBase {
   price?: number;
   type: string;
   efficiency: string;

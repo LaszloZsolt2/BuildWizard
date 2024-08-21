@@ -1,6 +1,6 @@
-export interface CaseFan {
-  _id: string;
-  name: string;
+import { ComponentBase } from "./componentBase";
+
+export interface CaseFan extends ComponentBase {
   price?: number;
   size: number;
   color: string;

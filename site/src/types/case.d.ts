@@ -1,6 +1,6 @@
-export interface Case {
-  _id: string;
-  name: string;
+import { ComponentBase } from "./componentBase";
+
+export interface Case extends ComponentBase {
   price?: number;
   type: string;
   color: string;

@@ -1,6 +1,5 @@
-export interface Memory {
-  _id: string;
-  name: string;
+import { ComponentBase } from "./componentBase";
+export interface Memory extends ComponentBase {
   price?: number;
   speed: number[];
   modules: number[];

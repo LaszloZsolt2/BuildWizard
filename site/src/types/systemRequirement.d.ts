@@ -4,10 +4,8 @@ interface Requirement {
   gpu: string[];
   vram: number;
 }
-
-export interface SystemRequirement {
-  _id: string;
-  name: string;
+import { ComponentBase } from "./componentBase";
+export interface SystemRequirement extends ComponentBase {
   type: "game" | "software";
   minimum: Requirement;
   recommended: Requirement;

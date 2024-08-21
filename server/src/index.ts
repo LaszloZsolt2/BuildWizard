@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import collectionRoutes from "./routes/collectionNames";
 
 import caseFanRouter from "./routes/CaseFans";
 import caseRouter from "./routes/Cases";
@@ -46,6 +47,7 @@ app.get("/", (req, res) => {
   res.send("MongoDB connection successful!");
 });
 
+app.use("/api/collections", collectionRoutes);
 app.use("/api/case-fans", caseFanRouter);
 app.use("/api/cases", caseRouter);
 app.use("/api/cpu-coolers", cpuCoolersRouter);
