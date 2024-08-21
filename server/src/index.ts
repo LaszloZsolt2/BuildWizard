@@ -10,7 +10,7 @@ import gpuRouter from "./routes/Gpus";
 import hardDrivesRouter from "./routes/HardDrives";
 import memoriesRouter from "./routes/Memories";
 import motherBoardRouter from "./routes/MotherBoards";
-import powerSuppliesRouter from "./routes/CaseFans";
+import powerSuppliesRouter from "./routes/PowerSupplies";
 import systemRequirementRouter from "./routes/SystemRequirements";
 
 dotenv.config();
@@ -56,5 +56,5 @@ app.use("/api/power-supplies", powerSuppliesRouter);
 app.use("/api/system-requirements", systemRequirementRouter);
 
 app.listen(PORT, () => {
-  console.log(`Server port: ${PORT} `);
+  console.log(`Server running on port ${PORT}`);
 });
