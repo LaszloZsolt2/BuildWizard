@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import PrimeSampleView from "../views/PrimeSampleView.vue";
+import ComponentsView from "@/views/ComponentsView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -17,6 +18,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/primevuesample",
     name: "sample",
     component: PrimeSampleView,
+  },
+  {
+    path: "/components/:type",
+    name: "components",
+    component: ComponentsView,
   },
 ];
 

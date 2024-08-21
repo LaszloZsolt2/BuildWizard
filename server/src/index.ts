@@ -10,7 +10,7 @@ import cpuRouter from "./routes/Cpus";
 import gpuRouter from "./routes/Gpus";
 import hardDrivesRouter from "./routes/HardDrives";
 import memoriesRouter from "./routes/Memories";
-import motherBoardRouter from "./routes/MotherBoards";
+import motherBoardRouter from "./routes/Motherboards";
 import powerSuppliesRouter from "./routes/PowerSupplies";
 import systemRequirementRouter from "./routes/SystemRequirements";
 
