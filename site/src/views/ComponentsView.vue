@@ -1,23 +1,56 @@
 <template>
   <div class="components text-white p-5">
     <ul v-if="!loading && !error && paginatedData.length">
-      <li v-for="item in paginatedData" :key="item._id">
-        <div v-for="(value, key) in item" :key="key">
-          {{ key }}: {{ value }}
-        </div>
-        <br />
-      </li>
-      <br />
+      <div class="bg-violet-800 p-10">
+        <p class="text-3xl font-bold text-white text-center">Select a ...</p>
+      </div>
+      <p class="mb-20"></p>
+      <table
+        class="m-10 w-11/12 bg-gray-800 text-white border-separate border-spacing-0"
+      >
+        <thead>
+          <tr>
+            <th
+              v-for="(key, index) in sortedKeys"
+              :key="index"
+              class="border-b px-6 py-3 text-left bg-gray-700"
+            >
+              {{ key }}
+            </th>
+            <th class="border-b px-6 py-3 text-left bg-gray-700">Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr
+            v-for="item in paginatedData"
+            :key="item._id"
+            class="hover:bg-gray-700"
+          >
+            <td v-for="key in sortedKeys" :key="key" class="border-b px-6 py-4">
+              {{ item[key] }}
+            </td>
+            <td class="border-b px-6 py-4">
+              <BaseButton
+                v-if="sortedKeys[sortedKeys.length - 1] === 'price'"
+                @click="handleAddClick(item)"
+                class="bg-blue-500 text-white hover:bg-blue-600"
+              >
+                Add
+              </BaseButton>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </ul>
+    <p v-if="error" class="text-red-500 mt-4">Error: {{ error }}</p>
+    <p v-if="loading" class="mt-4">Loading...</p>
 
-    <p v-if="error" class="text-red-500">Error: {{ error }}</p>
-    <p v-if="loading">Loading...</p>
-
-    <div v-if="totalPages > 1" class="flex justify-center align-center mt-5">
+    <div v-if="totalPages > 1" class="flex justify-center items-center mt-5">
       <BaseButton
         @click="prevPage"
         :disabled="currentPage === 1"
-        class="w-15 h-8 mt-4"
+        class="w-15 h-8"
       >
         Back
       </BaseButton>
@@ -25,7 +58,7 @@
       <BaseButton
         @click="nextPage"
         :disabled="currentPage === totalPages"
-        class="w-15 h-8 mt-4"
+        class="w-15 h-8"
       >
         Next
       </BaseButton>
@@ -41,7 +74,7 @@ import { PaginatedResponse } from "../types/paginatedResponse";
 const props = defineProps<{ type: string }>();
 
 const currentPage = ref(1);
-const itemsPerPage = ref(10);
+const itemsPerPage = ref(15);
 const data = ref<PaginatedResponse<any> | null>(null);
 const error = ref<string | null>(null);
 const loading = ref(true);
@@ -65,6 +98,25 @@ const fetchPage = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+const allKeys = computed(() => {
+  if (paginatedData.value.length === 0) return [];
+  const keys = Object.keys(paginatedData.value[0]);
+  return keys;
+});
+
+const sortedKeys = computed(() => {
+  const keys = allKeys.value;
+  const priceIndex = keys.indexOf("price");
+  if (priceIndex === -1) return keys;
+  const filteredKeys = keys.filter((key) => key !== "price");
+  filteredKeys.push("price");
+  return filteredKeys;
+});
+
+const handleAddClick = (item: any) => {
+  console.log("Add button clicked for item:", item);
 };
 
 const totalPages = computed(() =>
