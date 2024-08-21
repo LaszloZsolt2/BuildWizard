@@ -1,5 +1,5 @@
 import express from "express";
-import MotherBoards from "../models/MotherBoards";
+import Motherboards from "../models/Motherboards";
 
 const router = express.Router();
 
@@ -8,8 +8,8 @@ router.get("/", async (req, res) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || Infinity;
     const startIndex = (page - 1) * limit;
-    const total = await MotherBoards.countDocuments();
-    const motherBoards = await MotherBoards.find()
+    const total = await Motherboards.countDocuments();
+    const motherBoards = await Motherboards.find()
       .skip(startIndex)
       .limit(limit);
     res.json({
@@ -30,11 +30,11 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const motherBoard = await MotherBoards.findById(req.params.id);
+    const motherBoard = await Motherboards.findById(req.params.id);
     if (motherBoard) {
       res.json(motherBoard);
     } else {
-      res.status(404).json({ message: "MotherBoard not found" });
+      res.status(404).json({ message: "Motherboard not found" });
     }
   } catch (err: unknown) {
     if (err instanceof Error) {

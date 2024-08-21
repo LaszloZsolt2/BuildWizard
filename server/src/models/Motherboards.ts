@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const motherBoards = new mongoose.Schema({
+const motherboards = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, required: false },
   socket: { type: String, required: true },
@@ -10,10 +10,10 @@ const motherBoards = new mongoose.Schema({
   color: { type: String, required: true },
 });
 
-const MotherBoards = mongoose.model(
-  "MotherBoards",
-  motherBoards,
+const Motherboards = mongoose.model(
+  "Motherboards",
+  motherboards,
   "motherboards"
 );
 
-export default MotherBoards;
+export default Motherboards;
