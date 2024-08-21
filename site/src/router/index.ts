@@ -6,14 +6,9 @@ import ComponentsListView from "../views/ComponentsListView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/",
-    name: "home",
-    component: HomeView,
-  },
-  {
     path: "/builds",
     name: "builds",
-    component: HomeView,
+    component: ComponentsListView,
   },
   {
     path: "/primevuesample",
@@ -27,8 +22,8 @@ const routes: Array<RouteRecordRaw> = [
     props: (route) => ({ type: route.params.type }),
   },
   {
-    path: "/componentslist",
-    name: "componentslist",
+    path: "/",
+    name: "home",
     component: ComponentsListView,
     props: true,
   },

@@ -1,7 +1,7 @@
 import { ComponentBase } from "./componentBase";
 
 export interface Gpu extends ComponentBase {
-  price: number;
+  price?: number;
   chipset: string;
   memory: number;
   core_clock: number;
