@@ -38,6 +38,14 @@
     />
 
     <br />
+    <div>
+      <h1>Checkbox Example</h1>
+      <Checkbox v-model="isChecked" class="m-4" />
+      <Checkbox v-model="isChecked" :invalid="!isChecked" class="m-4" />
+      <Checkbox v-model="isChecked" disabled class="m-4" />
+      <p>Checkbox is {{ isChecked ? "checked" : "unchecked" }}</p>
+    </div>
+
     <BaseToggle v-model="isToggled" class="m-4" />
     <BaseToggle v-model="isToggled" :invalid="!isToggled" class="m-4" />
     <BaseToggle v-model="isToggled" disabled class="m-4" />
@@ -85,12 +93,13 @@
 </template>
 
 <script setup lang="ts">
-import BaseLabel from "@/components/BaseLabel.vue";
-import BaseInput from "@/components/BaseInput.vue";
-import BaseToggle from "@/components/BaseToggle.vue";
-import BaseButton from "@/components/BaseButton.vue";
-import Modal from "@/components/Modal.vue";
-import SearchableSelector from "@/components/SearchableSelector.vue";
+import BaseLabel from "../components/BaseLabel.vue";
+import BaseInput from "../components/BaseInput.vue";
+import BaseToggle from "../components/BaseToggle.vue";
+import BaseButton from "../components/BaseButton.vue";
+import Modal from "../components/Modal.vue";
+import SearchableSelector from "../components/SearchableSelector.vue";
+import Checkbox from "../components/Checkbox.vue";
 
 import { ref } from "vue";
 const items = ref([
@@ -98,7 +107,7 @@ const items = ref([
   { label: "Banana", value: "banana" },
   { label: "Cherry", value: "cherry" },
 ]);
-
+const isChecked = ref(false);
 const inputValue = ref("");
 const isToggled = ref(false);
 const isLoading = ref(true);

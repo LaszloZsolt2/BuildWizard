@@ -2,7 +2,9 @@
   <div class="components text-white p-5">
     <ul v-if="!loading && !error && paginatedData.length">
       <div class="bg-violet-800 p-10">
-        <p class="text-3xl font-bold text-white text-center">Select a ...</p>
+        <p class="text-3xl font-bold text-white text-center">
+          Select from {{ props.type }}
+        </p>
       </div>
       <p class="mb-20"></p>
       <table
