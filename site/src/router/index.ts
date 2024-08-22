@@ -16,16 +16,16 @@ const routes: Array<RouteRecordRaw> = [
     component: PrimeSampleView,
   },
   {
-    path: "/components/:type",
+    path: "/components",
     name: "components",
     component: ComponentsView,
-    props: (route) => ({ type: route.params.type }),
+    props: (route) => ({ type: route.query.type }),
   },
   {
     path: "/",
     name: "home",
     component: ComponentsListView,
-    props: true,
+    props: (route) => ({ type: route.query.type }),
   },
 ];
 

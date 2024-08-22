@@ -1,7 +1,6 @@
 import { ComponentBase } from "./componentBase";
 
 export interface Case extends ComponentBase {
-  price?: number;
   type: string;
   color: string;
   psu?: number;

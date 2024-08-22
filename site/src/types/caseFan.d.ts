@@ -1,7 +1,6 @@
 import { ComponentBase } from "./componentBase";
 
 export interface CaseFan extends ComponentBase {
-  price?: number;
   size: number;
   color: string;
   rpm?: number[];

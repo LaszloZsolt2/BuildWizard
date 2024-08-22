@@ -42,7 +42,6 @@
       <h1>Checkbox Example</h1>
       <Checkbox v-model="isChecked" class="m-4" />
       <Checkbox v-model="isChecked" :invalid="!isChecked" class="m-4" />
-      <Checkbox v-model="isChecked" disabled class="m-4" />
       <p>Checkbox is {{ isChecked ? "checked" : "unchecked" }}</p>
     </div>
 

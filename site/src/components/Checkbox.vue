@@ -1,14 +1,30 @@
 <template>
-  <Checkbox :binary="true" />
+  <Checkbox :binary="true" v-model="modelValue" />
 </template>
 
 <script setup lang="ts">
-import Checkbox, {
-  type CheckboxEmits,
-  type CheckboxProps,
-  CheckboxSlots,
-} from "primevue/checkbox";
-import { defineComponent } from "vue";
+import { defineProps, defineEmits, ref, watch } from "vue";
+import Checkbox from "primevue/checkbox";
 
-defineComponent<CheckboxProps, CheckboxEmits, CheckboxSlots>({});
+const props = defineProps<{
+  modelValue: boolean;
+}>();
+
+const emit = defineEmits<{
+  (e: "update:modelValue", value: boolean): void;
+}>();
+
+const modelValue = ref(props.modelValue);
+
+const updateValue = (value: boolean) => {
+  modelValue.value = value;
+  emit("update:modelValue", value);
+};
+
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    modelValue.value = newValue;
+  }
+);
 </script>

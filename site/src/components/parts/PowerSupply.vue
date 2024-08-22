@@ -1,7 +1,9 @@
 <template>
   <div class="p-4">
     <BaseLabel>
-      <router-link to="/components/power-supplies">
+      <router-link
+        :to="{ name: 'components', query: { type: 'Power-supplies' } }"
+      >
         <p class="text-xl font-semibold hover:underline cursor-pointer">
           Power Supply
         </p>
@@ -10,5 +12,5 @@
   </div>
 </template>
 <script setup lang="ts">
-import BaseLabel from "/home/zsolt/buildwizard/BuildWizard/site/src/components/BaseLabel.vue";
+import BaseLabel from "../BaseLabel.vue";
 </script>

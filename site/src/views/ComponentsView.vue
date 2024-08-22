@@ -8,10 +8,11 @@
       </div>
       <p class="mb-20"></p>
       <table
-        class="m-10 w-11/12 bg-gray-800 text-white border-separate border-spacing-0"
+        class="m-16 w-11/12 bg-gray-800 text-white border-separate border-spacing-0"
       >
         <thead>
           <tr>
+            <th class="border-b px-6 py-3 text-left bg-gray-700"></th>
             <th
               v-for="(key, index) in sortedKeys"
               :key="index"
@@ -19,7 +20,7 @@
             >
               {{ key }}
             </th>
-            <th class="border-b px-6 py-3 text-left bg-gray-700">Action</th>
+            <th class="border-b px-6 py-3 text-left bg-gray-700"></th>
           </tr>
         </thead>
 
@@ -29,6 +30,9 @@
             :key="item._id"
             class="hover:bg-gray-700"
           >
+            <td class="border-b px-6 py-4">
+              <Checkbox v-model:modelValue="item.selected" />
+            </td>
             <td v-for="key in sortedKeys" :key="key" class="border-b px-6 py-4">
               {{ item[key] }}
             </td>
@@ -71,12 +75,20 @@
 <script setup lang="ts">
 import { ref, computed, watchEffect } from "vue";
 import BaseButton from "../components/BaseButton.vue";
+import Checkbox from "../components/Checkbox.vue";
+import { useRouter } from "vue-router";
 import { PaginatedResponse } from "../types/paginatedResponse";
+import { ComponentBase } from "../types/componentBase";
 
 const props = defineProps<{ type: string }>();
+const router = useRouter();
+
+const emit = defineEmits<{
+  (event: "add", data: { name: string; price: number }): void;
+}>();
 
 const currentPage = ref(1);
-const itemsPerPage = ref(15);
+const itemsPerPage = ref(10);
 const data = ref<PaginatedResponse<any> | null>(null);
 const error = ref<string | null>(null);
 const loading = ref(true);
@@ -105,7 +117,7 @@ const fetchPage = async () => {
 const allKeys = computed(() => {
   if (paginatedData.value.length === 0) return [];
   const keys = Object.keys(paginatedData.value[0]);
-  return keys;
+  return keys.filter((key) => key !== "_id");
 });
 
 const sortedKeys = computed(() => {
@@ -117,8 +129,29 @@ const sortedKeys = computed(() => {
   return filteredKeys;
 });
 
-const handleAddClick = (item: any) => {
-  console.log("Add button clicked for item:", item);
+const handleAddClick = (item: ComponentBase) => {
+  emit("add", { name: item.name, price: item.price || 0 });
+
+  // Get existing selected items from localStorage
+  const storedData = localStorage.getItem("selectedComponents");
+  const selectedComponents = storedData ? JSON.parse(storedData) : {};
+
+  // Update localStorage with new selection
+  selectedComponents[props.type] = { name: item.name, price: item.price || 0 };
+  localStorage.setItem(
+    "selectedComponents",
+    JSON.stringify(selectedComponents)
+  );
+
+  // Update URL query
+  router.push({
+    name: "home",
+    query: {
+      type: props.type,
+      name: item.name,
+      price: item.price?.toString() || "0",
+    },
+  });
 };
 
 const totalPages = computed(() =>
