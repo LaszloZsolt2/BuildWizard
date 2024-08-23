@@ -148,7 +148,6 @@ const selected = ref<{ [key: string]: { name: string; price: number } }>({});
 const route = useRoute();
 
 onMounted(() => {
-  // Load selected items from localStorage when component is mounted
   const storedData = localStorage.getItem("selectedComponents");
   if (storedData) {
     selected.value = JSON.parse(storedData);
@@ -168,7 +167,6 @@ watch(
         price: parseFloat(price),
       };
 
-      // Update localStorage with the latest selection
       const storedData = localStorage.getItem("selectedComponents");
       const selectedComponents = storedData ? JSON.parse(storedData) : {};
       selectedComponents[type] = {
