@@ -6,7 +6,7 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || Infinity;
+    const limit = parseInt(req.query.limit as string) || 20;
     const startIndex = (page - 1) * limit;
     const total = await CpuCoolers.countDocuments();
     const cpuCoolers = await CpuCoolers.find().skip(startIndex).limit(limit);
