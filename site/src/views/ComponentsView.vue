@@ -6,9 +6,8 @@
           Select from {{ props.type }}
         </p>
       </div>
-      <p class="mb-20"></p>
       <table
-        class="m-16 w-11/12 bg-gray-800 text-white border-separate border-spacing-0"
+        class="mx-16 my-20 w-11/12 bg-gray-800 text-white border-separate border-spacing-0"
       >
         <thead>
           <tr>
@@ -100,8 +99,7 @@ const fetchPage = async () => {
       `http://localhost:5000/api/${props.type}?page=${currentPage.value}&limit=${itemsPerPage.value}`
     );
     if (response.ok) {
-      const result: PaginatedResponse<any> = await response.json();
-      data.value = result;
+      data.value = await response.json();
       error.value = null;
     } else {
       throw new Error("Failed to fetch data");
@@ -116,34 +114,31 @@ const fetchPage = async () => {
 
 const allKeys = computed(() => {
   if (paginatedData.value.length === 0) return [];
-  const keys = Object.keys(paginatedData.value[0]);
-  return keys.filter((key) => key !== "_id");
+  return Object.keys(paginatedData.value[0]).filter((key) => key !== "_id");
 });
 
 const sortedKeys = computed(() => {
-  const keys = allKeys.value;
+  const keys = [...allKeys.value];
   const priceIndex = keys.indexOf("price");
-  if (priceIndex === -1) return keys;
-  const filteredKeys = keys.filter((key) => key !== "price");
-  filteredKeys.push("price");
-  return filteredKeys;
+  if (priceIndex !== -1) {
+    keys.splice(priceIndex, 1);
+    keys.push("price");
+  }
+  return keys;
 });
 
 const handleAddClick = (item: ComponentBase) => {
   emit("add", { name: item.name, price: item.price || 0 });
 
-  // Get existing selected items from localStorage
-  const storedData = localStorage.getItem("selectedComponents");
-  const selectedComponents = storedData ? JSON.parse(storedData) : {};
-
-  // Update localStorage with new selection
+  const selectedComponents = JSON.parse(
+    localStorage.getItem("selectedComponents") || "{}"
+  );
   selectedComponents[props.type] = { name: item.name, price: item.price || 0 };
   localStorage.setItem(
     "selectedComponents",
     JSON.stringify(selectedComponents)
   );
 
-  // Update URL query
   router.push({
     name: "home",
     query: {

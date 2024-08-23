@@ -1,7 +1,7 @@
 <template>
-  <Button
-    @click="deleteItem"
-    class="flex items-center justify-center w-6 h-6 text-gray-500 hover:text-red-600 focus:outline-none"
+  <button
+    @click="handleDelete"
+    class="flex items-center justify-center text-white hover:text-red-500 focus:outline-none"
     aria-label="Delete"
   >
     <svg
@@ -10,7 +10,7 @@
       viewBox="0 0 24 24"
       stroke-width="2"
       stroke="currentColor"
-      class="w-4 h-4"
+      class="w-5 h-5"
     >
       <path
         stroke-linecap="round"
@@ -18,11 +18,11 @@
         d="M6 18L18 6M6 6l12 12"
       />
     </svg>
-  </Button>
+  </button>
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
+import { defineEmits, defineProps } from "vue";
 
 const props = defineProps<{
   type: string;
@@ -32,7 +32,7 @@ const emit = defineEmits<{
   (e: "delete", type: string): void;
 }>();
 
-const deleteItem = () => {
+const handleDelete = () => {
   emit("delete", props.type);
 };
 </script>

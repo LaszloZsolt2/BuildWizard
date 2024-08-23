@@ -43,10 +43,8 @@
 
     <br />
     <div>
-      <h1>Checkbox Example</h1>
       <Checkbox v-model="isChecked" class="m-4" />
       <Checkbox v-model="isChecked" :invalid="!isChecked" class="m-4" />
-      <p>Checkbox is {{ isChecked ? "checked" : "unchecked" }}</p>
     </div>
 
     <BaseToggle v-model="isToggled" class="m-4" />
@@ -111,7 +109,7 @@ const items = ref([
   { label: "Banana", value: "banana" },
   { label: "Cherry", value: "cherry" },
 ]);
-const isDeleted = ref(false);
+
 const isChecked = ref(false);
 const inputValue = ref("");
 const isToggled = ref(false);

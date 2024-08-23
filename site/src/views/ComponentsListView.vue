@@ -5,9 +5,9 @@
         Select Your Components
       </p>
     </div>
-    <p class="mb-20"></p>
+
     <table
-      class="m-16 w-11/12 bg-gray-800 rounded-lg overflow-hidden shadow-md"
+      class="mx-16 my-20 w-11/12 bg-gray-800 rounded-lg overflow-hidden shadow-md"
     >
       <thead>
         <tr class="bg-gray-700 text-white">
@@ -15,6 +15,7 @@
           <th class="p-3 text-center">Selected</th>
           <th class="p-3 text-center">Price</th>
           <th class="p-3 text-center">Where</th>
+          <th class="w-1"></th>
         </tr>
       </thead>
       <tbody>
@@ -29,6 +30,9 @@
             {{ selected.Cpus?.price || "" }}
           </td>
           <td class="p-3 text-center"></td>
+          <td class="text-right">
+            <Delete :type="'Cpus'" @delete="handleDelete" />
+          </td>
         </tr>
         <tr>
           <td class="p-3">
@@ -41,6 +45,9 @@
             {{ selected["Cpu-coolers"]?.price || "" }}
           </td>
           <td class="p-3 text-center"></td>
+          <td class="text-right">
+            <Delete :type="'Cpu-coolers'" @delete="handleDelete" />
+          </td>
         </tr>
         <tr>
           <td class="p-3">
@@ -53,6 +60,9 @@
             {{ selected.Gpus?.price || "" }}
           </td>
           <td class="p-3 text-center"></td>
+          <td class="text-right">
+            <Delete :type="'Gpus'" @delete="handleDelete" />
+          </td>
         </tr>
         <tr>
           <td class="p-3">
@@ -65,6 +75,9 @@
             {{ selected.Cases?.price || "" }}
           </td>
           <td class="p-3 text-center"></td>
+          <td class="text-right">
+            <Delete :type="'Cases'" @delete="handleDelete" />
+          </td>
         </tr>
         <tr>
           <td class="p-3">
@@ -75,6 +88,10 @@
           </td>
           <td class="p-3 text-white text-center">
             {{ selected["Case-fans"]?.price || "" }}
+          </td>
+          <td class="p-3 text-center"></td>
+          <td class="text-right">
+            <Delete :type="'Case-fans'" @delete="handleDelete" />
           </td>
         </tr>
         <tr>
@@ -88,6 +105,9 @@
             {{ selected["Hard-drives"]?.price || "" }}
           </td>
           <td class="p-3 text-center"></td>
+          <td class="text-right">
+            <Delete :type="'Hard-drives'" @delete="handleDelete" />
+          </td>
         </tr>
         <tr>
           <td class="p-3">
@@ -100,6 +120,9 @@
             {{ selected.Memories?.price || "" }}
           </td>
           <td class="p-3 text-center"></td>
+          <td class="text-right">
+            <Delete :type="'Memories'" @delete="handleDelete" />
+          </td>
         </tr>
         <tr>
           <td class="p-3">
@@ -112,6 +135,9 @@
             {{ selected.Motherboards?.price || "" }}
           </td>
           <td class="p-3 text-center"></td>
+          <td class="text-right">
+            <Delete :type="'Motherboards'" @delete="handleDelete" />
+          </td>
         </tr>
         <tr>
           <td class="p-3">
@@ -124,10 +150,12 @@
             {{ selected["Power-supplies"]?.price || "" }}
           </td>
           <td class="p-3 text-center"></td>
+          <td class="text-right">
+            <Delete :type="'Power-supplies'" @delete="handleDelete" />
+          </td>
         </tr>
       </tbody>
     </table>
-    <p class="mb-20"></p>
   </div>
 </template>
 
@@ -141,11 +169,10 @@ import HardDrive from "../components/parts/HardDrive.vue";
 import Memory from "../components/parts/Memory.vue";
 import Motherboard from "../components/parts/Motherboard.vue";
 import PowerSupply from "../components/parts/PowerSupply.vue";
-import { ref, watch, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import Delete from "../components/Delete.vue";
+import { ref, onMounted } from "vue";
 
 const selected = ref<{ [key: string]: { name: string; price: number } }>({});
-const route = useRoute();
 
 onMounted(() => {
   const storedData = localStorage.getItem("selectedComponents");
@@ -154,31 +181,9 @@ onMounted(() => {
   }
 });
 
-watch(
-  () => route.query,
-  (newQuery) => {
-    const type = newQuery.type as string | undefined;
-    const name = newQuery.name as string | undefined;
-    const price = newQuery.price as string | undefined;
-
-    if (type && name && price) {
-      selected.value[type] = {
-        name: name,
-        price: parseFloat(price),
-      };
-
-      const storedData = localStorage.getItem("selectedComponents");
-      const selectedComponents = storedData ? JSON.parse(storedData) : {};
-      selectedComponents[type] = {
-        name: name,
-        price: parseFloat(price),
-      };
-      localStorage.setItem(
-        "selectedComponents",
-        JSON.stringify(selectedComponents)
-      );
-    }
-  },
-  { immediate: true }
-);
+const handleDelete = (type: string) => {
+  delete selected.value[type];
+  const updatedComponents = { ...selected.value };
+  localStorage.setItem("selectedComponents", JSON.stringify(updatedComponents));
+};
 </script>
