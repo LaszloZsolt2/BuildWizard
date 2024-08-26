@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-neutral-800 m-2 xl:m-4 px-2 py-6 pb-8 rounded-lg flex flex-col xl:flex-row"
+    class="bg-neutral-800 m-2 xl:m-4 px-2 py-10 pb-8 rounded-lg flex flex-col xl:flex-row"
   >
     <div class="left flex-grow">
       <h1 class="text-2xl xl:text-4xl font-bold m-2 xl:m-6">
@@ -20,33 +20,39 @@
 
     <div class="flex flex-col xl:items-end">
       <div class="flex flex-col xl:flex-row flex-1">
-        <div class="right flex-1 mx-3 -mt-4 content-center">
-          <div class="text-neutral-200 font-bold text-lg">
-            Select games and software
-          </div>
-          <SearchableSelector
-            v-model="gameQuery"
-            :suggestions="filteredGames"
-            @option-select="onGameSelect"
-            placeholder="Search..."
-            class="block my-3"
-            :minLength="0"
-            :delay="0"
-            optionLabel="name"
-            fluid
-          />
-          <BaseButton
-            text
-            rounded
-            severity="secondary"
-            @click="removeGame(game)"
-            v-for="game in selectedGames"
-          >
-            {{ game.name }}
-            <TrashIcon class="m-1 h-4 inline-block" />
-          </BaseButton>
+        <div
+          class="right flex-1 xl:min-w-96 xl:max-w-96 mx-3 -mt-4 content-center"
+        >
+          <TransitionGroup tag="div" name="list">
+            <div class="text-neutral-200 font-bold text-lg">
+              Select games and software
+            </div>
+            <SearchableSelector
+              v-model="gameQuery"
+              :suggestions="filteredGames"
+              @option-select="onGameSelect"
+              placeholder="Search..."
+              class="block my-3"
+              :minLength="0"
+              :delay="0"
+              optionLabel="name"
+              fluid
+            />
+            <BaseButton
+              text
+              rounded
+              severity="secondary"
+              @click="removeGame(game)"
+              v-for="game in selectedGames"
+            >
+              {{ game.name }}
+              <TrashIcon class="m-1 h-4 inline-block" />
+            </BaseButton>
+          </TransitionGroup>
         </div>
-        <div class="right flex-1 mx-3 mt-4 lg:-mt-9 content-center">
+        <div
+          class="right flex-1 xl:min-w-96 xl:max-w-96mx-3 mx-3 mt-4 xl:-mt-9 content-center"
+        >
           <div class="text-neutral-200 font-bold text-lg">Set a budget</div>
           <BaseInput
             v-model="budget"
@@ -143,3 +149,21 @@ watch(gameQuery, async (newQuery) => {
   }
 });
 </script>
+
+<style scoped>
+.list-enter-from,
+.list-leave-to {
+  scale: 0.5;
+  opacity: 0;
+  transform: translateY(-20px);
+}
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.3s;
+  position: absolute;
+}
+
+.list-move {
+  transition: all 0.3s;
+}
+</style>
