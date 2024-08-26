@@ -1,6 +1,6 @@
 <template>
   <div class="components text-white p-5">
-    <ul v-if="!loading && !error && paginatedData.length">
+    <ul v-if="!isLoading && !fetchError && paginatedData.length">
       <div class="bg-violet-800 p-10">
         <p class="text-3xl font-bold text-white text-center">
           Select from {{ props.type }}
@@ -53,8 +53,8 @@
         </tbody>
       </table>
     </ul>
-    <p v-if="error" class="text-red-500 mt-4">Error: {{ error }}</p>
-    <p v-if="loading" class="mt-4">Loading...</p>
+    <p v-if="fetchError" class="text-red-500 mt-4">Error: {{ fetchError }}</p>
+    <p v-if="isLoading" class="mt-4">Loading...</p>
 
     <div v-if="totalPages > 1" class="flex justify-center items-center mt-5">
       <BaseButton
@@ -83,6 +83,7 @@ import Checkbox from "../components/Checkbox.vue";
 import { useRouter } from "vue-router";
 import { PaginatedResponse } from "../types/paginatedResponse";
 import { ComponentBase } from "../types/componentBase";
+import useFetch from "../composables/useFetch";
 
 const props = defineProps<{ type: string }>();
 const router = useRouter();
@@ -93,29 +94,29 @@ const emit = defineEmits<{
 
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
-const data = ref<PaginatedResponse<any> | null>(null);
-const error = ref<string | null>(null);
-const loading = ref(true);
+// const data = ref<PaginatedResponse<any> | null>(null);
+// const error = ref<string | null>(null);
+// const loading = ref(true);
 
-const fetchPage = async () => {
-  loading.value = true;
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/${props.type}?page=${currentPage.value}&limit=${itemsPerPage.value}`
-    );
-    if (response.ok) {
-      data.value = await response.json();
-      error.value = null;
-    } else {
-      throw new Error("Failed to fetch data");
-    }
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : "Unknown error occurred";
-    data.value = null;
-  } finally {
-    loading.value = false;
-  }
-};
+// const fetchPage = async () => {
+//   loading.value = true;
+//   try {
+//     const response = await fetch(
+//       `http://localhost:5000/api/${props.type}?page=${currentPage.value}&limit=${itemsPerPage.value}`
+//     );
+//     if (response.ok) {
+//       data.value = await response.json();
+//       error.value = null;
+//     } else {
+//       throw new Error("Failed to fetch data");
+//     }
+//   } catch (err) {
+//     error.value = err instanceof Error ? err.message : "Unknown error occurred";
+//     data.value = null;
+//   } finally {
+//     loading.value = false;
+//   }
+// };
 
 const allKeys = computed(() => {
   if (paginatedData.value.length === 0) return [];
@@ -155,9 +156,9 @@ const handleAddClick = (item: ComponentBase) => {
 };
 
 const totalPages = computed(() =>
-  Math.ceil((data.value?.total || 0) / itemsPerPage.value)
+  Math.ceil((fetchedData.value?.total || 0) / itemsPerPage.value)
 );
-const paginatedData = computed(() => data.value?.data || []);
+const paginatedData = computed(() => fetchedData.value?.data || []);
 
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
@@ -171,7 +172,21 @@ const prevPage = () => {
   }
 };
 
+const Data = ref<any>(null);
+const Error = ref<string | null>(null);
+const isLoading = ref<boolean>(true);
+
+const {
+  fetchedData,
+  fetchError,
+  isLoading: loading,
+} = useFetch(
+  `http://localhost:5000/api/${props.type}?page=${currentPage.value}&limit=${itemsPerPage.value}`
+);
+
 watchEffect(() => {
-  fetchPage();
+  Data.value = fetchedData.value;
+  Error.value = fetchError.value;
+  isLoading.value = loading.value;
 });
 </script>
