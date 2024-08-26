@@ -11,17 +11,19 @@
     >
       <thead>
         <tr class="bg-gray-700 text-white">
-          <th class="p-3 text-center">Components</th>
-          <th class="p-3 text-center">Selected</th>
-          <th class="p-3 text-center">Price</th>
-          <th class="p-3 text-center">Where</th>
+          <th
+            v-for="header in ['Components', 'Selected ', 'Price', 'Where']"
+            class="p-3 text-center"
+          >
+            {{ header }}
+          </th>
           <th class="w-1"></th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="part in partsList" :key="part.type">
           <td class="p-3 w-1/12">
-            <Parts :type="part.type" :label="part.label" />
+            <Parts :type="part.type">{{ part.label }}</Parts>
           </td>
           <td class="p-3 text-white text-center">
             {{ selected[part.type]?.name || "" }}
