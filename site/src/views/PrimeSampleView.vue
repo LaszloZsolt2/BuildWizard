@@ -43,8 +43,7 @@
 
     <br />
     <div>
-      <Checkbox v-model="isChecked" class="m-4" />
-      <Checkbox v-model="isChecked" :invalid="!isChecked" class="m-4" />
+      <Checkbox v-model="isChecked" :binary="true" />
     </div>
 
     <BaseToggle v-model="isToggled" class="m-4" />
@@ -101,7 +100,7 @@ import BaseButton from "../components/BaseButton.vue";
 import Modal from "../components/Modal.vue";
 import SearchableSelector from "../components/SearchableSelector.vue";
 import Checkbox from "../components/Checkbox.vue";
-import Delete from "../components/Delete.vue";
+import Delete from "../components/DeleteButton.vue";
 
 import { ref } from "vue";
 const items = ref([

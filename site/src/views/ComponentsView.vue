@@ -17,7 +17,9 @@
               :key="index"
               class="border-b px-6 py-3 text-left bg-gray-700"
             >
-              {{ key }}
+              <div class="" v-if="key != 'selected'">
+                {{ key }}
+              </div>
             </th>
             <th class="border-b px-6 py-3 text-left bg-gray-700"></th>
           </tr>
@@ -30,11 +32,14 @@
             class="hover:bg-gray-700"
           >
             <td class="border-b px-6 py-4">
-              <Checkbox v-model:modelValue="item.selected" />
+              <Checkbox v-model="item.selected" :binary="true" />
             </td>
             <td v-for="key in sortedKeys" :key="key" class="border-b px-6 py-4">
-              {{ item[key] }}
+              <div class="" v-if="key != 'selected'">
+                {{ item[key] }}
+              </div>
             </td>
+
             <td class="border-b px-6 py-4">
               <BaseButton
                 v-if="sortedKeys[sortedKeys.length - 1] === 'price'"

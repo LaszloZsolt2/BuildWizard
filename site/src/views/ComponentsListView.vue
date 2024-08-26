@@ -19,139 +19,24 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <tr v-for="part in partsList" :key="part.type">
           <td class="p-3 w-1/12">
-            <Cpu />
+            <Parts :type="part.type" :label="part.label" />
           </td>
           <td class="p-3 text-white text-center">
-            {{ selected.Cpus?.name || "" }}
+            {{ selected[part.type]?.name || "" }}
           </td>
+
           <td class="p-3 text-white text-center">
-            {{ selected.Cpus?.price || "" }}
+            {{
+              selected[part.type]?.price
+                ? selected[part.type]?.price.toFixed(2) + " $"
+                : ""
+            }}
           </td>
           <td class="p-3 text-center"></td>
           <td class="text-right">
-            <Delete :type="'Cpus'" @delete="handleDelete" />
-          </td>
-        </tr>
-        <tr>
-          <td class="p-3">
-            <CpuCooler />
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected["Cpu-coolers"]?.name || "" }}
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected["Cpu-coolers"]?.price || "" }}
-          </td>
-          <td class="p-3 text-center"></td>
-          <td class="text-right">
-            <Delete :type="'Cpu-coolers'" @delete="handleDelete" />
-          </td>
-        </tr>
-        <tr>
-          <td class="p-3">
-            <Gpu />
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected.Gpus?.name || "" }}
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected.Gpus?.price || "" }}
-          </td>
-          <td class="p-3 text-center"></td>
-          <td class="text-right">
-            <Delete :type="'Gpus'" @delete="handleDelete" />
-          </td>
-        </tr>
-        <tr>
-          <td class="p-3">
-            <Case />
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected.Cases?.name || "" }}
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected.Cases?.price || "" }}
-          </td>
-          <td class="p-3 text-center"></td>
-          <td class="text-right">
-            <Delete :type="'Cases'" @delete="handleDelete" />
-          </td>
-        </tr>
-        <tr>
-          <td class="p-3">
-            <CaseFan />
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected["Case-fans"]?.name || "" }}
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected["Case-fans"]?.price || "" }}
-          </td>
-          <td class="p-3 text-center"></td>
-          <td class="text-right">
-            <Delete :type="'Case-fans'" @delete="handleDelete" />
-          </td>
-        </tr>
-        <tr>
-          <td class="p-3">
-            <HardDrive />
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected["Hard-drives"]?.name || "" }}
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected["Hard-drives"]?.price || "" }}
-          </td>
-          <td class="p-3 text-center"></td>
-          <td class="text-right">
-            <Delete :type="'Hard-drives'" @delete="handleDelete" />
-          </td>
-        </tr>
-        <tr>
-          <td class="p-3">
-            <Memory />
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected.Memories?.name || "" }}
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected.Memories?.price || "" }}
-          </td>
-          <td class="p-3 text-center"></td>
-          <td class="text-right">
-            <Delete :type="'Memories'" @delete="handleDelete" />
-          </td>
-        </tr>
-        <tr>
-          <td class="p-3">
-            <Motherboard />
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected.Motherboards?.name || "" }}
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected.Motherboards?.price || "" }}
-          </td>
-          <td class="p-3 text-center"></td>
-          <td class="text-right">
-            <Delete :type="'Motherboards'" @delete="handleDelete" />
-          </td>
-        </tr>
-        <tr>
-          <td class="p-3">
-            <PowerSupply />
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected["Power-supplies"]?.name || "" }}
-          </td>
-          <td class="p-3 text-white text-center">
-            {{ selected["Power-supplies"]?.price || "" }}
-          </td>
-          <td class="p-3 text-center"></td>
-          <td class="text-right">
-            <Delete :type="'Power-supplies'" @delete="handleDelete" />
+            <Delete :type="part.type" @delete="handleDelete" />
           </td>
         </tr>
       </tbody>
@@ -160,17 +45,21 @@
 </template>
 
 <script setup lang="ts">
-import Cpu from "../components/parts/Cpu.vue";
-import Gpu from "../components/parts/Gpu.vue";
-import Case from "../components/parts/Case.vue";
-import CaseFan from "../components/parts/CaseFan.vue";
-import CpuCooler from "../components/parts/CpuCooler.vue";
-import HardDrive from "../components/parts/HardDrive.vue";
-import Memory from "../components/parts/Memory.vue";
-import Motherboard from "../components/parts/Motherboard.vue";
-import PowerSupply from "../components/parts/PowerSupply.vue";
-import Delete from "../components/Delete.vue";
+import Parts from "../components/Parts.vue";
+import Delete from "../components/DeleteButton.vue";
 import { ref, onMounted } from "vue";
+
+const partsList = [
+  { type: "cpus", label: "CPU" },
+  { type: "cpu-coolers", label: "CPU Cooler" },
+  { type: "gpus", label: "GPU" },
+  { type: "cases", label: "Case" },
+  { type: "case-fans", label: "Case Fan" },
+  { type: "hard-drives", label: "Hard Drive" },
+  { type: "memories", label: "Memory" },
+  { type: "motherboards", label: "Motherboard" },
+  { type: "power-supplies", label: "Power Supply" },
+];
 
 const selected = ref<{ [key: string]: { name: string; price: number } }>({});
 
@@ -183,7 +72,6 @@ onMounted(() => {
 
 const handleDelete = (type: string) => {
   delete selected.value[type];
-  const updatedComponents = { ...selected.value };
-  localStorage.setItem("selectedComponents", JSON.stringify(updatedComponents));
+  localStorage.setItem("selectedComponents", JSON.stringify(selected.value));
 };
 </script>
