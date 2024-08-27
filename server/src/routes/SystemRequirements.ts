@@ -1,5 +1,10 @@
 import express from "express";
 import SystemRequirements from "../models/SystemRequirements";
+import {
+  BenchmarkedSystemRequirement,
+  combineSystemRequirements,
+  getSystemRequirementBenchmarks,
+} from "../utils/benchmark";
 
 const router = express.Router();
 
@@ -52,6 +57,30 @@ router.get("/search", async (req, res) => {
       name: { $regex: query, $options: "i" },
     });
     res.json(systemRequirements);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "An unknown error occurred" });
+    }
+  }
+});
+
+router.get("/combined", async (req, res) => {
+  try {
+    let combinedSystemRequirements: BenchmarkedSystemRequirement | undefined;
+    for (const id of req.body.ids) {
+      const systemRequirement = await SystemRequirements.findById(id);
+      if (systemRequirement) {
+        const benchmarks =
+          await getSystemRequirementBenchmarks(systemRequirement);
+        combinedSystemRequirements = combineSystemRequirements(
+          { systemRequirement, benchmarks },
+          combinedSystemRequirements
+        );
+      }
+    }
+    res.json(combinedSystemRequirements);
   } catch (err: unknown) {
     if (err instanceof Error) {
       res.status(500).json({ message: err.message });
