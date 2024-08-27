@@ -2,7 +2,10 @@
   <div
     class="bg-neutral-800 m-4 px-2 py-10 pb-8 rounded-lg flex flex-col xl:flex-row w-full"
     :style="{
-      maxWidth: screenWidth < 768 ? `calc(${screenWidth}px - 5rem)` : undefined,
+      maxWidth:
+        screenWidth < 768
+          ? `calc(${screenWidth}px - ${selectedGames.length ? `${screenWidth * 0.175}px` : '2rem'})`
+          : undefined,
     }"
   >
     <div class="left flex-grow">
@@ -43,12 +46,12 @@
               fluid
             />
             <BaseButton
+              v-for="game in selectedGames"
               :key="game.name"
               text
               rounded
               severity="secondary"
               @click="removeGame(game)"
-              v-for="game in selectedGames"
             >
               {{ game.name }}
               <TrashIcon class="m-1 h-4 inline-block" />
