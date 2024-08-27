@@ -34,5 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import SvgIcon from "../components/SvgIcon.vue";
+import FacebookIcon from "@/assets/icons/facebook.svg";
+import EmailIcon from "@/assets/icons/email.svg";
+import LinkedinIcon from "@/assets/icons/linkedin.svg";
 </script>
