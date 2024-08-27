@@ -80,7 +80,9 @@ const partsList = [
   { type: "power-supplies", label: "Power Supply" },
 ];
 
-const selected = ref<{ [key: string]: { name: string; price: number } }>({});
+const selected = ref<{
+  [key: string]: { name: string; price: number; _id: string };
+}>({});
 const { screenWidth } = useScreenSize();
 
 onMounted(() => {

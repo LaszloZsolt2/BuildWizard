@@ -136,7 +136,11 @@ const handleAddClick = (item: ComponentBase) => {
   const selectedComponents = JSON.parse(
     localStorage.getItem("selectedComponents") || "{}"
   );
-  selectedComponents[props.type] = { name: item.name, price: item.price || 0 };
+  selectedComponents[props.type] = {
+    name: item.name,
+    price: item.price || 0,
+    _id: item._id,
+  };
   localStorage.setItem(
     "selectedComponents",
     JSON.stringify(selectedComponents)

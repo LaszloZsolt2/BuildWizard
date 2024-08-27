@@ -144,7 +144,6 @@ function removeGame(game: any) {
 
 function scrollToBuilder() {
   const componentsList = document.getElementById("components-list");
-  console.log(componentsList);
   if (componentsList) {
     componentsList.scrollIntoView({
       behavior: "smooth",

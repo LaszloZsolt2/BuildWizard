@@ -130,11 +130,15 @@ async function handleGameDataChanged() {
       {
         params: {
           ids: currentGames.value.map((g: any) => g._id),
+          components: JSON.parse(
+            localStorage.getItem("selectedComponents") || "{}"
+          ),
         },
       }
     );
     localStorage.setItem("systemRequirements", JSON.stringify(response.data));
     systemRequirements.value = response.data;
+    console.log(response.data);
   } else {
     localStorage.removeItem("systemRequirements");
   }

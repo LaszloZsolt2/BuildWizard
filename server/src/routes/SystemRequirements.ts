@@ -34,7 +34,6 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/search", async (req, res) => {
-  console.log(req.query);
   try {
     const query = req.query.q?.toString().toLowerCase();
     const systemRequirements = await SystemRequirements.find({
@@ -58,12 +57,14 @@ router.get("/combined", async (req, res) => {
       if (systemRequirement) {
         const benchmarks =
           await getSystemRequirementBenchmarks(systemRequirement);
-        combinedSystemRequirements = combineSystemRequirements(
+        combinedSystemRequirements = await combineSystemRequirements(
           { systemRequirement, benchmarks },
-          combinedSystemRequirements
+          combinedSystemRequirements,
+          req.query.components
         );
       }
     }
+
     res.json(combinedSystemRequirements);
   } catch (err: unknown) {
     if (err instanceof Error) {
