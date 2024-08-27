@@ -33,24 +33,8 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
-  try {
-    const systemRequirement = await SystemRequirements.findById(req.params.id);
-    if (systemRequirement) {
-      res.json(systemRequirement);
-    } else {
-      res.status(404).json({ message: "SystemRequirement not found" });
-    }
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      res.status(500).json({ message: err.message });
-    } else {
-      res.status(500).json({ message: "An unknown error occurred" });
-    }
-  }
-});
-
 router.get("/search", async (req, res) => {
+  console.log(req.query);
   try {
     const query = req.query.q?.toString().toLowerCase();
     const systemRequirements = await SystemRequirements.find({
@@ -81,6 +65,23 @@ router.get("/combined", async (req, res) => {
       }
     }
     res.json(combinedSystemRequirements);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "An unknown error occurred" });
+    }
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    const systemRequirement = await SystemRequirements.findById(req.params.id);
+    if (systemRequirement) {
+      res.json(systemRequirement);
+    } else {
+      res.status(404).json({ message: "SystemRequirement not found" });
+    }
   } catch (err: unknown) {
     if (err instanceof Error) {
       res.status(500).json({ message: err.message });

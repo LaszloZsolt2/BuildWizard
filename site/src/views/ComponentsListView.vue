@@ -8,10 +8,10 @@
         :style="{ maxWidth: screenWidth < 768 ? 'calc(82.5vw)' : undefined }"
       >
         <table
-          class="mx-4 my-10 w-full bg-gray-800 rounded-lg overflow-hidden shadow-md"
+          class="mx-4 my-10 w-full bg-neutral-800 rounded-lg overflow-hidden shadow-md"
         >
           <thead>
-            <tr class="bg-gray-700 text-white">
+            <tr class="bg-neutral-700 text-white">
               <th
                 v-for="header in ['Components', 'Selected ', 'Price', 'Where']"
                 class="px-1 py-2 md:p-3 text-center text-xs md:text-base"
