@@ -1,14 +1,14 @@
-// src/composables/useFetch.ts
-import { ref, onMounted } from "vue";
+import { ref, watch, Ref } from "vue";
 
-export default function useFetch(url: string) {
+export default function useFetch(url: Ref<string>) {
   const fetchedData = ref<any>(null);
   const fetchError = ref<string | null>(null);
   const isLoading = ref<boolean>(true);
 
   const fetchData = async () => {
+    isLoading.value = true;
     try {
-      const response = await fetch(url);
+      const response = await fetch(url.value);
       if (response.ok) {
         fetchedData.value = await response.json();
         fetchError.value = null;
@@ -23,7 +23,13 @@ export default function useFetch(url: string) {
     }
   };
 
-  onMounted(fetchData);
+  watch(
+    url,
+    () => {
+      fetchData();
+    },
+    { immediate: true }
+  );
 
   return { fetchedData, fetchError, isLoading };
 }

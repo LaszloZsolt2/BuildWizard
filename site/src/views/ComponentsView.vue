@@ -77,46 +77,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watchEffect } from "vue";
+import { ref, computed } from "vue";
 import BaseButton from "../components/BaseButton.vue";
 import Checkbox from "../components/Checkbox.vue";
 import { useRouter } from "vue-router";
-import { PaginatedResponse } from "../types/paginatedResponse";
-import { ComponentBase } from "../types/componentBase";
 import useFetch from "../composables/useFetch";
+import { ComponentBase } from "../types/componentBase";
 
 const props = defineProps<{ type: string }>();
 const router = useRouter();
-
 const emit = defineEmits<{
   (event: "add", data: { name: string; price: number }): void;
 }>();
 
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
-// const data = ref<PaginatedResponse<any> | null>(null);
-// const error = ref<string | null>(null);
-// const loading = ref(true);
 
-// const fetchPage = async () => {
-//   loading.value = true;
-//   try {
-//     const response = await fetch(
-//       `http://localhost:5000/api/${props.type}?page=${currentPage.value}&limit=${itemsPerPage.value}`
-//     );
-//     if (response.ok) {
-//       data.value = await response.json();
-//       error.value = null;
-//     } else {
-//       throw new Error("Failed to fetch data");
-//     }
-//   } catch (err) {
-//     error.value = err instanceof Error ? err.message : "Unknown error occurred";
-//     data.value = null;
-//   } finally {
-//     loading.value = false;
-//   }
-// };
+const fetchUrl = computed(
+  () =>
+    `http://localhost:5000/api/${props.type}?page=${currentPage.value}&limit=${itemsPerPage.value}`
+);
+
+const { fetchedData, fetchError, isLoading } = useFetch(fetchUrl);
 
 const allKeys = computed(() => {
   if (paginatedData.value.length === 0) return [];
@@ -171,22 +153,4 @@ const prevPage = () => {
     currentPage.value -= 1;
   }
 };
-
-const Data = ref<any>(null);
-const Error = ref<string | null>(null);
-const isLoading = ref<boolean>(true);
-
-const {
-  fetchedData,
-  fetchError,
-  isLoading: loading,
-} = useFetch(
-  `http://localhost:5000/api/${props.type}?page=${currentPage.value}&limit=${itemsPerPage.value}`
-);
-
-watchEffect(() => {
-  Data.value = fetchedData.value;
-  Error.value = fetchError.value;
-  isLoading.value = loading.value;
-});
 </script>
