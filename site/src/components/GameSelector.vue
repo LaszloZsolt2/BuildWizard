@@ -1,6 +1,7 @@
 <template>
   <div
     class="bg-neutral-800 m-4 px-2 py-10 pb-8 rounded-lg flex flex-col xl:flex-row w-full"
+    ref="componentsList"
     :style="{
       maxWidth:
         screenWidth < 768
@@ -13,8 +14,8 @@
         <div class="text-neutral-200 m-2">Pick your games and budget,</div>
         <div class="text-violet-500 m-2">We'll handle the rest</div>
       </h1>
-      <!-- TODO: scroll to builder on press -->
       <BaseButton
+        @click="scrollToBuilder"
         text
         severity="secondary"
         class="text-xl font-bold text-neutral-200 m-1 mb-8 xl:mb-0 xl:m-5"
@@ -139,6 +140,17 @@ function removeGame(game: any) {
   window.dispatchEvent(
     new CustomEvent("game-data-changed", { detail: currentGames })
   );
+}
+
+function scrollToBuilder() {
+  const componentsList = document.getElementById("components-list");
+  console.log(componentsList);
+  if (componentsList) {
+    componentsList.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }
 }
 
 onMounted(() => {

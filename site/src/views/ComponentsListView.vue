@@ -2,15 +2,19 @@
   <div class="flex">
     <div class="home flex-grow">
       <GameSelector />
-      <div class="components-list">
+      <div
+        id="components-list"
+        class="components-list"
+        :style="{ maxWidth: screenWidth < 768 ? 'calc(82.5vw)' : undefined }"
+      >
         <table
-          class="mx-16 my-20 w-11/12 bg-gray-800 rounded-lg overflow-hidden shadow-md"
+          class="mx-4 my-10 w-full bg-gray-800 rounded-lg overflow-hidden shadow-md"
         >
           <thead>
             <tr class="bg-gray-700 text-white">
               <th
                 v-for="header in ['Components', 'Selected ', 'Price', 'Where']"
-                class="p-3 text-center"
+                class="px-1 py-2 md:p-3 text-center text-xs md:text-base"
               >
                 {{ header }}
               </th>
@@ -19,21 +23,31 @@
           </thead>
           <tbody>
             <tr v-for="part in partsList" :key="part.type">
-              <td class="p-3 w-1/12">
-                <Parts :type="part.type">{{ part.label }}</Parts>
+              <td class="px-1 py-2 md:p-3 w-1/12">
+                <Parts :type="part.type"
+                  ><div class="text-xs md:text-base">
+                    {{ part.label }}
+                  </div></Parts
+                >
               </td>
-              <td class="p-3 text-white text-center">
+              <td
+                class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-xs md:text-base text-white text-center"
+              >
                 {{ selected[part.type]?.name || "" }}
               </td>
 
-              <td class="p-3 text-white text-center">
+              <td
+                class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-xs md:text-base text-white text-center"
+              >
                 {{
                   selected[part.type]?.price
                     ? selected[part.type]?.price.toFixed(2) + " $"
                     : ""
                 }}
               </td>
-              <td class="p-3 text-center"></td>
+              <td
+                class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-xs md:text-base text-center"
+              ></td>
               <td class="text-right">
                 <Delete :type="part.type" @delete="handleDelete" />
               </td>
@@ -52,6 +66,7 @@ import Delete from "../components/DeleteButton.vue";
 import GameSelector from "../components/GameSelector.vue";
 import SystemRequirementsSidebar from "../components/SystemRequirementsSidebar.vue";
 import { ref, onMounted } from "vue";
+import { useScreenSize } from "../composables/useScreenSize";
 
 const partsList = [
   { type: "cpus", label: "CPU" },
@@ -66,6 +81,7 @@ const partsList = [
 ];
 
 const selected = ref<{ [key: string]: { name: string; price: number } }>({});
+const { screenWidth } = useScreenSize();
 
 onMounted(() => {
   const storedData = localStorage.getItem("selectedComponents");
