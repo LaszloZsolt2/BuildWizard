@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import cors from "cors";
 
 import caseFanRouter from "./routes/CaseFans";
 import caseRouter from "./routes/Cases";
@@ -9,8 +10,8 @@ import cpuRouter from "./routes/Cpus";
 import gpuRouter from "./routes/Gpus";
 import hardDrivesRouter from "./routes/HardDrives";
 import memoriesRouter from "./routes/Memories";
-import motherBoardRouter from "./routes/MotherBoards";
-import powerSuppliesRouter from "./routes/CaseFans";
+import motherBoardRouter from "./routes/Motherboards";
+import powerSuppliesRouter from "./routes/PowerSupplies";
 import systemRequirementRouter from "./routes/SystemRequirements";
 
 dotenv.config();
@@ -20,6 +21,7 @@ const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/default";
 
 app.use(express.json());
+app.use(cors());
 
 mongoose
   .connect(MONGO_URI)
@@ -56,5 +58,5 @@ app.use("/api/power-supplies", powerSuppliesRouter);
 app.use("/api/system-requirements", systemRequirementRouter);
 
 app.listen(PORT, () => {
-  console.log(`Server port: ${PORT} `);
+  console.log(`Server running on port ${PORT}`);
 });

@@ -1,5 +1,5 @@
 import express from "express";
-import Cases from "../models/Cases";
+import Motherboards from "../models/Motherboards";
 
 const router = express.Router();
 
@@ -8,14 +8,16 @@ router.get("/", async (req, res) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
     const startIndex = (page - 1) * limit;
-    const total = await Cases.countDocuments();
-    const cases = await Cases.find().skip(startIndex).limit(limit);
+    const total = await Motherboards.countDocuments();
+    const motherBoards = await Motherboards.find()
+      .skip(startIndex)
+      .limit(limit);
     res.json({
       page,
       limit,
       total,
       totalPages: Math.ceil(total / limit),
-      data: cases,
+      data: motherBoards,
     });
   } catch (err: unknown) {
     if (err instanceof Error) {
@@ -28,11 +30,11 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const caseFan = await Cases.findById(req.params.id);
-    if (caseFan) {
-      res.json(caseFan);
+    const motherBoard = await Motherboards.findById(req.params.id);
+    if (motherBoard) {
+      res.json(motherBoard);
     } else {
-      res.status(404).json({ message: "Case Fan not found" });
+      res.status(404).json({ message: "Motherboard not found" });
     }
   } catch (err: unknown) {
     if (err instanceof Error) {

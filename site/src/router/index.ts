@@ -1,22 +1,30 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import HomeView from "../views/HomeView.vue";
 import PrimeSampleView from "../views/PrimeSampleView.vue";
+import ComponentsView from "../views/ComponentsView.vue";
+import ComponentsListView from "../views/ComponentsListView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/",
-    name: "home",
-    component: HomeView,
-  },
-  {
     path: "/builds",
     name: "builds",
-    component: HomeView,
+    component: ComponentsListView,
   },
   {
     path: "/primevuesample",
     name: "sample",
     component: PrimeSampleView,
+  },
+  {
+    path: "/components",
+    name: "components",
+    component: ComponentsView,
+    props: (route) => ({ type: route.query.type }),
+  },
+  {
+    path: "/",
+    name: "home",
+    component: ComponentsListView,
+    props: (route) => ({ type: route.query.type }),
   },
 ];
 
