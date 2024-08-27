@@ -1,6 +1,9 @@
 <template>
   <div
-    class="bg-neutral-800 m-2 xl:m-4 px-2 py-10 pb-8 rounded-lg flex flex-col xl:flex-row"
+    class="bg-neutral-800 m-4 px-2 py-10 pb-8 rounded-lg flex flex-col xl:flex-row w-full"
+    :style="{
+      maxWidth: screenWidth < 768 ? `calc(${screenWidth}px - 5rem)` : undefined,
+    }"
   >
     <div class="left flex-grow">
       <h1 class="text-2xl xl:text-4xl font-bold m-2 xl:m-6">
@@ -21,13 +24,14 @@
     <div class="flex flex-col xl:items-end">
       <div class="flex flex-col xl:flex-row flex-1">
         <div
-          class="right flex-1 xl:min-w-96 xl:max-w-96 mx-3 -mt-4 content-center"
+          class="right flex-1 2xl:min-w-96 xl:max-w-96 mx-3 mt-4 content-top"
         >
           <TransitionGroup tag="div" name="list">
-            <div class="text-neutral-200 font-bold text-lg">
+            <div class="text-neutral-200 font-bold text-lg" key="select-label">
               Select games and software
             </div>
             <SearchableSelector
+              key="searchable-selector"
               v-model="gameQuery"
               :suggestions="filteredGames"
               @option-select="onGameSelect"
@@ -39,6 +43,7 @@
               fluid
             />
             <BaseButton
+              :key="game.name"
               text
               rounded
               severity="secondary"
@@ -51,7 +56,7 @@
           </TransitionGroup>
         </div>
         <div
-          class="right flex-1 xl:min-w-96 xl:max-w-96mx-3 mx-3 mt-4 xl:-mt-9 content-center"
+          class="right flex-1 2xl:min-w-96 xl:max-w-96mx-3 mx-3 mt-4 content-top"
         >
           <div class="text-neutral-200 font-bold text-lg">Set a budget</div>
           <BaseInput
@@ -96,8 +101,10 @@ import axios from "axios";
 import BaseButton from "./BaseButton.vue";
 import BaseInput from "./BaseInput.vue";
 import { onMounted } from "vue";
+import { useScreenSize } from "../composables/useScreenSize";
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
+const { screenWidth } = useScreenSize();
 const gameQuery = ref("");
 const filteredGames = ref<any[]>([]);
 // const filteredGames = ref<Game[]>([]);
@@ -114,6 +121,10 @@ function onGameSelect(game: any) {
   currentGames.push(game.value);
   selectedGames.value.push(game.value);
   localStorage.setItem("games", JSON.stringify(currentGames));
+
+  window.dispatchEvent(
+    new CustomEvent("game-data-changed", { detail: currentGames })
+  );
 }
 
 function removeGame(game: any) {
@@ -121,6 +132,10 @@ function removeGame(game: any) {
   const newGames = currentGames.filter((g: any) => g._id !== game._id);
   localStorage.setItem("games", JSON.stringify(newGames));
   selectedGames.value = newGames;
+
+  window.dispatchEvent(
+    new CustomEvent("game-data-changed", { detail: currentGames })
+  );
 }
 
 onMounted(() => {
@@ -153,13 +168,15 @@ watch(gameQuery, async (newQuery) => {
 <style scoped>
 .list-enter-from,
 .list-leave-to {
-  scale: 0.5;
+  /* scale: 0.5; */
   opacity: 0;
   transform: translateY(-20px);
 }
 .list-enter-active,
 .list-leave-active {
   transition: all 0.3s;
+}
+.list-leave-active {
   position: absolute;
 }
 
