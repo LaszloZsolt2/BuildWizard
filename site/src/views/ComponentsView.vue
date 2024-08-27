@@ -56,7 +56,10 @@
     <p v-if="fetchError" class="text-red-500 mt-4">Error: {{ fetchError }}</p>
     <p v-if="isLoading" class="mt-4">Loading...</p>
 
-    <div v-if="totalPages > 1" class="flex justify-center items-center mt-5">
+    <div
+      v-if="!isLoading && totalPages > 1"
+      class="flex justify-center items-center mt-5"
+    >
       <BaseButton
         @click="prevPage"
         :disabled="currentPage === 1"
