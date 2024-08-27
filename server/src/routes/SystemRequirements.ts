@@ -69,7 +69,7 @@ router.get("/search", async (req, res) => {
 router.get("/combined", async (req, res) => {
   try {
     let combinedSystemRequirements: BenchmarkedSystemRequirement | undefined;
-    for (const id of req.body.ids) {
+    for (const id of req.query.ids as string[]) {
       const systemRequirement = await SystemRequirements.findById(id);
       if (systemRequirement) {
         const benchmarks =
