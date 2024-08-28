@@ -1,7 +1,7 @@
 <template>
   <button
     @click="handleDelete"
-    class="flex items-center justify-center text-white hover:text-red-500 focus:outline-none"
+    class="flex items-center justify-center text-white hover:text-red-500 focus:outline-none pr-4"
     aria-label="Delete"
   >
     <svg

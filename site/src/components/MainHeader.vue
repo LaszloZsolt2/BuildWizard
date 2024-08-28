@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full fixed">
+  <div class="w-full fixed z-50">
     <nav
       :class="[
         'bg-neutral-800 m-2 md:m-4 rounded-lg flex content-start p-3 md:p-4 shadow-lg transition-all duration-500',

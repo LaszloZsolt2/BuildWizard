@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4">
+  <div class="px-2 py-3 md:p-4">
     <BaseLabel>
       <router-link :to="{ name: 'components', query: { type: props.type } }">
         <p class="text-xl font-semibold hover:underline cursor-pointer">

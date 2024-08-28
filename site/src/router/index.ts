@@ -5,11 +5,6 @@ import ComponentsListView from "../views/ComponentsListView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/builds",
-    name: "builds",
-    component: ComponentsListView,
-  },
-  {
     path: "/primevuesample",
     name: "sample",
     component: PrimeSampleView,

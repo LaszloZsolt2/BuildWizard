@@ -1,5 +1,10 @@
 import express from "express";
 import SystemRequirements from "../models/SystemRequirements";
+import {
+  combineSystemRequirements,
+  getSystemRequirementBenchmarks,
+} from "../utils/benchmark";
+import { BenchmarkedSystemRequirement } from "../types/benchmark";
 
 const router = express.Router();
 
@@ -19,6 +24,48 @@ router.get("/", async (req, res) => {
       totalPages: Math.ceil(total / limit),
       data: systemRequirements,
     });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "An unknown error occurred" });
+    }
+  }
+});
+
+router.get("/search", async (req, res) => {
+  try {
+    const query = req.query.q?.toString()?.toLowerCase();
+    const systemRequirements = await SystemRequirements.find({
+      name: { $regex: query, $options: "i" },
+    });
+    res.json(systemRequirements);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "An unknown error occurred" });
+    }
+  }
+});
+
+router.get("/combined", async (req, res) => {
+  try {
+    let combinedSystemRequirements: BenchmarkedSystemRequirement | undefined;
+    for (const id of req.query.ids as string[]) {
+      const systemRequirement = await SystemRequirements.findById(id);
+      if (systemRequirement) {
+        const benchmarks =
+          await getSystemRequirementBenchmarks(systemRequirement);
+        combinedSystemRequirements = await combineSystemRequirements(
+          { systemRequirement, benchmarks },
+          combinedSystemRequirements,
+          req.query.components
+        );
+      }
+    }
+
+    res.json(combinedSystemRequirements);
   } catch (err: unknown) {
     if (err instanceof Error) {
       res.status(500).json({ message: err.message });
