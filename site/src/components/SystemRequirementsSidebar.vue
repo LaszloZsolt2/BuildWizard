@@ -80,12 +80,13 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 import CaretIcon from "@/assets/icons/caret.svg";
-import axios from "axios";
 import { useScreenSize } from "../composables/useScreenSize";
 import SystemRequirementsLoader from "./loaders/SystemRequirementsLoader.vue";
 import { getFirstNStrings } from "../utils/string";
 import SystemRequirements from "./SystemRequirements.vue";
 import ReqirementsMet from "./RequirementMet.vue";
+import useFetch from "../composables/useFetch";
+
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 type Props = { gameData?: any; parts?: any };
@@ -105,10 +106,12 @@ const panelStateWidths = {
     outer: "2rem",
   },
 };
+
 const panelState = ref<keyof typeof panelStateWidths>("hidden");
 const systemRequirements = ref<any>(null);
 const currentGames = ref<any[]>([]);
 const { screenWidth } = useScreenSize();
+const url = ref<string>("");
 
 function togglePanel() {
   panelState.value = panelState.value === "open" ? "closed" : "open";
@@ -125,33 +128,49 @@ async function handleGameDataChanged() {
   } else if (panelState.value === "hidden" && currentGames.value.length > 0) {
     panelState.value = "open";
   }
-  systemRequirements.value = JSON.parse(
-    localStorage.getItem("systemRequirements") || "{}"
+
+  const components = JSON.parse(
+    localStorage.getItem("selectedComponents") || "{}"
   );
+  const ids = currentGames.value.map((g: any) => g._id);
 
   if (panelState.value !== "hidden") {
-    localStorage.removeItem("systemRequirements");
     systemRequirements.value = null;
-    const response = await axios.get(
-      `${apiBaseUrl}/system-requirements/combined`,
-      {
-        params: {
-          ids: currentGames.value.map((g: any) => g._id),
-          components: JSON.parse(
-            localStorage.getItem("selectedComponents") || "{}"
-          ),
-        },
-      }
-    );
-    localStorage.setItem("systemRequirements", JSON.stringify(response.data));
-    systemRequirements.value = response.data;
+    url.value = `${apiBaseUrl}/system-requirements/combined?${buildQueryParams(ids, components)}`;
   } else {
-    localStorage.removeItem("systemRequirements");
+    url.value = "";
   }
 }
 
-watch(() => props.gameData, handleGameDataChanged);
-watch(() => props.parts, handleGameDataChanged);
+function buildQueryParams(ids: string[], components: any): string {
+  const queryString: string[] = [];
+
+  ids.forEach((id) => queryString.push(`ids[]=${encodeURIComponent(id)}`));
+
+  function appendNestedParams(params: any, parentKey: string): void {
+    for (const [key, value] of Object.entries(params)) {
+      const encodedKey = `${parentKey}[${key}]`;
+      if (typeof value === "object" && value !== null) {
+        appendNestedParams(value, encodedKey);
+      } else {
+        queryString.push(
+          `${encodedKey}=${encodeURIComponent(value as string)}`
+        );
+      }
+    }
+  }
+
+  appendNestedParams(components, "components");
+
+  return queryString.join("&");
+}
+
+const { fetchedData, fetchError, isLoading } = useFetch(url);
+
+watch(() => props.gameData, handleGameDataChanged, { immediate: true });
+watch(fetchedData, (data) => {
+  systemRequirements.value = data;
+});
 </script>
 
 <style scoped>
