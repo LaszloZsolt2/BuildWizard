@@ -1,10 +1,10 @@
 import express from "express";
 import SystemRequirements from "../models/SystemRequirements";
 import {
-  BenchmarkedSystemRequirement,
   combineSystemRequirements,
   getSystemRequirementBenchmarks,
 } from "../utils/benchmark";
+import { BenchmarkedSystemRequirement } from "../types/benchmark";
 
 const router = express.Router();
 
@@ -35,7 +35,7 @@ router.get("/", async (req, res) => {
 
 router.get("/search", async (req, res) => {
   try {
-    const query = req.query.q?.toString().toLowerCase();
+    const query = req.query.q?.toString()?.toLowerCase();
     const systemRequirements = await SystemRequirements.find({
       name: { $regex: query, $options: "i" },
     });

@@ -3,35 +3,7 @@ import Cpus from "../models/Cpus";
 import Gpus from "../models/Gpus";
 import Memories from "../models/Memories";
 import HardDrives from "../models/HardDrives";
-
-export type Benchmark = {
-  minCpuBenchmark: number;
-  minGpuBenchmark: number;
-  recCpuBenchmark: number;
-  recGpuBenchmark: number;
-};
-
-type requirementsMet = {
-  minimum: {
-    cpu: boolean;
-    gpu: boolean;
-    ram: boolean;
-    vram: boolean;
-  };
-  recommended: {
-    cpu: boolean;
-    gpu: boolean;
-    ram: boolean;
-    vram: boolean;
-  };
-  space: boolean;
-};
-
-export type BenchmarkedSystemRequirement = {
-  systemRequirement: any;
-  benchmarks: Benchmark;
-  requirementsMet?: requirementsMet;
-};
+import { BenchmarkedSystemRequirement, Benchmark } from "../types/benchmark";
 
 export async function getBenchmark(
   component: string,
