@@ -113,7 +113,7 @@ export async function combineSystemRequirements(
     try {
       const cpu = await Cpus.findById(components.cpus._id);
 
-      if (cpu && cpu.benchmark && cpu.benchmark !== -1) {
+      if (cpu?.benchmark && cpu?.benchmark > -1) {
         if (cpu.benchmark >= benchmarks.minCpuBenchmark) {
           requirementsMet.minimum.cpu = true;
         }
@@ -129,7 +129,7 @@ export async function combineSystemRequirements(
     try {
       const gpu = await Gpus.findById(components.gpus._id);
 
-      if (gpu && gpu.benchmark && gpu.benchmark !== -1) {
+      if (gpu?.benchmark && gpu?.benchmark > -1) {
         if (gpu.benchmark >= benchmarks.minGpuBenchmark) {
           requirementsMet.minimum.gpu = true;
         }
@@ -157,7 +157,7 @@ export async function combineSystemRequirements(
   if (components.memories) {
     try {
       const memory = await Memories.findById(components.memories._id);
-      if (memory && memory.modules && memory.modules.length === 2) {
+      if (memory?.modules && memory?.modules?.length === 2) {
         const totalRam = memory.modules[0] * memory.modules[1];
         if (
           totalRam >= first.systemRequirement.minimum.ram &&
@@ -181,13 +181,12 @@ export async function combineSystemRequirements(
       const hardDrive = await HardDrives.findById(
         components["hard-drives"]._id
       );
-      if (hardDrive && hardDrive.capacity) {
-        if (
-          hardDrive.capacity >=
+      if (
+        hardDrive?.capacity &&
+        hardDrive?.capacity >=
           first.systemRequirement.space + second.systemRequirement.space
-        ) {
-          requirementsMet.space = true;
-        }
+      ) {
+        requirementsMet.space = true;
       }
     } catch (err) {
       console.error("Error finding hard drive:", err);
