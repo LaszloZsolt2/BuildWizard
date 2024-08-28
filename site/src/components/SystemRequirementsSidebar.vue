@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import CaretIcon from "@/assets/icons/caret.svg";
 import axios from "axios";
 import { useScreenSize } from "../composables/useScreenSize";
@@ -86,8 +86,10 @@ import SystemRequirementsLoader from "./loaders/SystemRequirementsLoader.vue";
 import { getFirstNStrings } from "../utils/string";
 import SystemRequirements from "./SystemRequirements.vue";
 import ReqirementsMet from "./RequirementMet.vue";
-
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
+type Props = { gameData?: any; parts?: any };
+const props = defineProps<Props>();
 
 const panelStateWidths = {
   open: {
@@ -114,8 +116,6 @@ function togglePanel() {
 
 onMounted(() => {
   handleGameDataChanged();
-  window.addEventListener("game-data-changed", handleGameDataChanged);
-  window.addEventListener("part-deleted", handleGameDataChanged);
 });
 
 async function handleGameDataChanged() {
@@ -149,6 +149,9 @@ async function handleGameDataChanged() {
     localStorage.removeItem("systemRequirements");
   }
 }
+
+watch(() => props.gameData, handleGameDataChanged);
+watch(() => props.parts, handleGameDataChanged);
 </script>
 
 <style scoped>

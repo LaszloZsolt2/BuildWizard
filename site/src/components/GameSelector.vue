@@ -113,6 +113,8 @@ const filteredGames = ref<any[]>([]);
 const selectedGames = ref<any[]>([]);
 const budget = ref("");
 
+const emit = defineEmits(["game-data-changed"]);
+
 function onGameSelect(game: any) {
   gameQuery.value = "";
   let currentGames = JSON.parse(localStorage.getItem("games") || "[]");
@@ -124,9 +126,7 @@ function onGameSelect(game: any) {
   selectedGames.value.push(game.value);
   localStorage.setItem("games", JSON.stringify(currentGames));
 
-  window.dispatchEvent(
-    new CustomEvent("game-data-changed", { detail: currentGames })
-  );
+  emit("game-data-changed", currentGames);
 }
 
 function removeGame(game: any) {
@@ -135,9 +135,7 @@ function removeGame(game: any) {
   localStorage.setItem("games", JSON.stringify(newGames));
   selectedGames.value = newGames;
 
-  window.dispatchEvent(
-    new CustomEvent("game-data-changed", { detail: newGames })
-  );
+  emit("game-data-changed", newGames);
 }
 
 function scrollToBuilder() {

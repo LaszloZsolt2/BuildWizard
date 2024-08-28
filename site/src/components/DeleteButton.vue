@@ -34,6 +34,5 @@ const emit = defineEmits<{
 
 const handleDelete = () => {
   emit("delete", props.type);
-  window.dispatchEvent(new CustomEvent("part-deleted", { detail: props.type }));
 };
 </script>

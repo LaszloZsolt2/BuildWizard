@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <div class="home flex-grow">
-      <GameSelector />
+      <GameSelector @game-data-changed="handleGameDataChanged" />
       <div
         id="components-list"
         class="components-list"
@@ -56,7 +56,11 @@
         </table>
       </div>
     </div>
-    <SystemRequirementsSidebar class="flex-1" />
+    <SystemRequirementsSidebar
+      :parts="selected"
+      :gameData="gameData"
+      class="flex-1"
+    />
   </div>
 </template>
 
@@ -84,6 +88,7 @@ const selected = ref<{
   [key: string]: { name: string; price: number; _id: string };
 }>({});
 const { screenWidth } = useScreenSize();
+const gameData = ref<any>(null);
 
 onMounted(() => {
   const storedData = localStorage.getItem("selectedComponents");
@@ -92,8 +97,17 @@ onMounted(() => {
   }
 });
 
+function removeProperty(type: string) {
+  const { [type]: _, ...updatedSelected } = selected.value;
+  selected.value = updatedSelected;
+}
+
+function handleGameDataChanged(data: any) {
+  gameData.value = data;
+}
+
 const handleDelete = (type: string) => {
-  delete selected.value[type];
+  removeProperty(type);
   localStorage.setItem("selectedComponents", JSON.stringify(selected.value));
 };
 </script>
