@@ -96,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import SearchableSelector from "./SearchableSelector.vue";
 import DownArrowIcon from "@/assets/icons/down.svg";
 import TrashIcon from "@/assets/icons/trash.svg";
@@ -104,14 +104,12 @@ import RightArrowIcon from "@/assets/icons/arrow.svg";
 import axios from "axios";
 import BaseButton from "./BaseButton.vue";
 import BaseInput from "./BaseInput.vue";
-import { onMounted } from "vue";
 import { useScreenSize } from "../composables/useScreenSize";
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const { screenWidth } = useScreenSize();
 const gameQuery = ref("");
 const filteredGames = ref<any[]>([]);
-// const filteredGames = ref<Game[]>([]);
 const selectedGames = ref<any[]>([]);
 const budget = ref("");
 
@@ -138,7 +136,7 @@ function removeGame(game: any) {
   selectedGames.value = newGames;
 
   window.dispatchEvent(
-    new CustomEvent("game-data-changed", { detail: currentGames })
+    new CustomEvent("game-data-changed", { detail: newGames })
   );
 }
 

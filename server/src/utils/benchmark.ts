@@ -99,7 +99,7 @@ export async function combineSystemRequirements(
   components?: any
 ): Promise<BenchmarkedSystemRequirement> {
   if (!second) {
-    return first;
+    second = first;
   }
 
   let requirementsMet = {
@@ -156,8 +156,6 @@ export async function combineSystemRequirements(
   if (components.gpus) {
     try {
       const gpu = await Gpus.findById(components.gpus._id);
-
-      console.log(gpu);
 
       if (gpu && gpu.benchmark && gpu.benchmark !== -1) {
         if (gpu.benchmark >= benchmarks.minGpuBenchmark) {
@@ -223,6 +221,7 @@ export async function combineSystemRequirements(
       console.error("Error finding hard drive:", err);
     }
   }
+
   return {
     systemRequirement: {
       minimum: {

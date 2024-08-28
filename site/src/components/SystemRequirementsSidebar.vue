@@ -115,6 +115,7 @@ function togglePanel() {
 onMounted(() => {
   handleGameDataChanged();
   window.addEventListener("game-data-changed", handleGameDataChanged);
+  window.addEventListener("part-deleted", handleGameDataChanged);
 });
 
 async function handleGameDataChanged() {
@@ -144,7 +145,6 @@ async function handleGameDataChanged() {
     );
     localStorage.setItem("systemRequirements", JSON.stringify(response.data));
     systemRequirements.value = response.data;
-    console.log(response.data);
   } else {
     localStorage.removeItem("systemRequirements");
   }
