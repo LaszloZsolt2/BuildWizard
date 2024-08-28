@@ -152,18 +152,12 @@ async function checkMemoryRequirement(
     }
   }
 
-  if (
+  requirementsMet.minimum.ram =
     totalRam >= first.systemRequirement.minimum.ram &&
-    totalRam >= second.systemRequirement.minimum.ram
-  ) {
-    requirementsMet.minimum.ram = true;
-  }
-  if (
+    totalRam >= second.systemRequirement.minimum.ram;
+  requirementsMet.recommended.ram =
     totalRam >= first.systemRequirement.recommended.ram &&
-    totalRam >= second.systemRequirement.recommended.ram
-  ) {
-    requirementsMet.recommended.ram = true;
-  }
+    totalRam >= second.systemRequirement.recommended.ram;
 }
 
 async function checkHardDriveRequirement(
@@ -184,12 +178,9 @@ async function checkHardDriveRequirement(
     }
   }
 
-  if (
+  requirementsMet.space =
     totalSpace >=
-    first.systemRequirement.space + second.systemRequirement.space
-  ) {
-    requirementsMet.space = true;
-  }
+    first.systemRequirement.space + second.systemRequirement.space;
 }
 
 export async function combineSystemRequirements(
