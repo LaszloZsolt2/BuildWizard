@@ -92,6 +92,8 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 type Props = { gameData?: any; parts?: any };
 const props = defineProps<Props>();
 
+const emit = defineEmits(["game-data-changed"]);
+
 const panelStateWidths = {
   open: {
     inner: "w-full md:w-96",
@@ -140,6 +142,7 @@ async function handleGameDataChanged() {
   } else {
     url.value = "";
   }
+  emit("game-data-changed", currentGames.value);
 }
 
 function buildQueryParams(ids: string[], components: any): string {
@@ -168,6 +171,7 @@ function buildQueryParams(ids: string[], components: any): string {
 const { fetchedData, fetchError, isLoading } = useFetch(url);
 
 watch(() => props.gameData, handleGameDataChanged, { immediate: true });
+watch(() => props.parts, handleGameDataChanged, { immediate: true });
 watch(fetchedData, (data) => {
   systemRequirements.value = data;
 });

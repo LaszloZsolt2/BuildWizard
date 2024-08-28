@@ -135,42 +135,60 @@ async function checkGpuRequirement(
 }
 
 async function checkMemoryRequirement(
-  memoryId: string,
+  memories: any[],
   requirementsMet: any,
   first: BenchmarkedSystemRequirement,
   second: BenchmarkedSystemRequirement
 ) {
-  try {
-    const memory = await Memories.findById(memoryId);
-    if (memory?.modules && memory?.modules.length === 2) {
-      const totalRam = memory.modules[0] * memory.modules[1];
-      requirementsMet.minimum.ram =
-        totalRam >= first.systemRequirement.minimum.ram &&
-        totalRam >= second.systemRequirement.minimum.ram;
-
-      requirementsMet.recommended.ram =
-        totalRam >= first.systemRequirement.recommended.ram &&
-        totalRam >= second.systemRequirement.recommended.ram;
+  let totalRam = 0;
+  for (const mem of memories) {
+    try {
+      const memory = await Memories.findById(mem._id);
+      if (memory?.modules && memory?.modules.length === 2) {
+        totalRam += memory.modules[0] * memory.modules[1];
+      }
+    } catch (err) {
+      console.error("Error finding memory:", err);
     }
-  } catch (err) {
-    console.error("Error finding memory:", err);
+  }
+
+  if (
+    totalRam >= first.systemRequirement.minimum.ram &&
+    totalRam >= second.systemRequirement.minimum.ram
+  ) {
+    requirementsMet.minimum.ram = true;
+  }
+  if (
+    totalRam >= first.systemRequirement.recommended.ram &&
+    totalRam >= second.systemRequirement.recommended.ram
+  ) {
+    requirementsMet.recommended.ram = true;
   }
 }
 
 async function checkHardDriveRequirement(
-  hardDriveId: string,
+  hardDrives: any[],
   requirementsMet: any,
   first: BenchmarkedSystemRequirement,
   second: BenchmarkedSystemRequirement
 ) {
-  try {
-    const hardDrive = await HardDrives.findById(hardDriveId);
-    requirementsMet.space =
-      hardDrive?.capacity &&
-      hardDrive.capacity >=
-        first.systemRequirement.space + second.systemRequirement.space;
-  } catch (err) {
-    console.error("Error finding hard drive:", err);
+  let totalSpace = 0;
+  for (const hd of hardDrives) {
+    try {
+      const hardDrive = await HardDrives.findById(hd._id);
+      if (hardDrive?.capacity) {
+        totalSpace += hardDrive.capacity;
+      }
+    } catch (err) {
+      console.error("Error finding hard drive:", err);
+    }
+  }
+
+  if (
+    totalSpace >=
+    first.systemRequirement.space + second.systemRequirement.space
+  ) {
+    requirementsMet.space = true;
   }
 }
 
@@ -191,33 +209,39 @@ export async function combineSystemRequirements(
 
   const benchmarks = compareBenchmarks(first, second);
 
-  if (components.cpus) {
-    await checkCpuRequirement(components.cpus._id, benchmarks, requirementsMet);
-  }
-  if (components.gpus) {
-    await checkGpuRequirement(
-      components.gpus._id,
-      benchmarks,
-      requirementsMet,
-      first,
-      second
-    );
-  }
-  if (components.memories) {
-    await checkMemoryRequirement(
-      components.memories._id,
-      requirementsMet,
-      first,
-      second
-    );
-  }
-  if (components["hard-drives"]) {
-    await checkHardDriveRequirement(
-      components["hard-drives"]._id,
-      requirementsMet,
-      first,
-      second
-    );
+  if (components) {
+    if (components.cpus) {
+      await checkCpuRequirement(
+        components.cpus._id,
+        benchmarks,
+        requirementsMet
+      );
+    }
+    if (components.gpus) {
+      await checkGpuRequirement(
+        components.gpus._id,
+        benchmarks,
+        requirementsMet,
+        first,
+        second
+      );
+    }
+    if (components.memories) {
+      await checkMemoryRequirement(
+        components.memories,
+        requirementsMet,
+        first,
+        second
+      );
+    }
+    if (components["hard-drives"]) {
+      await checkHardDriveRequirement(
+        components["hard-drives"],
+        requirementsMet,
+        first,
+        second
+      );
+    }
   }
 
   return {

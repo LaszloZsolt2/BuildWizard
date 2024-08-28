@@ -136,11 +136,25 @@ const handleAddClick = (item: ComponentBase) => {
   const selectedComponents = JSON.parse(
     localStorage.getItem("selectedComponents") || "{}"
   );
-  selectedComponents[props.type] = {
-    name: item.name,
-    price: item.price || 0,
-    _id: item._id,
-  };
+
+  const allowMultiple = ["memories", "hard-drives", "case-fans"];
+  if (allowMultiple.includes(props.type)) {
+    if (!selectedComponents[props.type]) {
+      selectedComponents[props.type] = [];
+    }
+    selectedComponents[props.type].push({
+      name: item.name,
+      price: item.price || 0,
+      _id: item._id,
+    });
+  } else {
+    selectedComponents[props.type] = {
+      name: item.name,
+      price: item.price || 0,
+      _id: item._id,
+    };
+  }
+
   localStorage.setItem(
     "selectedComponents",
     JSON.stringify(selectedComponents)
