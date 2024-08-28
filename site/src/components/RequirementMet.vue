@@ -1,6 +1,6 @@
 <template>
   <CheckIcon
-    v-if="props.met"
+    v-if="met"
     class="inline-block w-5 h-5 text-violet-400 mr-1 mb-1"
   />
   <XMarkIcon v-else class="inline-block w-5 h-5 text-red-500 mr-1 mb-1" />

@@ -1,7 +1,7 @@
 <template>
   <div class="mt-6">
-    <p class="text-xl font-bold text-neutral-200">
-      {{ capitalizeFirstLetter(props.type) }}
+    <p class="text-xl font-bold text-neutral-200 capitalize">
+      {{ props.type }}
     </p>
     <div class="pl-4 pt-2">
       <ul class="list-inside pl-5">
@@ -47,7 +47,6 @@
 
 <script setup lang="ts">
 import { defineProps } from "vue";
-import { capitalizeFirstLetter } from "../utils/string";
 import RequirementsMet from "./RequirementMet.vue";
 
 type Props = {

@@ -8,7 +8,3 @@ export function getFirstNStrings(arr: string[], n: number) {
 
   return `${selectedStrings.join(", ")} and ${remainingCount} more...`;
 }
-
-export function capitalizeFirstLetter(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
