@@ -3,8 +3,8 @@
     <p class="text-xl font-bold text-neutral-200">
       {{ capitalizeFirstLetter(props.type) }}
     </p>
-    <div class="pl-8 pt-2">
-      <ul class="list-disc list-inside pl-5">
+    <div class="pl-4 pt-2">
+      <ul class="list-inside pl-5">
         <li
           v-for="requirement in Object.keys(
             props.systemRequirements[props.type]
@@ -12,7 +12,12 @@
           :key="requirement"
           class="mb-2"
         >
-          <p class="font-bold">{{ requirement.toUpperCase() }}</p>
+          <p class="font-bold">
+            <RequirementsMet
+              :met="props.requirementsMet[props.type][requirement]"
+            />
+            {{ requirement.toUpperCase() }}
+          </p>
           <div
             v-if="
               typeof props.systemRequirements[props.type][requirement] ===
@@ -43,8 +48,11 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
 import { capitalizeFirstLetter } from "../utils/string";
+import RequirementsMet from "./RequirementMet.vue";
+
 type Props = {
   systemRequirements: any;
+  requirementsMet: any;
   type: "minimum" | "recommended";
 };
 const props = defineProps<Props>();

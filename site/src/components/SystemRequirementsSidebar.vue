@@ -45,17 +45,22 @@
             <SystemRequirements
               type="minimum"
               :systemRequirements="systemRequirements.systemRequirement"
+              :requirementsMet="systemRequirements.requirementsMet"
             />
             <SystemRequirements
               type="recommended"
               :systemRequirements="systemRequirements.systemRequirement"
+              :requirementsMet="systemRequirements.requirementsMet"
             />
-            <div class="pl-4 pt-2">
-              <ul class="list-disc list-inside pl-5">
+            <div class="pl-0 pt-2">
+              <ul class="list-inside pl-5">
                 <li class="mb-2">
                   <p class="font-bold">Storage</p>
                   <div>
                     <p class="text-neutral-400 ml-4">
+                      <ReqirementsMet
+                        :met="systemRequirements.requirementsMet.space"
+                      />
                       {{ systemRequirements.systemRequirement.space }} GB
                     </p>
                   </div>
@@ -80,6 +85,7 @@ import { useScreenSize } from "../composables/useScreenSize";
 import SystemRequirementsLoader from "./loaders/SystemRequirementsLoader.vue";
 import { getFirstNStrings } from "../utils/string";
 import SystemRequirements from "./SystemRequirements.vue";
+import ReqirementsMet from "./RequirementMet.vue";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
