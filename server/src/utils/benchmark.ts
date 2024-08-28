@@ -97,12 +97,9 @@ async function checkCpuRequirement(
   try {
     const cpu = await Cpus.findById(cpuId);
     if (cpu?.benchmark && cpu?.benchmark > -1) {
-      if (cpu.benchmark >= benchmarks.minCpuBenchmark) {
-        requirementsMet.minimum.cpu = true;
-      }
-      if (cpu.benchmark >= benchmarks.recCpuBenchmark) {
-        requirementsMet.recommended.cpu = true;
-      }
+      requirementsMet.minimum.cpu = cpu.benchmark >= benchmarks.minCpuBenchmark;
+      requirementsMet.recommended.cpu =
+        cpu.benchmark >= benchmarks.recCpuBenchmark;
     }
   } catch (err) {
     console.error("Error finding CPU:", err);
@@ -119,24 +116,18 @@ async function checkGpuRequirement(
   try {
     const gpu = await Gpus.findById(gpuId);
     if (gpu?.benchmark && gpu?.benchmark > -1) {
-      if (gpu.benchmark >= benchmarks.minGpuBenchmark) {
-        requirementsMet.minimum.gpu = true;
-      }
-      if (gpu.benchmark >= benchmarks.recGpuBenchmark) {
-        requirementsMet.recommended.gpu = true;
-      }
-      if (
+      requirementsMet.minimum.gpu = gpu.benchmark >= benchmarks.minGpuBenchmark;
+
+      requirementsMet.recommended.gpu =
+        gpu.benchmark >= benchmarks.recGpuBenchmark;
+
+      requirementsMet.minimum.vram =
         gpu.memory >= first.systemRequirement.minimum.vram &&
-        gpu.memory >= second.systemRequirement.minimum.vram
-      ) {
-        requirementsMet.minimum.vram = true;
-      }
-      if (
+        gpu.memory >= second.systemRequirement.minimum.vram;
+
+      requirementsMet.recommended.vram =
         gpu.memory >= first.systemRequirement.recommended.vram &&
-        gpu.memory >= second.systemRequirement.recommended.vram
-      ) {
-        requirementsMet.recommended.vram = true;
-      }
+        gpu.memory >= second.systemRequirement.recommended.vram;
     }
   } catch (err) {
     console.error("Error finding GPU:", err);
@@ -153,18 +144,13 @@ async function checkMemoryRequirement(
     const memory = await Memories.findById(memoryId);
     if (memory?.modules && memory?.modules.length === 2) {
       const totalRam = memory.modules[0] * memory.modules[1];
-      if (
+      requirementsMet.minimum.ram =
         totalRam >= first.systemRequirement.minimum.ram &&
-        totalRam >= second.systemRequirement.minimum.ram
-      ) {
-        requirementsMet.minimum.ram = true;
-      }
-      if (
+        totalRam >= second.systemRequirement.minimum.ram;
+
+      requirementsMet.recommended.ram =
         totalRam >= first.systemRequirement.recommended.ram &&
-        totalRam >= second.systemRequirement.recommended.ram
-      ) {
-        requirementsMet.recommended.ram = true;
-      }
+        totalRam >= second.systemRequirement.recommended.ram;
     }
   } catch (err) {
     console.error("Error finding memory:", err);
@@ -179,13 +165,10 @@ async function checkHardDriveRequirement(
 ) {
   try {
     const hardDrive = await HardDrives.findById(hardDriveId);
-    if (
+    requirementsMet.space =
       hardDrive?.capacity &&
       hardDrive.capacity >=
-        first.systemRequirement.space + second.systemRequirement.space
-    ) {
-      requirementsMet.space = true;
-    }
+        first.systemRequirement.space + second.systemRequirement.space;
   } catch (err) {
     console.error("Error finding hard drive:", err);
   }
