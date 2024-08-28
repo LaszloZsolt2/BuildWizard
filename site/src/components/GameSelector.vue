@@ -60,7 +60,7 @@
           </TransitionGroup>
         </div>
         <div
-          class="right flex-1 2xl:min-w-96 xl:max-w-96mx-3 mx-3 mt-4 content-top"
+          class="right flex-1 2xl:min-w-96 xl:max-w-96 mx-3 mt-4 content-top"
         >
           <div class="text-neutral-200 font-bold text-lg">Set a budget</div>
           <BaseInput
@@ -101,10 +101,11 @@ import SearchableSelector from "./SearchableSelector.vue";
 import DownArrowIcon from "@/assets/icons/down.svg";
 import TrashIcon from "@/assets/icons/trash.svg";
 import RightArrowIcon from "@/assets/icons/arrow.svg";
-import axios from "axios";
 import BaseButton from "./BaseButton.vue";
 import BaseInput from "./BaseInput.vue";
 import { useScreenSize } from "../composables/useScreenSize";
+import useFetch from "../composables/useFetch";
+
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const { screenWidth } = useScreenSize();
@@ -112,6 +113,7 @@ const gameQuery = ref("");
 const filteredGames = ref<any[]>([]);
 const selectedGames = ref<any[]>([]);
 const budget = ref("");
+const url = ref<string>("");
 
 const emit = defineEmits(["game-data-changed"]);
 
@@ -148,37 +150,29 @@ function scrollToBuilder() {
   }
 }
 
+watch(gameQuery, (newQuery) => {
+  if (newQuery) {
+    url.value = `${apiBaseUrl}/system-requirements/search?q=${encodeURIComponent(newQuery)}`;
+  } else {
+    url.value = "";
+  }
+});
+
+const { fetchedData, fetchError, isLoading } = useFetch(url);
+
+watch(fetchedData, (data) => {
+  filteredGames.value = data || [];
+});
+
 onMounted(() => {
   const currentGames = JSON.parse(localStorage.getItem("games") || "[]");
   selectedGames.value = currentGames;
-});
-
-watch(gameQuery, async (newQuery) => {
-  if (newQuery) {
-    try {
-      const response = await axios.get(
-        `${apiBaseUrl}/system-requirements/search`,
-        {
-          params: {
-            q: newQuery,
-          },
-        }
-      );
-      filteredGames.value = response.data;
-    } catch (error) {
-      console.error("Failed to fetch games:", error);
-      filteredGames.value = [];
-    }
-  } else {
-    filteredGames.value = [];
-  }
 });
 </script>
 
 <style scoped>
 .list-enter-from,
 .list-leave-to {
-  /* scale: 0.5; */
   opacity: 0;
   transform: translateY(-20px);
 }
