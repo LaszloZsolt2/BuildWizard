@@ -304,13 +304,28 @@ export function checkCaseStorageCompatibility(
     return;
   }
 
-  console.log(components["hard-drives"], components.cases);
+  // check if there are enough drive bays
+  let driveBays = 0;
+  let hasM2 = false;
+  for (const drive of components["hard-drives"]) {
+    if (drive.form_factor == 2.5 || drive.form_factor == 3.5) {
+      driveBays++;
+    } else if (drive.form_factor !== "PCIe") {
+      hasM2 = true;
+    }
+  }
+
+  if (driveBays > components.cases.internal_35_bays) {
+    messages.push({
+      message: `The selected case (${components.cases.name}) does not have enough drive bays to support ${driveBays} drives. Choose a case with more drive bays or remove some drives.`,
+      severity: "error",
+    });
+  }
+
+  if (hasM2) {
+    messages.push({
+      message: `You have selected M.2 drives. Make sure your motherboard has enough M.2 slots.`,
+      severity: "warn",
+    });
+  }
 }
-
-// case
-// ['ATX Mid Tower' 'MicroATX Mini Tower' 'MicroATX Mid Tower'
-//  'Mini ITX Desktop' 'ATX Full Tower' 'Mini ITX Tower' 'HTPC'
-//  'ATX Mini Tower' 'MicroATX Desktop' 'ATX Desktop' 'Mini ITX Test Bench'
-//  'MicroATX Slim' 'ATX Test Bench']
-
-// storage
