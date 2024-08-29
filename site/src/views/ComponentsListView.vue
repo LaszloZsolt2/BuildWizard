@@ -2,13 +2,21 @@
   <div class="flex">
     <div class="home flex-grow">
       <GameSelector @game-data-changed="handleGameDataChanged" />
+      <CompatibilityMessages
+        :parts="selected"
+        :style="{
+          maxWidth: maxWidth,
+        }"
+      />
       <div
         id="components-list"
         class="components-list"
-        :style="{ maxWidth: screenWidth < 768 ? 'calc(82.5vw)' : undefined }"
+        :style="{
+          maxWidth: maxWidth,
+        }"
       >
         <table
-          class="mx-4 my-10 w-full bg-neutral-800 rounded-lg overflow-hidden shadow-md"
+          class="mx-4 my-4 w-full bg-neutral-800 rounded-lg overflow-hidden shadow-md"
         >
           <thead>
             <tr class="bg-neutral-700 text-white">
@@ -41,11 +49,18 @@
 import GameSelector from "../components/GameSelector.vue";
 import SystemRequirementsSidebar from "../components/SystemRequirementsSidebar.vue";
 import ComponentsListItem from "../components/ComponentsListItem.vue";
+import CompatibilityMessages from "../components/CompatibilityMessages.vue";
 import { useScreenSize } from "../composables/useScreenSize";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 const selected = ref<any>(null);
 const games = ref<any>(null);
+const { screenWidth } = useScreenSize();
+const maxWidth = computed(() => {
+  return screenWidth.value < 768
+    ? `calc(${screenWidth.value}px - ${games.value?.length ? `${screenWidth.value * 0.175}px` : "2rem"})`
+    : undefined;
+});
 
 function handleDelete(selectedParts: any) {
   selected.value = selectedParts;
@@ -66,6 +81,4 @@ const partsList = [
   { type: "motherboards", label: "Motherboard", multiple: false },
   { type: "power-supplies", label: "Power Supply", multiple: false },
 ];
-
-const { screenWidth } = useScreenSize();
 </script>

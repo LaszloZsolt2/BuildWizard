@@ -13,6 +13,7 @@ import memoriesRouter from "./routes/Memories";
 import motherBoardRouter from "./routes/Motherboards";
 import powerSuppliesRouter from "./routes/PowerSupplies";
 import systemRequirementRouter from "./routes/SystemRequirements";
+import compatibilityRouter from "./routes/Compatibility";
 
 dotenv.config();
 
@@ -56,6 +57,7 @@ app.use("/api/memories", memoriesRouter);
 app.use("/api/motherboards", motherBoardRouter);
 app.use("/api/power-supplies", powerSuppliesRouter);
 app.use("/api/system-requirements", systemRequirementRouter);
+app.use("/api/compatibility", compatibilityRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

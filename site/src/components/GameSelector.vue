@@ -170,7 +170,7 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
+<style>
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
