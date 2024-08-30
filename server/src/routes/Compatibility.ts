@@ -2,6 +2,7 @@ import express from "express";
 import { getPartList } from "../utils/partData";
 import { ComponentsType } from "../types/componentsType";
 import {
+  checkBottleneck,
   checkCaseMotherboardCompatibility,
   checkCasePowerSupplyCompatibility,
   checkCaseStorageCompatibility,
@@ -42,6 +43,7 @@ router.get("/", async (req, res) => {
     checkCaseMotherboardCompatibility(components, messages);
     checkCasePowerSupplyCompatibility(components, messages);
     checkCaseStorageCompatibility(components, messages);
+    checkBottleneck(components, messages);
 
     if (!messages.length) {
       messages.push({

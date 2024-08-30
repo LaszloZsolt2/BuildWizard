@@ -329,3 +329,35 @@ export function checkCaseStorageCompatibility(
     });
   }
 }
+
+export function checkBottleneck(
+  components: ComponentsType,
+  messages: CompatibilityMessage[]
+) {
+  if (
+    !components.cpus ||
+    !components.gpus ||
+    components.cpus.benchmark <= 0 ||
+    components.gpus.benchmark <= 0
+  ) {
+    return;
+  }
+
+  const performanceRatio =
+    components.gpus.benchmark / components.cpus.benchmark;
+  const threshold = 0.5;
+
+  if (performanceRatio > 1 + threshold) {
+    messages.push({
+      message: `The selected CPU (${components.cpus.name}) may be too weak for the selected GPU (${components.gpus.name}). Consider choosing a more powerful CPU.`,
+      severity: "warn",
+    });
+  }
+
+  if (performanceRatio < 1 - threshold) {
+    messages.push({
+      message: `The selected GPU (${components.gpus.name}) may be too weak for the selected CPU (${components.cpus.name}). Consider choosing a more powerful GPU.`,
+      severity: "warn",
+    });
+  }
+}
