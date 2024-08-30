@@ -24,11 +24,17 @@ router.get("/", async (req, res) => {
       req.query.components as ComponentsType
     );
 
+    let messages: CompatibilityMessage[] = [];
+
     if (!components || !Object.keys(components).length) {
+      messages.push({
+        message: "You have no parts selected",
+        severity: "warn",
+      });
+      res.json({ messages });
       return;
     }
 
-    let messages: CompatibilityMessage[] = [];
     hasAllNecessaryParts(components, messages);
     checkCpuMotherboardCompatibility(components, messages);
     checkMotherboardMemoryCompatibility(components, messages);
@@ -43,6 +49,20 @@ router.get("/", async (req, res) => {
         severity: "success",
       });
     }
+
+    messages.sort((a, b) => {
+      if (a.severity === "error") {
+        return -1;
+      } else if (b.severity === "error") {
+        return 1;
+      } else if (a.severity === "warn") {
+        return -1;
+      } else if (b.severity === "warn") {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
 
     res.json({ messages });
   } catch (err: unknown) {

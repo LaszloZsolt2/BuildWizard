@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-neutral-800 m-4 px-4 pt-6 pb-1 rounded-lg w-full"
+    class="bg-neutral-800 m-4 px-4 pt-6 pb-1 rounded-lg w-full transition-all duration-500"
     ref="componentsList"
   >
     <Transition name="opacity-slide-left">
