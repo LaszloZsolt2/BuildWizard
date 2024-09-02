@@ -16,21 +16,36 @@ export async function getPartData(part: PartBase, type: PartType) {
 }
 
 export async function getPartList(components: ComponentsType) {
-  let res = {} as ComponentsType;
+  const res: ComponentsType = {};
+  const promises: Array<Promise<any>> = [];
+
   for (const key in components) {
     if (componentQuantity[key as PartType] === "multiple") {
-      let data = [];
-      for (const component of components[key as PartType]) {
-        const part: PartBase = JSON.parse(component);
-        const result = await getPartData(part, key as PartType);
-        data.push(result);
-      }
-      res[key] = data;
+      const dataPromises = (components[key as PartType] as string[]).map(
+        async (component) => {
+          const part: PartBase = JSON.parse(component);
+          return getPartData(part, key as PartType);
+        }
+      );
+
+      promises.push(
+        (async () => {
+          const data = await Promise.all(dataPromises);
+          res[key] = data;
+        })()
+      );
     } else {
-      const part: PartBase = JSON.parse(components[key as PartType]);
-      const result = await getPartData(part, key as PartType);
-      res[key] = result;
+      const component = components[key as PartType];
+      const part: PartBase = JSON.parse(component);
+
+      promises.push(
+        (async () => {
+          res[key] = await getPartData(part, key as PartType);
+        })()
+      );
     }
   }
+
+  await Promise.all(promises);
   return res;
 }
