@@ -1,5 +1,5 @@
 export interface ComponentBase {
   _id: string;
   name: string;
-  price?: number;
+  price_data?: any;
 }

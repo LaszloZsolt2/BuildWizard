@@ -38,6 +38,8 @@ import BaseLabel from "./BaseLabel.vue";
 import CheckIcon from "@/assets/icons/check.svg";
 import ErrorIcon from "@/assets/icons/error.svg";
 import WarningIcon from "@/assets/icons/warning.svg";
+import { removePriceField } from "../utils/removePriceField";
+
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 type CompatibilityMessage = {
@@ -62,6 +64,7 @@ const messages = ref<CompatibilityMessage[]>([]);
 
 function buildQueryString(parts: any) {
   const params = new URLSearchParams();
+  parts = removePriceField(parts);
 
   Object.entries(parts).forEach(([key, value]) => {
     if (Array.isArray(value)) {
@@ -81,21 +84,37 @@ const updateApiUrl = () => {
   apiUrl.value = `${apiBaseUrl}/compatibility?${queryString}`;
 };
 
+let updateTimeout: any;
+
+const debouncedUpdateApiUrl = () => {
+  if (updateTimeout) clearTimeout(updateTimeout);
+  updateTimeout = setTimeout(() => {
+    updateApiUrl();
+  }, 300);
+};
+
 const handlePartsChanged = () => {
-  parts.value = JSON.parse(localStorage.getItem("selectedComponents") || "{}");
+  const newParts = JSON.parse(
+    localStorage.getItem("selectedComponents") || "{}"
+  );
+  if (JSON.stringify(newParts) !== JSON.stringify(parts.value)) {
+    parts.value = newParts;
+  }
 };
 
 onMounted(() => {
   updateApiUrl();
 });
 
-watch(parts, updateApiUrl, { deep: true });
+watch(parts, debouncedUpdateApiUrl, { deep: true });
 watch(() => props.parts, handlePartsChanged, { immediate: true });
 
 const { fetchedData, fetchError, isLoading } = useFetch(apiUrl);
 
 watch(fetchedData, (newData) => {
-  messages.value = newData.messages;
+  if (newData && newData.messages) {
+    messages.value = newData.messages;
+  }
 });
 </script>
 

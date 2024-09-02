@@ -21,7 +21,7 @@
           <thead>
             <tr class="bg-neutral-700 text-white">
               <th
-                v-for="header in ['Components', 'Selected ', 'Price', 'Where']"
+                v-for="header in ['Components', 'Selected ', 'Price', 'Store']"
                 class="px-1 py-2 md:p-3 text-center text-xs md:text-base"
               >
                 {{ header }}
