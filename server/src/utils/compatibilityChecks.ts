@@ -81,10 +81,8 @@ const casePowerSupplyCompatibility = {
   "ATX Test Bench": ["ATX", "SFX", "Mini ITX"],
 };
 
-export function hasAllNecessaryParts(
-  components: ComponentsType,
-  messages: CompatibilityMessage[]
-) {
+export function hasAllNecessaryParts(components: ComponentsType) {
+  let messages: CompatibilityMessage[] = [];
   const necessaryParts = [
     "cpus",
     "gpus",
@@ -130,27 +128,27 @@ export function hasAllNecessaryParts(
         .join(", ")}`,
       severity: "error",
     });
-    return;
   }
+
+  return messages;
 }
 
-export function checkCpuMotherboardCompatibility(
-  components: ComponentsType,
-  messages: CompatibilityMessage[]
-) {
+export function checkCpuMotherboardCompatibility(components: ComponentsType) {
+  let messages: CompatibilityMessage[] = [];
+
   if (
     !components.cpus ||
     !components.motherboards ||
     components.cpus.socket === components.motherboards.socket
   ) {
-    return;
+    return messages;
   }
 
   // for motherboards that support multiple sockets
   if (components.motherboards.socket.includes("/")) {
     const sockets = components.motherboards.socket.split("/");
     if (sockets.includes(components.cpus.socket)) {
-      return;
+      return messages;
     }
   }
 
@@ -158,14 +156,16 @@ export function checkCpuMotherboardCompatibility(
     message: `The selected CPU (${components.cpus.name}) is not compatible with the selected motherboard (${components.motherboards.name}). Choose a motherboard with an ${components.cpus.socket} socket.`,
     severity: "error",
   });
+  return messages;
 }
 
 export function checkMotherboardMemoryCompatibility(
-  components: ComponentsType,
-  messages: CompatibilityMessage[]
+  components: ComponentsType
 ) {
+  let messages: CompatibilityMessage[] = [];
+
   if (!components.memories || !components.motherboards) {
-    return;
+    return messages;
   }
 
   // check if the speed is supported
@@ -175,7 +175,7 @@ export function checkMotherboardMemoryCompatibility(
     ];
   const ramSpeed = components.memories[0].speed[0];
   if (!supportedRamSpeed || !ramSpeed) {
-    return;
+    return messages;
   }
 
   if (supportedRamSpeed !== ramSpeed) {
@@ -206,14 +206,15 @@ export function checkMotherboardMemoryCompatibility(
       severity: "error",
     });
   }
+
+  return messages;
 }
 
-export function checkMemoryCompatibility(
-  components: ComponentsType,
-  messages: CompatibilityMessage[]
-) {
+export function checkMemoryCompatibility(components: ComponentsType) {
+  let messages: CompatibilityMessage[] = [];
+
   if (!components.memories) {
-    return;
+    return messages;
   }
 
   let type = components.memories[0].speed[0];
@@ -254,14 +255,15 @@ export function checkMemoryCompatibility(
       severity: "warn",
     });
   }
+
+  return messages;
 }
 
-export function checkCaseMotherboardCompatibility(
-  components: ComponentsType,
-  messages: CompatibilityMessage[]
-) {
+export function checkCaseMotherboardCompatibility(components: ComponentsType) {
+  let messages: CompatibilityMessage[] = [];
+
   if (!components.cases || !components.motherboards) {
-    return;
+    return messages;
   }
 
   if (
@@ -274,14 +276,15 @@ export function checkCaseMotherboardCompatibility(
       severity: "error",
     });
   }
+
+  return messages;
 }
 
-export function checkCasePowerSupplyCompatibility(
-  components: ComponentsType,
-  messages: CompatibilityMessage[]
-) {
+export function checkCasePowerSupplyCompatibility(components: ComponentsType) {
+  let messages: CompatibilityMessage[] = [];
+
   if (!components.cases || !components["power-supplies"]) {
-    return;
+    return messages;
   }
 
   if (
@@ -294,14 +297,15 @@ export function checkCasePowerSupplyCompatibility(
       severity: "error",
     });
   }
+
+  return messages;
 }
 
-export function checkCaseStorageCompatibility(
-  components: ComponentsType,
-  messages: CompatibilityMessage[]
-) {
+export function checkCaseStorageCompatibility(components: ComponentsType) {
+  let messages: CompatibilityMessage[] = [];
+
   if (!components.cases || !components["hard-drives"]) {
-    return;
+    return messages;
   }
 
   // check if there are enough drive bays
@@ -328,19 +332,20 @@ export function checkCaseStorageCompatibility(
       severity: "warn",
     });
   }
+
+  return messages;
 }
 
-export function checkBottleneck(
-  components: ComponentsType,
-  messages: CompatibilityMessage[]
-) {
+export function checkBottleneck(components: ComponentsType) {
+  let messages: CompatibilityMessage[] = [];
+
   if (
     !components.cpus ||
     !components.gpus ||
     components.cpus.benchmark <= 0 ||
     components.gpus.benchmark <= 0
   ) {
-    return;
+    return messages;
   }
 
   const performanceRatio =
@@ -352,12 +357,12 @@ export function checkBottleneck(
       message: `The selected CPU (${components.cpus.name}) may be too weak for the selected GPU (${components.gpus.name}). Consider choosing a more powerful CPU.`,
       severity: "warn",
     });
-  }
-
-  if (performanceRatio < 1 - threshold) {
+  } else if (performanceRatio < 1 - threshold) {
     messages.push({
       message: `The selected GPU (${components.gpus.name}) may be too weak for the selected CPU (${components.cpus.name}). Consider choosing a more powerful GPU.`,
       severity: "warn",
     });
   }
+
+  return messages;
 }

@@ -36,14 +36,14 @@ router.get("/", async (req, res) => {
       return;
     }
 
-    hasAllNecessaryParts(components, messages);
-    checkCpuMotherboardCompatibility(components, messages);
-    checkMotherboardMemoryCompatibility(components, messages);
-    checkMemoryCompatibility(components, messages);
-    checkCaseMotherboardCompatibility(components, messages);
-    checkCasePowerSupplyCompatibility(components, messages);
-    checkCaseStorageCompatibility(components, messages);
-    checkBottleneck(components, messages);
+    messages.push(...hasAllNecessaryParts(components));
+    messages.push(...checkCpuMotherboardCompatibility(components));
+    messages.push(...checkMotherboardMemoryCompatibility(components));
+    messages.push(...checkMemoryCompatibility(components));
+    messages.push(...checkCaseMotherboardCompatibility(components));
+    messages.push(...checkCasePowerSupplyCompatibility(components));
+    messages.push(...checkCaseStorageCompatibility(components));
+    messages.push(...checkBottleneck(components));
 
     if (!messages.length) {
       messages.push({
