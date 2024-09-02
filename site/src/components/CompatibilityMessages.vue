@@ -15,15 +15,10 @@
           >
             <div class="flex items-center">
               <div class="flex-1">
-                <CheckIcon
-                  v-if="message.severity === 'success'"
+                <component
+                  :is="messageIcons[message.severity]"
                   class="h-6 w-6 inline-block mr-3 pb-1"
                 />
-                <ErrorIcon
-                  v-else-if="message.severity === 'error'"
-                  class="h-6 w-6 inline-block mr-3 pb-1"
-                />
-                <WarningIcon v-else class="h-6 w-6 inline-block mr-3 pb-1" />
               </div>
               <div class="font-bold flex-grow">{{ message.message }}</div>
             </div>
@@ -48,6 +43,12 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 type CompatibilityMessage = {
   message: string;
   severity: "error" | "warn" | "success";
+};
+
+const messageIcons = {
+  error: ErrorIcon,
+  warn: WarningIcon,
+  success: CheckIcon,
 };
 
 type Props = { parts?: any };
