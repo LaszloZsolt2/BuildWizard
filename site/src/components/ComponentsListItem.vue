@@ -62,7 +62,11 @@
       class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-xs md:text-base text-center"
     ></td>
     <td class="text-right">
-      <Delete :type="part.type" @delete="handleDelete" />
+      <Delete
+        v-if="selected[part.type]"
+        :type="part.type"
+        @delete="handleDelete"
+      />
     </td>
   </template>
 </template>
@@ -85,7 +89,20 @@ const selected = ref<{
 
 const emit = defineEmits(["delete-part"]);
 
+function removeItem(type: any) {
+  const currentItems = JSON.parse(
+    localStorage.getItem("selectedComponents") || "{}"
+  );
+  const newItems = { ...currentItems };
+  delete newItems[type];
+  localStorage.setItem("selectedComponents", JSON.stringify(newItems));
+  selected.value = newItems;
+}
+
 const handleDelete = (type: string, part?: any) => {
+  selected.value = JSON.parse(
+    localStorage.getItem("selectedComponents") || "{}"
+  );
   if (part) {
     const index = selected.value[type].findIndex(
       (p: any) => p._id === part._id
@@ -94,7 +111,7 @@ const handleDelete = (type: string, part?: any) => {
       selected.value[type].splice(index, 1);
     }
   } else {
-    delete selected.value[type];
+    removeItem(type);
   }
   localStorage.setItem("selectedComponents", JSON.stringify(selected.value));
   emit("delete-part", selected.value);

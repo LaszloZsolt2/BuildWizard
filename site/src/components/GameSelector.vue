@@ -170,11 +170,12 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
+<style>
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
   transform: translateY(-20px);
+  scale: 0.95;
 }
 .list-enter-active,
 .list-leave-active {

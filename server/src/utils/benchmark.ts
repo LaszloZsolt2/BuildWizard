@@ -207,40 +207,57 @@ export async function combineSystemRequirements(
   const benchmarks = compareBenchmarks(first, second);
 
   if (components) {
+    const promises = [];
+
     if (components.cpus) {
-      const met = await checkCpuRequirement(components.cpus._id, benchmarks);
-      requirementsMet.minimum.cpu = met.minimum;
-      requirementsMet.recommended.cpu = met.recommended;
+      promises.push(
+        checkCpuRequirement(components.cpus._id, benchmarks).then((met) => {
+          requirementsMet.minimum.cpu = met.minimum;
+          requirementsMet.recommended.cpu = met.recommended;
+        })
+      );
     }
+
     if (components.gpus) {
-      const met = await checkGpuRequirement(
-        components.gpus._id,
-        benchmarks,
-        first,
-        second
+      promises.push(
+        checkGpuRequirement(
+          components.gpus._id,
+          benchmarks,
+          first,
+          second
+        ).then((met) => {
+          requirementsMet.minimum.gpu = met.minimum.gpu;
+          requirementsMet.recommended.gpu = met.recommended.gpu;
+          requirementsMet.minimum.vram = met.minimum.vram;
+          requirementsMet.recommended.vram = met.recommended.vram;
+        })
       );
-      requirementsMet.minimum.gpu = met.minimum.gpu;
-      requirementsMet.recommended.gpu = met.recommended.gpu;
-      requirementsMet.minimum.vram = met.minimum.vram;
-      requirementsMet.recommended.vram = met.recommended.vram;
     }
+
     if (components.memories) {
-      const met = await checkMemoryRequirement(
-        components.memories,
-        first,
-        second
+      promises.push(
+        checkMemoryRequirement(components.memories, first, second).then(
+          (met) => {
+            requirementsMet.minimum.ram = met.minimum;
+            requirementsMet.recommended.ram = met.recommended;
+          }
+        )
       );
-      requirementsMet.minimum.ram = met.minimum;
-      requirementsMet.recommended.ram = met.recommended;
     }
+
     if (components["hard-drives"]) {
-      const met = await checkHardDriveRequirement(
-        components["hard-drives"],
-        first,
-        second
+      promises.push(
+        checkHardDriveRequirement(
+          components["hard-drives"],
+          first,
+          second
+        ).then((met) => {
+          requirementsMet.space = met;
+        })
       );
-      requirementsMet.space = met;
     }
+
+    await Promise.all(promises);
   }
 
   return {
