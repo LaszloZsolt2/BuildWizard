@@ -65,41 +65,72 @@ async function updateComponentData(
 
 export async function updatePriceData() {
   const components = {} as any;
+
+  const [
+    cpus,
+    gpus,
+    memories,
+    motherboards,
+    cpuCoolers,
+    cases,
+    caseFans,
+    hardDrives,
+    powerSupplies,
+  ] = await Promise.all([
+    Cpus.find({}),
+    Gpus.find({}),
+    Memories.find({}),
+    Motherboards.find({}),
+    CpuCoolers.find({}),
+    Cases.find({}),
+    CaseFan.find({}),
+    HardDrives.find({}),
+    PowerSupplies.find({}),
+  ]);
+
   components.cpus = {
-    items: await Cpus.find({}),
+    items: cpus,
     query: (component: any) => component.name,
   };
+
   components.gpus = {
-    items: await Gpus.find({}),
+    items: gpus,
     query: (component: any) => `${component.name} ${component.chipset}`,
   };
+
   components.memories = {
-    items: await Memories.find({}),
+    items: memories,
     query: (component: any) =>
       `${component.name} DDR${component.speed[0]} ${component.speed[1]}`,
   };
+
   components.motherboards = {
-    items: await Motherboards.find({}),
+    items: motherboards,
     query: (component: any) => component.name,
   };
+
   components["cpu-coolers"] = {
-    items: await CpuCoolers.find({}),
+    items: cpuCoolers,
     query: (component: any) => component.name,
   };
+
   components.cases = {
-    items: await Cases.find({}),
+    items: cases,
     query: (component: any) => component.name,
   };
+
   components["case-fans"] = {
-    items: await CaseFan.find({}),
+    items: caseFans,
     query: (component: any) => component.name,
   };
+
   components["hard-drives"] = {
-    items: await HardDrives.find({}),
+    items: hardDrives,
     query: (component: any) => `${component.name} ${component.capacity}`,
   };
+
   components["power-supplies"] = {
-    items: await PowerSupplies.find({}),
+    items: powerSupplies,
     query: (component: any) => `${component.name} ${component.wattage}`,
   };
 
