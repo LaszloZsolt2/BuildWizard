@@ -1,3 +1,5 @@
+import { PartBase } from "./partBase";
+
 export type ComponentsType = {
-  [key in PartType]: any;
+  [key in PartType]: PartBase | PartBase[];
 };

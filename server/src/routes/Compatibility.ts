@@ -22,7 +22,7 @@ export type CompatibilityMessage = {
 router.get("/", async (req, res) => {
   try {
     const components = await getPartList(
-      req.query.components as ComponentsType
+      req.query.components as unknown as ComponentsType
     );
 
     let messages: CompatibilityMessage[] = [];
