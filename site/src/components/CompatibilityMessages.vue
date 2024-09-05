@@ -79,28 +79,28 @@ function buildQueryString(parts: any) {
   return params.toString();
 }
 
-const updateApiUrl = () => {
+function updateApiUrl() {
   const queryString = buildQueryString(parts.value);
   apiUrl.value = `${apiBaseUrl}/compatibility?${queryString}`;
-};
+}
 
 let updateTimeout: any;
 
-const debouncedUpdateApiUrl = () => {
+function debouncedUpdateApiUrl() {
   if (updateTimeout) clearTimeout(updateTimeout);
   updateTimeout = setTimeout(() => {
     updateApiUrl();
   }, 300);
-};
+}
 
-const handlePartsChanged = () => {
+function handlePartsChanged() {
   const newParts = JSON.parse(
     localStorage.getItem("selectedComponents") || "{}"
   );
   if (JSON.stringify(newParts) !== JSON.stringify(parts.value)) {
     parts.value = newParts;
   }
-};
+}
 
 onMounted(() => {
   updateApiUrl();
@@ -112,7 +112,7 @@ watch(() => props.parts, handlePartsChanged, { immediate: true });
 const { fetchedData, fetchError, isLoading } = useFetch(apiUrl);
 
 watch(fetchedData, (newData) => {
-  if (newData && newData.messages) {
+  if (newData?.messages) {
     messages.value = newData.messages;
   }
 });
