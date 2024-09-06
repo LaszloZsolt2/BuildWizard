@@ -8,6 +8,8 @@ const powerSupplies = new mongoose.Schema({
   wattage: { type: Number, required: true },
   modular: { type: mongoose.Schema.Types.Mixed, required: false },
   color: { type: String, required: false },
+  price_data: { type: mongoose.Schema.Types.Mixed, required: false },
+  image: { type: String, required: false },
 });
 
 const PowerSupplies = mongoose.model(

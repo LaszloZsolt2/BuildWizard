@@ -14,6 +14,7 @@ import motherBoardRouter from "./routes/Motherboards";
 import powerSuppliesRouter from "./routes/PowerSupplies";
 import systemRequirementRouter from "./routes/SystemRequirements";
 import compatibilityRouter from "./routes/Compatibility";
+import { updatePriceData } from "./scraper/price/updatePriceData";
 
 dotenv.config();
 
@@ -37,6 +38,9 @@ const db = mongoose.connection;
 db.on("connected", () => {
   console.log(`Connected to MongoDB at ${db.host}:${db.port}`);
   console.log(`Database name: ${db.name}`);
+
+  // update price data every 24 hours
+  setInterval(updatePriceData, 86400000);
 });
 
 db.on("error", (err) => {

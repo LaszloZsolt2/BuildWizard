@@ -9,6 +9,8 @@ const hardDrives = new mongoose.Schema({
   cache: { type: Number, required: false },
   form_factor: { type: mongoose.Schema.Types.Mixed, required: false },
   interface: { type: String, required: true },
+  price_data: { type: mongoose.Schema.Types.Mixed, required: false },
+  image: { type: String, required: false },
 });
 
 const HardDrives = mongoose.model("HardDrives", hardDrives, "hard-drives");

@@ -86,6 +86,7 @@ import { getFirstNStrings } from "../utils/string";
 import SystemRequirements from "./SystemRequirements.vue";
 import ReqirementsMet from "./RequirementMet.vue";
 import useFetch from "../composables/useFetch";
+import { removePriceField } from "../utils/removePriceField";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -138,7 +139,7 @@ async function handleGameDataChanged() {
 
   if (panelState.value !== "hidden") {
     systemRequirements.value = null;
-    url.value = `${apiBaseUrl}/system-requirements/combined?${buildQueryParams(ids, components)}`;
+    url.value = `${apiBaseUrl}/system-requirements/combined?${buildQueryParams(ids, removePriceField(components))}`;
   } else {
     url.value = "";
   }

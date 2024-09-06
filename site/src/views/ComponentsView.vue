@@ -20,7 +20,7 @@
                 :key="index"
                 class="border-b border-neutral-400 px-6 py-3 text-left bg-neutral-700"
               >
-                <div class="" v-if="key != 'selected'">
+                <div class="">
                   {{ key }}
                 </div>
               </th>
@@ -44,14 +44,37 @@
                 :key="key"
                 class="border-b border-neutral-400 px-6 py-4"
               >
-                <div class="" v-if="key != 'selected'">
-                  {{ item[key] }}
+                <div v-if="item[key]">
+                  <div v-if="key === 'price_data'">
+                    {{ item[key][0].price }} lei
+                  </div>
+                  <div v-else-if="key === 'image'">
+                    <img :src="item[key]" class="h-12 w-20 object-contain" />
+                  </div>
+                  <div v-else>
+                    {{ item[key] }}
+                  </div>
+                </div>
+                <div
+                  v-if="key === 'store' && item['price_data']"
+                  class="text-nowrap"
+                >
+                  <a :href="item['price_data'][0].url">
+                    <img
+                      :src="item['price_data'][0].logo"
+                      :alt="item['price_data'][0].shop"
+                      class="h-12 w-20 object-contain inline"
+                    />
+                  </a>
+                  <CaretIcon
+                    @click="modalData = item"
+                    class="h-12 text-neutral-500 hover:text-neutral-200 inline rotate-90 p-3 transition-all"
+                  />
                 </div>
               </td>
 
               <td class="border-b border-neutral-400 px-6 py-4">
                 <BaseButton
-                  v-if="sortedKeys[sortedKeys.length - 1] === 'price'"
                   @click="handleAddClick(item)"
                   class="bg-blue-500 text-white hover:bg-blue-600"
                 >
@@ -88,6 +111,37 @@
     </div>
     <SystemRequirementsSidebar class="flex-1" />
   </div>
+  <Modal
+    v-model="modalData"
+    :breakpoints="{ '1199px': '50vw', '575px': '75vw' }"
+  >
+    <template #header
+      ><h1 class="text-2xl">Prices for {{ modalData.name }}</h1></template
+    >
+    <div>
+      <a
+        :href="offer.url"
+        v-for="offer in modalData.price_data"
+        class="flex content-between w-full my-2"
+      >
+        <img
+          :src="offer.logo"
+          :alt="offer.shop"
+          class="h-12 w-20 object-contain"
+        />
+        <p class="flex-1 text-right text-xl font-bold self-center">
+          {{ offer.price }} lei
+        </p>
+      </a>
+    </div>
+    <template #footer>
+      <BaseButton
+        severity="secondary"
+        label="Close"
+        @click="modalData = null"
+      />
+    </template>
+  </Modal>
 </template>
 
 <script setup lang="ts">
@@ -98,6 +152,8 @@ import { useRouter } from "vue-router";
 import useFetch from "../composables/useFetch";
 import { ComponentBase } from "../types/componentBase";
 import SystemRequirementsSidebar from "../components/SystemRequirementsSidebar.vue";
+import CaretIcon from "@/assets/icons/caret.svg";
+import Modal from "../components/Modal.vue";
 
 const props = defineProps<{ type: string }>();
 const router = useRouter();
@@ -120,18 +176,39 @@ const allKeys = computed(() => {
   return Object.keys(paginatedData.value[0]).filter((key) => key !== "_id");
 });
 
+const modalData = ref<any>(null);
+
 const sortedKeys = computed(() => {
   const keys = [...allKeys.value];
+
+  const versionIndex = keys.indexOf("__v");
+  if (versionIndex !== -1) {
+    keys.splice(versionIndex, 1);
+  }
+
+  const selectedIndex = keys.indexOf("selected");
+  if (selectedIndex !== -1) {
+    keys.splice(selectedIndex, 1);
+  }
+
   const priceIndex = keys.indexOf("price");
   if (priceIndex !== -1) {
     keys.splice(priceIndex, 1);
-    keys.push("price");
   }
+
+  const imageIndex = keys.indexOf("image");
+  if (imageIndex !== -1) {
+    keys.splice(imageIndex, 1);
+    keys.unshift("image");
+  }
+
+  keys.push("store");
+
   return keys;
 });
 
 const handleAddClick = (item: ComponentBase) => {
-  emit("add", { name: item.name, price: item.price || 0 });
+  emit("add", { name: item.name, price: item.price_data });
 
   const selectedComponents = JSON.parse(
     localStorage.getItem("selectedComponents") || "{}"
@@ -144,13 +221,13 @@ const handleAddClick = (item: ComponentBase) => {
     }
     selectedComponents[props.type].push({
       name: item.name,
-      price: item.price || 0,
+      price_data: item.price_data,
       _id: item._id,
     });
   } else {
     selectedComponents[props.type] = {
       name: item.name,
-      price: item.price || 0,
+      price: item.price_data,
       _id: item._id,
     };
   }
@@ -165,7 +242,7 @@ const handleAddClick = (item: ComponentBase) => {
     query: {
       type: props.type,
       name: item.name,
-      price: item.price?.toString() || "0",
+      price: item.price_data?.toString(),
     },
   });
 };
