@@ -19,7 +19,7 @@
           target="_blank"
           rel="noopener noreferrer"
         >
-          <EmailIcon class="w-6 h-6 text-white" />
+          <EmailIcon class="w-7 h-6 text-white" />
         </a>
         <a
           href="https://www.linkedin.com"

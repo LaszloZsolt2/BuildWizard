@@ -64,6 +64,7 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import BarsIcon from "@/assets/icons/bars.svg";
 import CompletedBuildsIcon from "@/assets/icons/completedBuilds.svg";
 import BuildIcon from "@/assets/icons/build.svg";
+import CascadeSelect from "primevue/cascadeselect";
 
 const isNavbarOpen = ref(false);
 

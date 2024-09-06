@@ -63,6 +63,11 @@
       class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-xs md:text-base text-white text-center"
     >
       {{ selected[part.type]?.name || "" }}
+      {{
+        type === "gpus" && selected[part.type]?.chipset
+          ? selected[part.type].chipset
+          : ""
+      }}
     </td>
 
     <td
@@ -141,6 +146,7 @@ import BaseButton from "./BaseButton.vue";
 
 type Props = {
   part: PartListItem;
+  type: string;
 };
 
 defineProps<Props>();
