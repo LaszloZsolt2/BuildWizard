@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 
-export function getComponentUrl(query: string) {
+export function getComponentUrl(query: string, categories: string[]) {
   return axios
     .get(
       `https://www.compari.ro/CategorySearch.php?st=${encodeURIComponent(query)}`
@@ -23,26 +23,8 @@ export function getComponentUrl(query: string) {
       // remove empty hrefs
       links = links.filter((link) => link !== "#");
 
-      const excludedSubstrings = [
-        "Jump.php",
-        "sisteme-desktop",
-        "jocuri-pc",
-        "notebook-laptop",
-        "nas-drive",
-        "ochelari-vr",
-        "sistem-pos",
-        "placa-de-captura",
-        "hrana-pentru-caini",
-        "stergatoare",
-        "telefoane-mobile",
-        "hard-disk-extern",
-        "routere",
-        "casca-schi",
-      ];
-
-      links = links.filter(
-        (link) =>
-          !excludedSubstrings.some((substring) => link.includes(substring))
+      links = links.filter((link) =>
+        categories.some((category) => link.includes(category))
       );
 
       return links[0];
