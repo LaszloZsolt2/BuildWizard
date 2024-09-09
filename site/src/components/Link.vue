@@ -19,14 +19,10 @@ import { ref, onMounted } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import Button from "../components/BaseButton.vue";
 
-const generateUniqueIdentifier = () => {
-  return uuidv4();
-};
-
 const generateLink = () => {
   const baseUrl = window.location.origin;
   const pagePath = window.location.pathname;
-  const uniqueId = generateUniqueIdentifier();
+  const uniqueId = uuidv4();
   return `${baseUrl}${pagePath}?list=${uniqueId}`;
 };
 
