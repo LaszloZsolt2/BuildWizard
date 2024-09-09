@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import Button from "../components/BaseButton.vue";
 
@@ -26,11 +26,7 @@ const generateLink = () => {
   return `${baseUrl}${pagePath}?list=${uniqueId}`;
 };
 
-const link = ref("");
-
-const updateLink = () => {
-  link.value = generateLink();
-};
+const link = ref(generateLink());
 
 const copyLink = () => {
   navigator.clipboard
@@ -42,8 +38,4 @@ const copyLink = () => {
       console.error("Failed to copy the link: ", err);
     });
 };
-
-onMounted(() => {
-  updateLink();
-});
 </script>
