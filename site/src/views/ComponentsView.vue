@@ -187,6 +187,11 @@ const sortedKeys = computed(() => {
     keys.splice(versionIndex, 1);
   }
 
+  const powerConsumptionIndex = keys.indexOf("power_consumption");
+  if (powerConsumptionIndex !== -1) {
+    keys.splice(powerConsumptionIndex, 1);
+  }
+
   const selectedIndex = keys.indexOf("selected");
   if (selectedIndex !== -1) {
     keys.splice(selectedIndex, 1);
