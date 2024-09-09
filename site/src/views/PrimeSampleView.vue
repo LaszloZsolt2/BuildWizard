@@ -41,6 +41,8 @@
       <Delete type="Delete" />
     </div>
 
+    <LinkBar />
+
     <br />
     <div>
       <Checkbox v-model="isChecked" :binary="true" />
@@ -107,6 +109,7 @@ import Modal from "../components/Modal.vue";
 import SearchableSelector from "../components/SearchableSelector.vue";
 import Checkbox from "../components/Checkbox.vue";
 import Delete from "../components/DeleteButton.vue";
+import LinkBar from "../components/Link.vue";
 import BenchmarkBar from "../components/BenchmarkBar.vue";
 
 import { ref } from "vue";
