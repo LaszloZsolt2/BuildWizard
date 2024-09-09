@@ -68,7 +68,7 @@
             class="block mt-3 mb-2"
             placeholder="Enter a number"
             maxlength="5"
-            :invalid="!/^[0-9]*$/.test(budget)"
+            :invalid="isBudgetInvalid"
             fluid
           />
           <div class="text-sm text-neutral-400 ml-3">
@@ -85,7 +85,14 @@
           </div>
         </div>
       </div>
-      <BaseButton class="mt-14 xl:mt-0 mx-4">
+      <BaseButton
+        @click="onBuild"
+        :disabled="!selectedGames.length || isBudgetInvalid"
+        class="mt-14 xl:mt-0 mx-4"
+        :style="{
+          transition: 'all 0.2s ease',
+        }"
+      >
         <div class="px-2 font-bold">
           <RightArrowIcon class="h-5 inline-block pr-2 pb-1" />
           Build
@@ -93,6 +100,56 @@
       </BaseButton>
     </div>
   </div>
+  <Modal
+    v-model="isModalOpen"
+    @hide="onModalClose"
+    class="overflow-x-hidden transition-all"
+  >
+    <template #header
+      ><h1 class="text-3xl mt-2">Build suggestions</h1></template
+    >
+    <div>
+      <Transition name="list">
+        <div
+          v-if="fetchedBuilds?.message"
+          class="text-neutral-500 font-bold m-8"
+        >
+          {{ fetchedBuilds.message }}
+        </div>
+        <div v-else-if="fetchedBuilds" class="flex flex-col xl:flex-row">
+          <SuggestedBuildCard
+            v-for="buildType in Object.keys(fetchedBuilds.builds)"
+            @update:selectedBuild="selectedBuild = $event"
+            :build="fetchedBuilds.builds[buildType]"
+            :type="buildType as BuildType"
+            :key="buildType"
+            :selectedBuild="selectedBuild as BuildType"
+          />
+        </div>
+        <div v-else class="flex flex-col xl:flex-row">
+          <SuggestedBuildLoader v-for="n in 3" />
+        </div>
+      </Transition>
+    </div>
+    <template #footer>
+      <BaseButton
+        @click="onBuildAccept"
+        v-if="!fetchedBuilds?.message"
+        :disabled="!selectedBuild"
+        label="Accept build"
+        class="mt-4"
+        :style="{
+          transition: 'all 0.2s ease',
+        }"
+      />
+      <BaseButton
+        @click="onModalClose"
+        severity="secondary"
+        label="Close"
+        class="mt-4"
+      />
+    </template>
+  </Modal>
 </template>
 
 <script setup lang="ts">
@@ -105,6 +162,13 @@ import BaseButton from "./BaseButton.vue";
 import BaseInput from "./BaseInput.vue";
 import { useScreenSize } from "../composables/useScreenSize";
 import useFetch from "../composables/useFetch";
+import { removePriceField } from "../utils/removePriceField";
+import { buildQueryParams } from "../utils/buildQueryParams";
+import { computed } from "vue";
+import Modal from "./Modal.vue";
+import SuggestedBuildCard from "./SuggestedBuildCard.vue";
+import SuggestedBuildLoader from "./loaders/SuggestedBuildLoader.vue";
+import { BuildType } from "../types/buildType";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -113,9 +177,15 @@ const gameQuery = ref("");
 const filteredGames = ref<any[]>([]);
 const selectedGames = ref<any[]>([]);
 const budget = ref("");
-const url = ref<string>("");
+const gameSearchUrl = ref<string>("");
+const buildUrl = ref<string>("");
+const isBudgetInvalid = computed(() => {
+  return !/^[0-9]*$/.test(budget.value);
+});
+const isModalOpen = ref(false);
+const selectedBuild = ref<string | null>(null);
 
-const emit = defineEmits(["game-data-changed"]);
+const emit = defineEmits(["game-data-changed", "build-accept"]);
 
 function onGameSelect(game: any) {
   gameQuery.value = "";
@@ -150,15 +220,69 @@ function scrollToBuilder() {
   }
 }
 
+function onBuild() {
+  const components = JSON.parse(
+    localStorage.getItem("selectedComponents") || "{}"
+  );
+  const ids = selectedGames.value.map((g: any) => g._id);
+  buildUrl.value = `${apiBaseUrl}/build/?${buildQueryParams(ids, removePriceField(components))}${
+    budget.value ? `&budget=${budget.value}` : ""
+  }`;
+  isModalOpen.value = true;
+}
+
+function onModalClose() {
+  isModalOpen.value = false;
+  buildUrl.value = "";
+  selectedBuild.value = null;
+}
+
+function onBuildAccept() {
+  let build = fetchedBuilds.value.builds[selectedBuild.value!].build;
+
+  let simplifiedBuild = Object.fromEntries(
+    Object.entries(build).map(([category, components]) => {
+      if (Array.isArray(components)) {
+        return [
+          category,
+          components.map((comp) => ({
+            _id: comp._id,
+            price_data: comp.price_data,
+            name: comp.name,
+          })),
+        ];
+      }
+      return [
+        category,
+        {
+          _id: components._id,
+          price: components.price_data,
+          name: components.name,
+          chipset: components.chipset,
+        },
+      ];
+    })
+  );
+
+  localStorage.setItem("selectedComponents", JSON.stringify(simplifiedBuild));
+  emit("build-accept", simplifiedBuild);
+  onModalClose();
+}
+
 watch(gameQuery, (newQuery) => {
   if (newQuery) {
-    url.value = `${apiBaseUrl}/system-requirements/search?q=${encodeURIComponent(newQuery)}`;
+    gameSearchUrl.value = `${apiBaseUrl}/system-requirements/search?q=${encodeURIComponent(newQuery)}`;
   } else {
-    url.value = "";
+    gameSearchUrl.value = "";
   }
 });
 
-const { fetchedData, fetchError, isLoading } = useFetch(url);
+const {
+  fetchedData: fetchedBuilds,
+  fetchError: fetchBuildError,
+  isLoading: isBuildLoading,
+} = useFetch(buildUrl);
+const { fetchedData, fetchError, isLoading } = useFetch(gameSearchUrl);
 
 watch(fetchedData, (data) => {
   filteredGames.value = data || [];

@@ -43,8 +43,11 @@
                   <div v-if="key === 'price_data'">
                     {{ item[key][0].price }} lei
                   </div>
-                  <div v-else-if="key === 'image'">
-                    <img :src="item[key]" class="h-12 w-20 object-contain" />
+                  <div
+                    v-else-if="key === 'image'"
+                    class="h-12 w-12 flex items-center"
+                  >
+                    <img :src="item[key]" class="object-contain rounded-md" />
                   </div>
                   <BenchmarkBar
                     v-else-if="key === 'benchmark'"
@@ -349,11 +352,6 @@ const handleAddClick = (item: ComponentBase) => {
 
   router.push({
     name: "home",
-    query: {
-      type: props.type,
-      name: item.name,
-      price: item.price_data?.toString(),
-    },
   });
 };
 

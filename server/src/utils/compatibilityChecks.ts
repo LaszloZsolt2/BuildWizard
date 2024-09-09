@@ -3,7 +3,7 @@ import { partLabels } from "../utils/partLabels";
 import { ComponentsType } from "../types/componentsType";
 import { PartType } from "../types/partType";
 
-const socketRamSpeeds = {
+export const socketRamSpeeds = {
   LGA1151: 4,
   LGA2066: 4,
   AM4: 4,
@@ -32,7 +32,7 @@ const socketRamSpeeds = {
   "AM2+/AM2": 2,
 };
 
-const caseMotherboardCompatibility = {
+export const caseMotherboardCompatibility = {
   "ATX Mid Tower": ["ATX", "Micro ATX", "Mini ITX"],
   "MicroATX Mini Tower": ["Micro ATX", "Mini ITX"],
   "MicroATX Mid Tower": ["Micro ATX", "Mini ITX"],
@@ -65,7 +65,7 @@ const caseMotherboardCompatibility = {
   ],
 };
 
-const casePowerSupplyCompatibility = {
+export const casePowerSupplyCompatibility = {
   "ATX Mid Tower": ["ATX"],
   "MicroATX Mini Tower": ["ATX", "SFX"],
   "MicroATX Mid Tower": ["ATX", "SFX"],
@@ -96,7 +96,7 @@ export function hasAllNecessaryParts(components: ComponentsType) {
 
   let missingParts = [];
   for (const part of necessaryParts) {
-    if (!components[part]) {
+    if (!components[part as keyof typeof components]) {
       missingParts.push(part);
     }
   }
@@ -173,7 +173,7 @@ export function checkMotherboardMemoryCompatibility(
     socketRamSpeeds[
       components.motherboards.socket as keyof typeof socketRamSpeeds
     ];
-  const ramSpeed = components.memories[0].speed[0];
+  const ramSpeed = components.memories[0]?.speed[0];
   if (!supportedRamSpeed || !ramSpeed) {
     return messages;
   }
@@ -213,7 +213,7 @@ export function checkMotherboardMemoryCompatibility(
 export function checkMemoryCompatibility(components: ComponentsType) {
   let messages: CompatibilityMessage[] = [];
 
-  if (!components.memories) {
+  if (!components.memories || !components.memories[0]) {
     return messages;
   }
 

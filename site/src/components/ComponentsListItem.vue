@@ -4,7 +4,7 @@
     <td class="px-1 py-2 md:p-3 w-1/12">
       <Parts :type="part.type">
         <div class="text-xs md:text-base">
-          {{ part.label }}
+          {{ partLabels[part.type as PartType] }}
         </div>
       </Parts>
     </td>
@@ -55,7 +55,7 @@
     <td class="px-1 py-2 md:p-3 w-1/12">
       <Parts :type="part.type">
         <div class="text-xs md:text-base">
-          {{ part.label }}
+          {{ partLabels[part.type as PartType] }}
         </div>
       </Parts>
     </td>
@@ -139,6 +139,7 @@ import { computed, onMounted, ref } from "vue";
 import CaretIcon from "@/assets/icons/caret.svg";
 import Modal from "./Modal.vue";
 import BaseButton from "./BaseButton.vue";
+import { PartType, partLabels } from "../types/partType";
 
 type Props = {
   part: PartListItem;
