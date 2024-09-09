@@ -59,6 +59,7 @@ import SystemRequirementsSidebar from "../components/SystemRequirementsSidebar.v
 import ComponentsListItem from "../components/ComponentsListItem.vue";
 import CompatibilityMessages from "../components/CompatibilityMessages.vue";
 import { useScreenSize } from "../composables/useScreenSize";
+import Linkbar from "../components/Link.vue";
 import { computed, ref } from "vue";
 
 const selected = ref<any>(null);
@@ -66,7 +67,9 @@ const games = ref<any>(null);
 const { screenWidth } = useScreenSize();
 const maxWidth = computed(() => {
   return screenWidth.value < 768
-    ? `calc(${screenWidth.value}px - ${games.value?.length ? `${screenWidth.value * 0.175}px` : "2rem"})`
+    ? `calc(${screenWidth.value}px - ${
+        games.value?.length ? `${screenWidth.value * 0.175}px` : "2rem"
+      })`
     : undefined;
 });
 
