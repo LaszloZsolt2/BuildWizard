@@ -19,12 +19,9 @@ export function getComponentUrl(query: string, categories: string[]) {
 
       // remove duplicates
       links = [...new Set(links)];
-
-      // remove empty hrefs
-      links = links.filter((link) => link !== "#");
-
-      links = links.filter((link) =>
-        categories.some((category) => link.includes(category))
+      links = links.filter(
+        (link) =>
+          link !== "#" && categories.some((category) => link.includes(category))
       );
 
       return links[0];

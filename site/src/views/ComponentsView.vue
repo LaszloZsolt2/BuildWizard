@@ -331,19 +331,14 @@ const handleAddClick = (item: ComponentBase) => {
       _id: item._id,
     });
   } else {
+    selectedComponents[props.type] = {
+      name: item.name,
+      price: item.price_data,
+      _id: item._id,
+    };
+
     if (props.type === "gpus") {
-      selectedComponents[props.type] = {
-        name: item.name,
-        price: item.price_data,
-        _id: item._id,
-        chipset: (item as any).chipset,
-      };
-    } else {
-      selectedComponents[props.type] = {
-        name: item.name,
-        price: item.price_data,
-        _id: item._id,
-      };
+      selectedComponents["gpus"].chipset = (item as any).chipset;
     }
   }
 
