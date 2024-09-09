@@ -68,6 +68,12 @@ export function buildPc(
         });
       }
 
+      if (requiredParts["cpu-coolers"]) {
+        cpus = cpus.filter((cpu: any) => {
+          return cpu.tdp <= requiredParts["cpu-coolers"].tdp;
+        });
+      }
+
       if (!cpus.length) {
         return null;
       }
@@ -315,7 +321,9 @@ export function buildPc(
       return requiredParts["cpu-coolers"];
     }
 
-    const cpuCoolers = allParts["cpu-coolers"];
+    const cpuCoolers = allParts["cpu-coolers"].filter(
+      (cooler: any) => (cooler.tdp || 0) >= (build.cpus.tdp || 0) * 1.5
+    );
 
     if (!cpuCoolers.length) {
       return null;
@@ -451,8 +459,11 @@ export function buildPc(
     }
 
     let bayCount = 0;
-    for (const drive of build["hard-drives"]) {
-      bayCount += drive.form_factor == 2.5 || drive.form_factor == 3.5 ? 1 : 0;
+    if (build["hard-drives"]) {
+      for (const drive of build["hard-drives"]) {
+        bayCount +=
+          drive.form_factor == 2.5 || drive.form_factor == 3.5 ? 1 : 0;
+      }
     }
 
     cases = cases.filter((c: any) => {

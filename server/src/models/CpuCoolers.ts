@@ -8,6 +8,7 @@ const cpuCoolers = new mongoose.Schema({
   size: { type: Number, required: false },
   price_data: { type: mongoose.Schema.Types.Mixed, required: false },
   image: { type: String, required: false },
+  tdp: { type: Number, required: false },
 });
 
 const CpuCoolers = mongoose.model("CpuCoolers", cpuCoolers, "cpu-coolers");

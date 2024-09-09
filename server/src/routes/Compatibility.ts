@@ -6,6 +6,7 @@ import {
   checkCaseMotherboardCompatibility,
   checkCasePowerSupplyCompatibility,
   checkCaseStorageCompatibility,
+  checkCpuCoolerCompatibilty,
   checkCpuMotherboardCompatibility,
   checkMemoryCompatibility,
   checkMotherboardMemoryCompatibility,
@@ -44,6 +45,7 @@ router.get("/", async (req, res) => {
     messages.push(...checkCasePowerSupplyCompatibility(components));
     messages.push(...checkCaseStorageCompatibility(components));
     messages.push(...checkBottleneck(components));
+    messages.push(...checkCpuCoolerCompatibilty(components));
 
     if (!messages.length) {
       messages.push({

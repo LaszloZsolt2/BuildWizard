@@ -366,3 +366,25 @@ export function checkBottleneck(components: ComponentsType) {
 
   return messages;
 }
+
+export function checkCpuCoolerCompatibilty(components: ComponentsType) {
+  let messages: CompatibilityMessage[] = [];
+
+  if (
+    !components.cpus ||
+    !components["cpu-coolers"] ||
+    !components.cpus.tdp ||
+    !components["cpu-coolers"].tdp
+  ) {
+    return messages;
+  }
+
+  if (components.cpus.tdp > components["cpu-coolers"].tdp) {
+    messages.push({
+      message: `The selected CPU Cooler (${components["cpu-coolers"].name}) may not be able to handle the thermal output of the selected CPU (${components.cpus.name}). Consider choosing a more powerful CPU Cooler.`,
+      severity: "warn",
+    });
+  }
+
+  return messages;
+}
