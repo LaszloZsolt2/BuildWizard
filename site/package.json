@@ -11,12 +11,16 @@
   "dependencies": {
     "@primevue/themes": "^4.0.4",
     "axios": "^1.7.4",
+    "dotenv": "^16.4.5",
+    "lodash": "^4.17.21",
+    "mongodb": "^6.8.0",
     "primevue": "^4.0.4",
     "uuid": "^10.0.0",
     "vue": "^3.4.37",
     "vue-router": "^4.4.3"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.7",
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-vue": "^5.1.2",
     "autoprefixer": "^10.4.20",

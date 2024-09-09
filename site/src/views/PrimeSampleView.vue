@@ -43,6 +43,8 @@
 
     <LinkBar />
 
+    <SearchComponents type="cpus" />
+
     <br />
     <div>
       <Checkbox v-model="isChecked" :binary="true" />
@@ -110,14 +112,10 @@ import SearchableSelector from "../components/SearchableSelector.vue";
 import Checkbox from "../components/Checkbox.vue";
 import Delete from "../components/DeleteButton.vue";
 import LinkBar from "../components/Link.vue";
+import SearchComponents from "../components/SearchComponents.vue";
 import BenchmarkBar from "../components/BenchmarkBar.vue";
 
 import { ref } from "vue";
-const items = ref([
-  { label: "Apple", value: "apple" },
-  { label: "Banana", value: "banana" },
-  { label: "Cherry", value: "cherry" },
-]);
 
 const isChecked = ref(false);
 const inputValue = ref("");

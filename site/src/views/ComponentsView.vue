@@ -2,8 +2,14 @@
   <div class="flex">
     <div class="components text-white p-5 flex-grow">
       <ul v-if="!isLoading && !fetchError && paginatedData.length">
+        <div class="bg-violet-800 p-10">
+          <p class="text-3xl font-bold text-white text-center">
+            Select from {{ props.type }}
+          </p>
+        </div>
+        <Search :type="props.type" />
         <table
-          class="mx-16 my-20 w-11/12 bg-neutral-800 text-white border-separate border-spacing-0"
+          class="mx-16 my-5 w-11/12 bg-neutral-800 text-white border-separate border-spacing-0"
         >
           <thead>
             <tr>
@@ -158,6 +164,7 @@ import SystemRequirementsSidebar from "../components/SystemRequirementsSidebar.v
 import CaretIcon from "@/assets/icons/caret.svg";
 import Modal from "../components/Modal.vue";
 import BenchmarkBar from "../components/BenchmarkBar.vue";
+import Search from "../components/SearchComponents.vue";
 
 const props = defineProps<{ type: string }>();
 const router = useRouter();

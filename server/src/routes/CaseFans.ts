@@ -26,6 +26,22 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/search", async (req, res) => {
+  try {
+    const query = req.query.q?.toString()?.toLowerCase();
+    const caseFans = await CaseFan.find({
+      name: { $regex: query, $options: "i" },
+    });
+    res.json(caseFans);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "An unknown error occurred" });
+    }
+  }
+});
+
 router.get("/:id", async (req, res) => {
   try {
     const caseFan = await CaseFan.findById(req.params.id);
