@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const links = new mongoose.Schema({
-  link: { type: String, required: true },
   cpu: { type: mongoose.Schema.Types.ObjectId, required: false },
   cpu_cooler: { type: mongoose.Schema.Types.ObjectId, required: false },
   gpu: { type: mongoose.Schema.Types.ObjectId, required: false },

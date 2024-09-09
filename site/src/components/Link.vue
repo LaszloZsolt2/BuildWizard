@@ -26,6 +26,7 @@ const generateLink = () => {
   const baseUrl = window.location.origin;
   const pagePath = window.location.pathname;
   const uniqueId = uuidv4();
+
   return `${baseUrl}${pagePath}?list=${uniqueId}`;
 };
 
@@ -50,19 +51,17 @@ const copyAndSaveLink = async () => {
       power_supplies: selectedComponents["power-supplies"]?._id || null,
     };
 
-    console.log("Sending data:", postData);
-
     const response = await axios.post("/api/links", postData, {
       headers: {
         "Content-Type": "application/json",
       },
     });
 
-    console.log("Response status:", response.status);
-
     if (response.status === 201) {
       await navigator.clipboard.writeText(link.value);
       alert("Link copied to clipboard and saved successfully!");
+    } else {
+      throw new Error("Failed to save link");
     }
   } catch (err) {
     if (axios.isAxiosError(err)) {

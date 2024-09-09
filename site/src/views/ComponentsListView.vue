@@ -18,6 +18,7 @@
           maxWidth: maxWidth,
         }"
       >
+        <Linkbar />
         <table
           class="mx-4 my-4 w-full bg-neutral-800 rounded-lg overflow-hidden shadow-md"
         >

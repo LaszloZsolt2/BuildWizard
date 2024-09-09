@@ -25,8 +25,10 @@ export default function useFetch(url: Ref<string>) {
 
   watch(
     url,
-    () => {
-      fetchData();
+    (newUrl) => {
+      if (newUrl) {
+        fetchData();
+      }
     },
     { immediate: true }
   );

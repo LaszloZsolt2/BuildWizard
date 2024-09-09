@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import Links from "../models/Link";
+import Component from "../models/Component";
 
 const router = express.Router();
 
@@ -18,35 +19,41 @@ router.get("/", async (req: Request, res: Response) => {
       data: links,
     });
   } catch (err: unknown) {
-    if (err instanceof Error) {
-      res.status(500).json({ message: err.message });
-    } else {
-      res.status(500).json({ message: "An unknown error occurred" });
-    }
+    console.error("Error fetching links:", err);
+    res
+      .status(500)
+      .json({ message: "An unknown error occurred while fetching links." });
   }
 });
 
 router.get("/:id", async (req: Request, res: Response) => {
   try {
-    const link = await Links.findById(req.params.id);
-    if (link) {
-      res.json(link);
-    } else {
-      res.status(404).json({ message: "Link not found" });
+    const link = await Links.findById(req.params.id).populate([
+      "cpu",
+      "cpu_cooler",
+      "gpu",
+      "case",
+      "case_fans",
+      "hard_drives",
+      "memories",
+      "motherboards",
+      "power_supplies",
+    ]);
+    if (!link) {
+      return res.status(404).json({ message: "Link not found" });
     }
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      res.status(500).json({ message: err.message });
-    } else {
-      res.status(500).json({ message: "An unknown error occurred" });
-    }
+    res.json(link);
+  } catch (err) {
+    console.error("Error fetching link:", err);
+    res
+      .status(500)
+      .json({ message: "An error occurred while fetching the link" });
   }
 });
 
 router.post("/", async (req: Request, res: Response) => {
   try {
     const {
-      link,
       cpu,
       cpu_cooler,
       gpu,
@@ -59,7 +66,6 @@ router.post("/", async (req: Request, res: Response) => {
     } = req.body;
 
     const linkData = {
-      link,
       cpu: cpu ? { _id: cpu } : null,
       cpu_cooler: cpu_cooler ? { _id: cpu_cooler } : null,
       gpu: gpu ? { _id: gpu } : null,
@@ -70,19 +76,17 @@ router.post("/", async (req: Request, res: Response) => {
       motherboards: motherboards ? { _id: motherboards } : null,
       power_supplies: power_supplies ? { _id: power_supplies } : null,
     };
+
     const newLink = new Links(linkData);
-    await newLink.save();
-    const savedLink = await newLink.save();
+    const savedLink = await newLink.save(); // Only call save once
+
     console.log("Saved link:", savedLink);
     res.status(201).json(savedLink);
   } catch (err: unknown) {
-    if (err instanceof Error) {
-      console.error("Error:", err.message);
-      res.status(500).json({ message: err.message });
-    } else {
-      console.error("Unknown error:", err);
-      res.status(500).json({ message: "An unknown error occurred" });
-    }
+    console.error("Error saving link:", err);
+    res
+      .status(500)
+      .json({ message: "An unknown error occurred while saving the link." });
   }
 });
 
