@@ -1,13 +1,13 @@
 <template>
   <div class="flex">
     <div class="components text-white p-5 flex-grow">
-      <ul v-if="!isLoading && !fetchError && paginatedData.length">
-        <div class="bg-violet-800 p-10">
-          <p class="text-3xl font-bold text-white text-center">
-            Select from {{ props.type }}
-          </p>
-        </div>
-        <Search :type="props.type" @search="handleSearch" />
+      <div class="bg-violet-800 p-10">
+        <p class="text-3xl font-bold text-white text-center">
+          Select from {{ props.type }}
+        </p>
+      </div>
+      <Search :type="props.type" @search="handleSearch" />
+      <ul v-if="!fetchError && paginatedData.length">
         <table
           class="mx-16 my-5 w-11/12 bg-neutral-800 text-white border-separate border-spacing-0"
         >
@@ -95,12 +95,9 @@
         </table>
       </ul>
       <p v-if="fetchError" class="text-red-500 mt-4">Error: {{ fetchError }}</p>
-      <p v-if="isLoading" class="mt-4">Loading...</p>
+      <p v-if="isLoading" class="mt-4"></p>
 
-      <div
-        v-if="!isLoading && totalPages > 1"
-        class="flex justify-center items-center mt-5"
-      >
+      <div class="flex justify-center items-center mt-5">
         <BaseButton
           @click="prevPage"
           :disabled="currentPage === 1"
@@ -175,11 +172,15 @@ const emit = defineEmits<{
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
 const searchQuery = ref("");
+const data = ref<any>(0);
 
-const fetchUrl = computed(
-  () =>
-    `http://localhost:5000/api/${props.type}?page=${currentPage.value}&limit=${itemsPerPage.value}`
-);
+const fetchUrl = computed(() => {
+  return searchQuery.value
+    ? `http://localhost:5000/api/${props.type}/search?q=${encodeURIComponent(
+        searchQuery.value
+      )}&page=${currentPage.value}&limit=${itemsPerPage.value}`
+    : `http://localhost:5000/api/${props.type}?page=${currentPage.value}&limit=${itemsPerPage.value}`;
+});
 
 const { fetchedData, fetchError, isLoading } = useFetch(fetchUrl);
 
@@ -364,9 +365,9 @@ const handleAddClick = (item: ComponentBase) => {
 };
 
 const totalPages = computed(() =>
-  Math.ceil((fetchedData.value?.total || 0) / itemsPerPage.value)
+  Math.ceil((data.value?.total || 0) / itemsPerPage.value)
 );
-const paginatedData = computed(() => fetchedData.value?.data || []);
+const paginatedData = computed(() => data.value?.data || []);
 
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
@@ -383,4 +384,11 @@ const handleSearch = (query: string) => {
   searchQuery.value = query;
   currentPage.value = 1;
 };
+
+watch(fetchedData, (newValue) => {
+  if (newValue) {
+    console.log(newValue);
+    data.value = newValue;
+  }
+});
 </script>

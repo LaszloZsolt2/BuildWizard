@@ -29,10 +29,24 @@ router.get("/", async (req, res) => {
 router.get("/search", async (req, res) => {
   try {
     const query = req.query.q?.toString()?.toLowerCase();
-    const memories = await Memories.find({
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const startIndex = (page - 1) * limit;
+    const total = await Memories.countDocuments({
       name: { $regex: query, $options: "i" },
     });
-    res.json(memories);
+    const memories = await Memories.find({
+      name: { $regex: query, $options: "i" },
+    })
+      .skip(startIndex)
+      .limit(limit);
+    res.json({
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+      data: memories,
+    });
   } catch (err: unknown) {
     if (err instanceof Error) {
       res.status(500).json({ message: err.message });
