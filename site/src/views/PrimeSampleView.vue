@@ -31,11 +31,7 @@
     />
     <BaseInput type="text" v-model="inputValue" disabled class="block m-4" />
 
-    <SearchableSelector
-      v-model="selectedItem"
-      :items="items"
-      class="block m-4"
-    />
+    <SearchableSelector v-model="selectedItem" class="block m-4" />
     <br />
     <div>
       <Delete type="Delete" />

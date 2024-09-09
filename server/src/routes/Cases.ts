@@ -28,10 +28,15 @@ router.get("/", async (req, res) => {
 
 router.get("/search", async (req, res) => {
   try {
-    const query = req.query.q?.toString()?.toLowerCase();
+    const query = req.query.q?.toString().trim().toLowerCase();
+    if (!query) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
     const cases = await Cases.find({
-      name: { $regex: query, $options: "i" },
+      name: { $regex: new RegExp(query, "i") },
     });
+
     res.json(cases);
   } catch (err: unknown) {
     if (err instanceof Error) {

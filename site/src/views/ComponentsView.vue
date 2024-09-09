@@ -7,7 +7,7 @@
             Select from {{ props.type }}
           </p>
         </div>
-        <Search :type="props.type" />
+        <Search :type="props.type" @search="handleSearch" />
         <table
           class="mx-16 my-5 w-11/12 bg-neutral-800 text-white border-separate border-spacing-0"
         >
@@ -154,7 +154,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import BaseButton from "../components/BaseButton.vue";
 import Checkbox from "../components/Checkbox.vue";
 import { useRouter } from "vue-router";
@@ -174,6 +174,7 @@ const emit = defineEmits<{
 
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
+const searchQuery = ref("");
 
 const fetchUrl = computed(
   () =>
@@ -377,5 +378,9 @@ const prevPage = () => {
   if (currentPage.value > 1) {
     currentPage.value -= 1;
   }
+};
+const handleSearch = (query: string) => {
+  searchQuery.value = query;
+  currentPage.value = 1;
 };
 </script>
