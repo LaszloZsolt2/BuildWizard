@@ -450,17 +450,14 @@ export function buildPc(
       });
     }
 
-    if (requiredParts["hard-drives"]) {
-      let bayCount = 0;
-      for (const drive of requiredParts["hard-drives"]) {
-        bayCount +=
-          drive.form_factor == 2.5 || drive.form_factor == 3.5 ? 1 : 0;
-      }
-
-      cases = cases.filter((c: any) => {
-        return c.internal_35_bays >= bayCount;
-      });
+    let bayCount = 0;
+    for (const drive of build["hard-drives"]) {
+      bayCount += drive.form_factor == 2.5 || drive.form_factor == 3.5 ? 1 : 0;
     }
+
+    cases = cases.filter((c: any) => {
+      return c.internal_35_bays >= bayCount;
+    });
 
     if (!cases.length) {
       return null;
