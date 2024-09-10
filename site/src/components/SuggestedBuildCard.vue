@@ -11,7 +11,7 @@
         : undefined,
     }"
   >
-    <div class="h-22 mb-2 overflow-clip">
+    <div class="overflow-clip" :style="{ height: '5.5rem' }">
       <div class="text-2xl capitalize text-neutral-300 font-bold mb-2">
         {{ typeAliases[type as keyof typeof typeAliases] || type }}
       </div>

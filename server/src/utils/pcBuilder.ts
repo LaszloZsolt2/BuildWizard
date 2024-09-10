@@ -321,9 +321,12 @@ export function buildPc(
       return requiredParts["cpu-coolers"];
     }
 
-    const cpuCoolers = allParts["cpu-coolers"].filter(
-      (cooler: any) => (cooler.tdp || 0) >= (build.cpus.tdp || 0) * 1.5
-    );
+    let cpuCoolers = allParts["cpu-coolers"];
+    if (build.cpus?.tdp) {
+      cpuCoolers = allParts["cpu-coolers"].filter(
+        (cooler: any) => (cooler.tdp || 0) >= (build.cpus.tdp || 0) * 1.5
+      );
+    }
 
     if (!cpuCoolers.length) {
       return null;
@@ -512,7 +515,10 @@ export function buildPc(
     const caseType = build.cases
       .type as keyof typeof casePowerSupplyCompatibility;
     powerSupplies = powerSupplies.filter((ps: any) => {
-      return casePowerSupplyCompatibility[caseType].includes(ps.type);
+      return (
+        casePowerSupplyCompatibility[caseType].includes(ps.type) &&
+        ps.wattage >= powerConsumption * 1.5
+      );
     });
 
     if (!powerSupplies.length) {
@@ -566,7 +572,40 @@ export function buildPc(
     return [];
   }
 
+  function getPowerConsumption(part: any, type: PartType) {
+    if (part._doc) {
+      part = part._doc;
+    }
+
+    if (!part) {
+      return 0;
+    }
+
+    if (type === "cpus" || type === "gpus") {
+      return part.power_consumption || 0;
+    }
+
+    if (type === "cpu-coolers") {
+      return 10;
+    }
+
+    if (type === "hard-drives") {
+      return part.length || 0;
+    }
+
+    if (type === "memories") {
+      return part[0]?.modules?.[0] * 5 || 0;
+    }
+
+    if (type === "motherboards") {
+      return 50;
+    }
+
+    return 0;
+  }
+
   let remainingParts = 9;
+  let powerConsumption = 0;
   let build: ComponentsType = {};
 
   const partsSelection = {
@@ -585,6 +624,7 @@ export function buildPc(
     const part = p as PartType;
     build[part] = partsSelection[part]();
     remainingParts--;
+    powerConsumption += getPowerConsumption(build[part], part);
   });
 
   if (
