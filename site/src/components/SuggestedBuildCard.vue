@@ -47,9 +47,7 @@
       </div>
     </BaseLabel>
     <div class="mt-4">
-      <span class="text-3xl font-bold text-violet-400">{{
-        Math.round(build.price.price * 100) / 100
-      }}</span>
+      <span class="text-3xl font-bold text-violet-400">{{ price }}</span>
       <span class="text-2xl font-bold text-neutral-200"> lei </span>
       <span
         v-if="!build.price.isPriceForAllParts"
@@ -89,6 +87,7 @@ const emit = defineEmits<{
 
 const { screenWidth } = useScreenSize();
 const isSelected = computed(() => props.selectedBuild === props.type);
+const price = computed(() => Math.round(props.build.price.price * 100) / 100);
 
 function onBuildClick() {
   const newValue = isSelected.value ? null : props.type;

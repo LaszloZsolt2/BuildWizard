@@ -572,38 +572,6 @@ export function buildPc(
     return [];
   }
 
-  function getPowerConsumption(part: any, type: PartType) {
-    if (part._doc) {
-      part = part._doc;
-    }
-
-    if (!part) {
-      return 0;
-    }
-
-    if (type === "cpus" || type === "gpus") {
-      return part.power_consumption || 0;
-    }
-
-    if (type === "cpu-coolers") {
-      return 10;
-    }
-
-    if (type === "hard-drives") {
-      return part.length || 0;
-    }
-
-    if (type === "memories") {
-      return part[0]?.modules?.[0] * 5 || 0;
-    }
-
-    if (type === "motherboards") {
-      return 50;
-    }
-
-    return 0;
-  }
-
   let remainingParts = 9;
   let powerConsumption = 0;
   let build: ComponentsType = {};
@@ -709,4 +677,36 @@ export function buildWithExtraBudget(
   return pcWithExtraBudget && getBuildPrice(pcWithExtraBudget).price <= budget
     ? pcWithExtraBudget
     : oldPc;
+}
+
+export function getPowerConsumption(part: any, type: PartType) {
+  if (!part) {
+    return 0;
+  }
+
+  if (part._doc) {
+    part = part._doc;
+  }
+
+  if (type === "cpus" || type === "gpus") {
+    return part.power_consumption || 0;
+  }
+
+  if (type === "cpu-coolers") {
+    return 10;
+  }
+
+  if (type === "hard-drives") {
+    return part.length || 0;
+  }
+
+  if (type === "memories") {
+    return part[0]?.modules?.[0] * 5 || 0;
+  }
+
+  if (type === "motherboards") {
+    return 50;
+  }
+
+  return 0;
 }
