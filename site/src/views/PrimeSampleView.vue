@@ -89,6 +89,12 @@
         />
       </template>
     </Modal>
+    <div class="w-32 m-4">
+      <BenchmarkBar :value="50" :maxValue="200" />
+    </div>
+    <div class="w-32 m-4">
+      <BenchmarkBar :value="-1" :maxValue="200" />
+    </div>
   </div>
 </template>
 
@@ -101,6 +107,7 @@ import Modal from "../components/Modal.vue";
 import SearchableSelector from "../components/SearchableSelector.vue";
 import Checkbox from "../components/Checkbox.vue";
 import Delete from "../components/DeleteButton.vue";
+import BenchmarkBar from "../components/BenchmarkBar.vue";
 
 import { ref } from "vue";
 const items = ref([

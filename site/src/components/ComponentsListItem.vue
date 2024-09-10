@@ -63,6 +63,7 @@
       class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-xs md:text-base text-white text-center"
     >
       {{ selected[part.type]?.name || "" }}
+      {{ chipsetText }}
     </td>
 
     <td
@@ -134,7 +135,7 @@
 import Parts from "../components/Parts.vue";
 import Delete from "../components/DeleteButton.vue";
 import { PartListItem } from "../types/partListItem";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import CaretIcon from "@/assets/icons/caret.svg";
 import Modal from "./Modal.vue";
 import BaseButton from "./BaseButton.vue";
@@ -143,7 +144,7 @@ type Props = {
   part: PartListItem;
 };
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 const selected = ref<{
   [key: string]: any;
@@ -179,6 +180,13 @@ const handleDelete = (type: string, part?: any) => {
   localStorage.setItem("selectedComponents", JSON.stringify(selected.value));
   emit("delete-part", selected.value);
 };
+
+const chipsetText = computed(() => {
+  return (
+    (props.part.type === "gpus" && selected.value[props.part.type]?.chipset) ||
+    ""
+  );
+});
 
 onMounted(() => {
   const storedData = localStorage.getItem("selectedComponents");

@@ -17,17 +17,37 @@ const BATCH_SIZE = 100;
 const DELAY_MS = 900000;
 const limit = pLimit(CONCURRENCY_LIMIT);
 
+const categories = {
+  cpus: ["procesoare"],
+  gpus: ["placi-video"],
+  memories: ["memorii"],
+  motherboards: ["placi-de-baza"],
+  "cpu-coolers": ["coolere"],
+  cases: ["carcase"],
+  "case-fans": ["ventilator-carcasa"],
+  "hard-drives": ["ssd", "solid-state-drive", "hard-disk"],
+  "power-supplies": ["surse-de-alimentare"],
+};
+
 async function updateComponentData(
   components: any,
-  getSearchQuery: (component: any) => string
+  getSearchQuery: (component: any) => string,
+  type: string
 ) {
   let processedCount = 0;
 
   for (const component of components) {
+    if (!component.price_data) {
+      continue;
+    }
+
     await limit(async () => {
       try {
         const searchQuery = getSearchQuery(component);
-        const componentUrl = await getComponentUrl(searchQuery);
+        const componentUrl = await getComponentUrl(
+          searchQuery,
+          categories[type as keyof typeof categories]
+        );
         console.log("Updating price data for component:", searchQuery);
         if (!componentUrl) throw new Error("Component URL not found");
 
@@ -136,7 +156,7 @@ export async function updatePriceData() {
 
   for (const key in components) {
     const component = components[key];
-    await updateComponentData(component.items, component.query);
+    await updateComponentData(component.items, component.query, key);
   }
 
   console.log("Finished updating price data for all components");

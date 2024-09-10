@@ -2,11 +2,6 @@
   <div class="flex">
     <div class="components text-white p-5 flex-grow">
       <ul v-if="!isLoading && !fetchError && paginatedData.length">
-        <div class="bg-violet-800 p-10">
-          <p class="text-3xl font-bold text-white text-center">
-            Select from {{ props.type }}
-          </p>
-        </div>
         <table
           class="mx-16 my-20 w-11/12 bg-neutral-800 text-white border-separate border-spacing-0"
         >
@@ -18,10 +13,10 @@
               <th
                 v-for="(key, index) in sortedKeys"
                 :key="index"
-                class="border-b border-neutral-400 px-6 py-3 text-left bg-neutral-700"
+                class="border-b border-neutral-400 px-6 py-3 text-left bg-neutral-700 capitalize text-nowrap"
               >
-                <div class="">
-                  {{ key }}
+                <div>
+                  {{ formatKey(key) }}
                 </div>
               </th>
               <th
@@ -51,8 +46,13 @@
                   <div v-else-if="key === 'image'">
                     <img :src="item[key]" class="h-12 w-20 object-contain" />
                   </div>
+                  <BenchmarkBar
+                    v-else-if="key === 'benchmark'"
+                    :value="item[key]"
+                    :maxValue="type === 'cpus' ? 133 : 370"
+                  />
                   <div v-else>
-                    {{ item[key] }}
+                    {{ formatValue(item[key], key) }}
                   </div>
                 </div>
                 <div
@@ -154,6 +154,7 @@ import { ComponentBase } from "../types/componentBase";
 import SystemRequirementsSidebar from "../components/SystemRequirementsSidebar.vue";
 import CaretIcon from "@/assets/icons/caret.svg";
 import Modal from "../components/Modal.vue";
+import BenchmarkBar from "../components/BenchmarkBar.vue";
 
 const props = defineProps<{ type: string }>();
 const router = useRouter();
@@ -186,6 +187,11 @@ const sortedKeys = computed(() => {
     keys.splice(versionIndex, 1);
   }
 
+  const powerConsumptionIndex = keys.indexOf("power_consumption");
+  if (powerConsumptionIndex !== -1) {
+    keys.splice(powerConsumptionIndex, 1);
+  }
+
   const selectedIndex = keys.indexOf("selected");
   if (selectedIndex !== -1) {
     keys.splice(selectedIndex, 1);
@@ -194,6 +200,11 @@ const sortedKeys = computed(() => {
   const priceIndex = keys.indexOf("price");
   if (priceIndex !== -1) {
     keys.splice(priceIndex, 1);
+  }
+
+  const pricePerGbIndex = keys.indexOf("price_per_gb");
+  if (pricePerGbIndex !== -1) {
+    keys.splice(pricePerGbIndex, 1);
   }
 
   const imageIndex = keys.indexOf("image");
@@ -206,6 +217,101 @@ const sortedKeys = computed(() => {
 
   return keys;
 });
+
+const formatKey = (key: string) => {
+  const aliases: { [key: string]: string } = {
+    price_data: "price",
+    tdp: "TDP",
+    smt: "SMT",
+    rpm: "RPM",
+    psu: "PSU",
+    internal_35_bays: "internal 3.5 bays",
+    pwm: "PWM",
+  };
+
+  if (aliases[key]) {
+    key = aliases[key];
+  }
+  return key.replace(/_/g, " ");
+};
+
+const formatValue = (value: any, key: string) => {
+  const formatArrayValue = (suffix: string) => {
+    if (!value.length) {
+      return "N/A";
+    } else if (value.length === 1) {
+      return `${value[0]} ${suffix}`;
+    } else {
+      return `${value[0]} - ${value[1]} ${suffix}`;
+    }
+  };
+
+  if (!value) {
+    return "N/A";
+  }
+
+  if (key === "tdp" || key === "psu" || key === "wattage") {
+    return `${value} W`;
+  }
+
+  if (key === "smt" || key === "pwm") {
+    return value ? "Yes" : "No";
+  }
+
+  if (key === "boost_clock" || key === "core_clock") {
+    return `${value} ${props.type === "cpus" ? "GHz" : "MHz"}`;
+  }
+
+  if (key === "rpm") {
+    return formatArrayValue("RPM");
+  }
+
+  if (key === "noise_level") {
+    return formatArrayValue("dB");
+  }
+
+  if (key === "size" || key === "length") {
+    return `${value} mm`;
+  }
+
+  if (key === "memory" || key === "capacity" || key === "max_memory") {
+    return `${value} GB`;
+  }
+
+  if (key === "external_volume") {
+    return `${value} L`;
+  }
+
+  if (key === "airflow") {
+    return formatArrayValue("CFM");
+  }
+
+  if (key === "cache") {
+    return `${value} MB`;
+  }
+
+  if (key === "speed") {
+    if (!value.length || value.length !== 2) {
+      return "N/A";
+    } else {
+      return `DDR${value[0]} ${value[1]} MHz`;
+    }
+  }
+
+  if (key === "modules") {
+    if (!value.length || value.length !== 2) {
+      return "N/A";
+    } else {
+      return `${value[0]} x ${value[1]} GB`;
+    }
+  }
+
+  if (key === "first_word_latency") {
+    return `${value} ns`;
+  }
+
+  return value;
+};
 
 const handleAddClick = (item: ComponentBase) => {
   emit("add", { name: item.name, price: item.price_data });
@@ -230,6 +336,10 @@ const handleAddClick = (item: ComponentBase) => {
       price: item.price_data,
       _id: item._id,
     };
+
+    if (props.type === "gpus") {
+      selectedComponents["gpus"].chipset = (item as any).chipset;
+    }
   }
 
   localStorage.setItem(
