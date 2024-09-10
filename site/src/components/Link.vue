@@ -1,13 +1,13 @@
 <template>
   <div
-    class="p-3 my-5 bg-gray-400 border border-gray-800 rounded-md shadow-md flex items-center space-x-4"
+    class="p-3 ml-4 -mr-4 my-5 bg-neutral-800 border border-gray-800 rounded-md shadow-md flex items-center space-x-4"
   >
     <div class="flex-1">
       <input
         v-model="link"
         type="text"
         readonly
-        class="w-full p-2 border border-violet-800 rounded-md bg-gray-200 text-violet-900 focus:outline-none"
+        class="w-full p-2 border border-violet-800 rounded-md bg-neutral-700 text-neutral-200 focus:outline-none"
       />
     </div>
     <Button @click="copyAndSaveLink">Copy Link</Button>
@@ -25,11 +25,12 @@ axios.defaults.baseURL = "http://localhost:5000";
 const generateLink = () => {
   const baseUrl = window.location.origin;
   const pagePath = window.location.pathname;
-  const uniqueId = uuidv4();
+  const uniqueId = (linkId.value = uuidv4());
 
   return `${baseUrl}${pagePath}?list=${uniqueId}`;
 };
 
+const linkId = ref("");
 const link = ref(generateLink());
 
 const copyAndSaveLink = async () => {
@@ -39,14 +40,20 @@ const copyAndSaveLink = async () => {
     );
 
     const postData = {
-      link: link.value,
+      link: linkId.value,
       cpu: selectedComponents.cpus?._id || null,
       cpu_cooler: selectedComponents["cpu-coolers"]?._id || null,
       gpu: selectedComponents.gpus?._id || null,
       case: selectedComponents.cases?._id || null,
-      case_fans: selectedComponents["case-fans"]?._id || null,
-      hard_drives: selectedComponents["hard-drives"]?._id || null,
-      memories: selectedComponents.memories?._id || null,
+      case_fans: selectedComponents["case-fans"]
+        ? selectedComponents["case-fans"].map((fan: any) => fan._id)
+        : null,
+      hard_drives: selectedComponents["hard-drives"]
+        ? selectedComponents["hard-drives"].map((drive: any) => drive._id)
+        : null,
+      memories: selectedComponents["memories"]
+        ? selectedComponents["memories"].map((memory: any) => memory._id)
+        : null,
       motherboards: selectedComponents.motherboards?._id || null,
       power_supplies: selectedComponents["power-supplies"]?._id || null,
     };

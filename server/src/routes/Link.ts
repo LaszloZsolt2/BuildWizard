@@ -63,18 +63,20 @@ router.post("/", async (req: Request, res: Response) => {
       memories,
       motherboards,
       power_supplies,
+      link,
     } = req.body;
 
     const linkData = {
-      cpu: cpu ? { _id: cpu } : null,
-      cpu_cooler: cpu_cooler ? { _id: cpu_cooler } : null,
-      gpu: gpu ? { _id: gpu } : null,
-      case: caseComponent ? { _id: caseComponent } : null,
-      case_fans: case_fans ? { _id: case_fans } : null,
-      hard_drives: hard_drives ? { _id: hard_drives } : null,
-      memories: memories ? { _id: memories } : null,
-      motherboards: motherboards ? { _id: motherboards } : null,
-      power_supplies: power_supplies ? { _id: power_supplies } : null,
+      cpu: cpu,
+      cpu_cooler: cpu_cooler,
+      gpu: gpu,
+      case: caseComponent,
+      case_fans: case_fans,
+      hard_drives: hard_drives,
+      memories: memories,
+      motherboards: motherboards,
+      power_supplies: power_supplies,
+      link: link,
     };
 
     const newLink = new Links(linkData);
