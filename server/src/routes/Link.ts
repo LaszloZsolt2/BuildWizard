@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import Links from "../models/Link";
-import Component from "../models/Component";
+import { getPartList } from "../utils/partData";
 
 const router = express.Router();
 
@@ -28,21 +28,24 @@ router.get("/", async (req: Request, res: Response) => {
 
 router.get("/:id", async (req: Request, res: Response) => {
   try {
-    const link = await Links.findById(req.params.id).populate([
-      "cpu",
-      "cpu_cooler",
-      "gpu",
-      "case",
-      "case_fans",
-      "hard_drives",
-      "memories",
-      "motherboards",
-      "power_supplies",
-    ]);
+    const link = await Links.findOne({ link: req.params.id });
     if (!link) {
       return res.status(404).json({ message: "Link not found" });
     }
-    res.json(link);
+
+    const components = {
+      cpus: { _id: link.cpu },
+      "cpu-coolers": { _id: link.cpu_cooler },
+      gpus: { _id: link.gpu },
+      cases: { _id: link.case },
+      "case-fans": link.case_fans.map((id: any) => ({ _id: id })),
+      "hard-drives": link.hard_drives.map((id: any) => ({ _id: id })),
+      memories: link.memories.map((id: any) => ({ _id: id })),
+      motherboards: { _id: link.motherboards },
+      "power-supplies": { _id: link.power_supplies },
+    };
+
+    res.json(await getPartList(components));
   } catch (err) {
     console.error("Error fetching link:", err);
     res
@@ -67,17 +70,20 @@ router.post("/", async (req: Request, res: Response) => {
     } = req.body;
 
     const linkData = {
-      cpu: cpu,
-      cpu_cooler: cpu_cooler,
-      gpu: gpu,
+      cpu,
+      cpu_cooler,
+      gpu,
       case: caseComponent,
-      case_fans: case_fans,
-      hard_drives: hard_drives,
-      memories: memories,
-      motherboards: motherboards,
-      power_supplies: power_supplies,
-      link: link,
+      case_fans,
+      hard_drives,
+      memories,
+      motherboards,
+      power_supplies,
+      link,
     };
+
+    // delete previous links with this link
+    await Links.deleteMany({ link });
 
     const newLink = new Links(linkData);
     const savedLink = await newLink.save(); // Only call save once

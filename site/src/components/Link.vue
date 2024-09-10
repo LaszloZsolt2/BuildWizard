@@ -15,10 +15,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import Button from "../components/BaseButton.vue";
 import axios from "axios";
+import { onMounted } from "vue";
+import useFetch from "../composables/useFetch";
+import router from "../router";
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 axios.defaults.baseURL = "http://localhost:5000";
 
@@ -32,6 +37,8 @@ const generateLink = () => {
 
 const linkId = ref("");
 const link = ref(generateLink());
+const sharedLink = ref("");
+const { fetchedData, fetchError, isLoading } = useFetch(sharedLink);
 
 const copyAndSaveLink = async () => {
   try {
@@ -88,4 +95,52 @@ const copyAndSaveLink = async () => {
     }
   }
 };
+
+onMounted(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const listId = urlParams.get("list");
+
+  if (listId) {
+    sharedLink.value = `${apiBaseUrl}/links/${listId}`;
+  }
+});
+
+watch(fetchedData, () => {
+  if (fetchedData.value) {
+    const simplifiedBuild = Object.fromEntries(
+      Object.entries(fetchedData.value).map(([category, components]) => {
+        if (!components) return [category, null];
+        if (Array.isArray(components)) {
+          return [
+            category,
+            components.map((comp) => ({
+              _id: comp._id,
+              price_data: comp.price_data,
+              name: comp.name,
+            })),
+          ];
+        }
+        return [
+          category,
+          {
+            _id: components._id,
+            price: components.price_data,
+            name: components.name,
+            chipset: components.chipset,
+          },
+        ];
+      })
+    );
+
+    localStorage.setItem("selectedComponents", JSON.stringify(simplifiedBuild));
+    // TODO: don't reload the page here (after BW-26 is merged)
+    window.location.href = "/";
+  }
+});
+
+watch(fetchError, () => {
+  if (fetchError.value) {
+    router.push("/");
+  }
+});
 </script>
