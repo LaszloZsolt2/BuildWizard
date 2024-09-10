@@ -29,23 +29,33 @@ router.get("/", async (req, res) => {
 router.get("/search", async (req, res) => {
   try {
     const query = req.query.q?.toString()?.toLowerCase();
+    const suggestionsOnly = req.query.suggestions === "true";
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
     const startIndex = (page - 1) * limit;
-    const total = await CaseFan.countDocuments({
+    const searchLimit = suggestionsOnly ? 10 : limit;
+
+    const filter = {
       name: { $regex: query, $options: "i" },
-    });
-    const caseFan = await CaseFan.find({
-      name: { $regex: query, $options: "i" },
-    })
+    };
+
+    const total = suggestionsOnly ? await CaseFan.countDocuments(filter) : 0;
+    const caseFans = await CaseFan.find(filter)
       .skip(startIndex)
-      .limit(limit);
+      .limit(searchLimit);
+
+    if (suggestionsOnly) {
+      return res.json({
+        suggestions: caseFans.map((caseFan) => caseFan.name),
+      });
+    }
+
     res.json({
       page,
       limit,
       total,
       totalPages: Math.ceil(total / limit),
-      data: caseFan,
+      data: caseFans,
     });
   } catch (err: unknown) {
     if (err instanceof Error) {

@@ -31,17 +31,29 @@ router.get("/", async (req, res) => {
 router.get("/search", async (req, res) => {
   try {
     const query = req.query.q?.toString()?.toLowerCase();
+    const suggestionsOnly = req.query.suggestions === "true";
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
     const startIndex = (page - 1) * limit;
-    const total = await PowerSupplies.countDocuments({
+    const searchLimit = suggestionsOnly ? 10 : limit;
+
+    const filter = {
       name: { $regex: query, $options: "i" },
-    });
-    const powerSupplies = await PowerSupplies.find({
-      name: { $regex: query, $options: "i" },
-    })
+    };
+
+    const total = suggestionsOnly
+      ? await PowerSupplies.countDocuments(filter)
+      : 0;
+    const powerSupplies = await PowerSupplies.find(filter)
       .skip(startIndex)
-      .limit(limit);
+      .limit(searchLimit);
+
+    if (suggestionsOnly) {
+      return res.json({
+        suggestions: powerSupplies.map((powerSupplie) => powerSupplie.name),
+      });
+    }
+
     res.json({
       page,
       limit,

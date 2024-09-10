@@ -29,17 +29,27 @@ router.get("/", async (req, res) => {
 router.get("/search", async (req, res) => {
   try {
     const query = req.query.q?.toString()?.toLowerCase();
+    const suggestionsOnly = req.query.suggestions === "true";
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
     const startIndex = (page - 1) * limit;
-    const total = await Memories.countDocuments({
+    const searchLimit = suggestionsOnly ? 10 : limit;
+
+    const filter = {
       name: { $regex: query, $options: "i" },
-    });
-    const memories = await Memories.find({
-      name: { $regex: query, $options: "i" },
-    })
+    };
+
+    const total = suggestionsOnly ? await Memories.countDocuments(filter) : 0;
+    const memories = await Memories.find(filter)
       .skip(startIndex)
-      .limit(limit);
+      .limit(searchLimit);
+
+    if (suggestionsOnly) {
+      return res.json({
+        suggestions: memories.map((memorie) => memorie.name),
+      });
+    }
+
     res.json({
       page,
       limit,

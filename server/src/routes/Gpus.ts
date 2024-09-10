@@ -29,17 +29,25 @@ router.get("/", async (req, res) => {
 router.get("/search", async (req, res) => {
   try {
     const query = req.query.q?.toString()?.toLowerCase();
+    const suggestionsOnly = req.query.suggestions === "true";
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
     const startIndex = (page - 1) * limit;
-    const total = await Gpus.countDocuments({
+    const searchLimit = suggestionsOnly ? 10 : limit;
+
+    const filter = {
       name: { $regex: query, $options: "i" },
-    });
-    const gpus = await Gpus.find({
-      name: { $regex: query, $options: "i" },
-    })
-      .skip(startIndex)
-      .limit(limit);
+    };
+
+    const total = suggestionsOnly ? await Gpus.countDocuments(filter) : 0;
+    const gpus = await Gpus.find(filter).skip(startIndex).limit(searchLimit);
+
+    if (suggestionsOnly) {
+      return res.json({
+        suggestions: gpus.map((gpu) => gpu.name),
+      });
+    }
+
     res.json({
       page,
       limit,

@@ -31,17 +31,29 @@ router.get("/", async (req, res) => {
 router.get("/search", async (req, res) => {
   try {
     const query = req.query.q?.toString()?.toLowerCase();
+    const suggestionsOnly = req.query.suggestions === "true";
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
     const startIndex = (page - 1) * limit;
-    const total = await Motherboards.countDocuments({
+    const searchLimit = suggestionsOnly ? 10 : limit;
+
+    const filter = {
       name: { $regex: query, $options: "i" },
-    });
-    const motherboards = await Motherboards.find({
-      name: { $regex: query, $options: "i" },
-    })
+    };
+
+    const total = suggestionsOnly
+      ? await Motherboards.countDocuments(filter)
+      : 0;
+    const motherboards = await Motherboards.find(filter)
       .skip(startIndex)
-      .limit(limit);
+      .limit(searchLimit);
+
+    if (suggestionsOnly) {
+      return res.json({
+        suggestions: motherboards.map((motherboard) => motherboard.name),
+      });
+    }
+
     res.json({
       page,
       limit,
@@ -60,9 +72,9 @@ router.get("/search", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const motherBoard = await Motherboards.findById(req.params.id);
-    if (motherBoard) {
-      res.json(motherBoard);
+    const motherboard = await Motherboards.findById(req.params.id);
+    if (motherboard) {
+      res.json(motherboard);
     } else {
       res.status(404).json({ message: "Motherboard not found" });
     }
