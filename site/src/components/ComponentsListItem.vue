@@ -142,7 +142,6 @@ import BaseButton from "./BaseButton.vue";
 
 type Props = {
   part: PartListItem;
-  type: string;
 };
 
 const props = defineProps<Props>();
@@ -184,7 +183,8 @@ const handleDelete = (type: string, part?: any) => {
 
 const chipsetText = computed(() => {
   return (
-    (props.type === "gpus" && selected.value[props.part.type]?.chipset) || ""
+    (props.part.type === "gpus" && selected.value[props.part.type]?.chipset) ||
+    ""
   );
 });
 

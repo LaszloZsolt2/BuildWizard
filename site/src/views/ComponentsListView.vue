@@ -31,11 +31,7 @@
           </thead>
           <tbody>
             <tr v-for="part in partsList" :key="part.type">
-              <ComponentsListItem
-                @delete-part="handleDelete"
-                :part="part"
-                :type="part.type"
-              />
+              <ComponentsListItem @delete-part="handleDelete" :part="part" />
             </tr>
           </tbody>
         </table>
