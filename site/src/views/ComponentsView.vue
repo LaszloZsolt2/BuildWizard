@@ -1,15 +1,10 @@
 <template>
   <div class="flex">
     <div class="components text-white p-5 flex-grow">
-      <div class="bg-violet-800 p-10">
-        <p class="text-3xl font-bold text-white text-center">
-          Select from {{ props.type }}
-        </p>
-      </div>
       <Search :type="props.type" @search="handleSearch" />
       <ul v-if="!fetchError && paginatedData.length">
         <table
-          class="mx-16 my-5 w-11/12 bg-neutral-800 text-white border-separate border-spacing-0"
+          class="mx-0 my-5 w-full bg-neutral-800 text-white border-separate border-spacing-0"
         >
           <thead>
             <tr>

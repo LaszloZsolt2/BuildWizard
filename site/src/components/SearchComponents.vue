@@ -1,11 +1,11 @@
 <template>
-  <div class="flex justify-end my-5">
+  <div class="flex justify-end">
     <Search
       v-model="componentQuery"
       :suggestions="filteredComponents"
       @change="debouncedSearch"
       placeholder="Search..."
-      class="block border-4 border-violet-800 rounded-lg"
+      class="block rounded-lg"
       :minLength="1"
       :delay="300"
     />
