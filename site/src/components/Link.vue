@@ -39,6 +39,7 @@ const linkId = ref("");
 const link = ref(generateLink());
 const sharedLink = ref("");
 const { fetchedData, fetchError, isLoading } = useFetch(sharedLink);
+const emit = defineEmits(["build-load"]);
 
 const copyAndSaveLink = async () => {
   try {
@@ -109,7 +110,7 @@ watch(fetchedData, () => {
   if (fetchedData.value) {
     const simplifiedBuild = Object.fromEntries(
       Object.entries(fetchedData.value).map(([category, components]) => {
-        if (!components) return [category, null];
+        if (!components) return [category, undefined];
         if (Array.isArray(components)) {
           return [
             category,
@@ -133,7 +134,7 @@ watch(fetchedData, () => {
     );
 
     localStorage.setItem("selectedComponents", JSON.stringify(simplifiedBuild));
-    // TODO: don't reload the page here (after BW-26 is merged)
+    emit("build-load", simplifiedBuild);
     window.location.href = "/";
   }
 });

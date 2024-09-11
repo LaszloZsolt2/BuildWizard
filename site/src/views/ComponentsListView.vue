@@ -18,7 +18,7 @@
           maxWidth: maxWidth,
         }"
       >
-        <Linkbar />
+        <Linkbar @build-load="handlePartsChanged" />
         <table
           class="mx-4 mb-10 w-full bg-neutral-800 rounded-lg overflow-hidden shadow-md"
         >
@@ -75,9 +75,15 @@ const maxWidth = computed(() => {
 });
 
 function handlePartsChanged(selectedParts: any) {
+  if (!selectedParts) {
+    selectedParts = JSON.parse(
+      localStorage.getItem("selectedComponents") || "{}"
+    );
+  }
+
   selected.value = selectedParts;
 
-  console.log(selectedParts);
+  console.log("selectedParts:", selectedParts);
 }
 
 function handleGameDataChanged(gameData: any) {
