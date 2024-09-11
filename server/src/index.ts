@@ -14,13 +14,16 @@ import motherBoardRouter from "./routes/Motherboards";
 import powerSuppliesRouter from "./routes/PowerSupplies";
 import systemRequirementRouter from "./routes/SystemRequirements";
 import compatibilityRouter from "./routes/Compatibility";
+import buildRouter from "./routes/Build";
 import { updatePriceData } from "./scraper/price/updatePriceData";
+import { getAllParts } from "./utils/partData";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/default";
+const CACHE_DURATION_MS = 3600000;
 
 app.use(express.json());
 app.use(cors());
@@ -41,6 +44,12 @@ db.on("connected", () => {
 
   // update price data every 24 hours
   setInterval(updatePriceData, 86400000);
+
+  // keep the parts cache up to date
+  if (process.env.NODE_ENV === "production") {
+    getAllParts();
+    setInterval(getAllParts, CACHE_DURATION_MS + 1000);
+  }
 });
 
 db.on("error", (err) => {
@@ -62,6 +71,7 @@ app.use("/api/motherboards", motherBoardRouter);
 app.use("/api/power-supplies", powerSuppliesRouter);
 app.use("/api/system-requirements", systemRequirementRouter);
 app.use("/api/compatibility", compatibilityRouter);
+app.use("/api/build", buildRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

@@ -24,6 +24,22 @@
             </div>
           </BaseLabel>
         </TransitionGroup>
+        <div class="border-t-2 border-t-neutral-700 -mx-4 pb-2 px-4">
+          <span class="mt-4 mr-6 inline-block">
+            <MoneyIcon class="h-6 w-6 inline-block pb-1 text-violet-500" />
+            <div class="font-bold text-neutral-400 inline">
+              Total price: <span class="text-violet-400">{{ price }}</span> lei
+            </div>
+          </span>
+          <br v-if="screenWidth < 768" />
+          <span class="mt-4 inline-block">
+            <BoltIcon class="h-5 w-5 inline-block pb-1 text-violet-500" />
+            <div class="font-bold text-neutral-400 inline">
+              Estimated wattage:
+              <span class="text-violet-400">{{ powerConsumption }}</span> W
+            </div>
+          </span>
+        </div>
       </div>
       <div v-else><CompatibilityLoader class="transition-all" /></div>
     </Transition>
@@ -38,7 +54,10 @@ import BaseLabel from "./BaseLabel.vue";
 import CheckIcon from "@/assets/icons/check.svg";
 import ErrorIcon from "@/assets/icons/error.svg";
 import WarningIcon from "@/assets/icons/warning.svg";
+import MoneyIcon from "@/assets/icons/money.svg";
+import BoltIcon from "@/assets/icons/bolt.svg";
 import { removePriceField } from "../utils/removePriceField";
+import { useScreenSize } from "../composables/useScreenSize";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -61,6 +80,10 @@ const parts = ref<any>(
   JSON.parse(localStorage.getItem("selectedComponents") || "{}")
 );
 const messages = ref<CompatibilityMessage[]>([]);
+const price = ref<number>(0);
+const powerConsumption = ref<number>(0);
+
+const { screenWidth } = useScreenSize();
 
 function buildQueryString(parts: any) {
   const params = new URLSearchParams();
@@ -114,6 +137,12 @@ const { fetchedData, fetchError, isLoading } = useFetch(apiUrl);
 watch(fetchedData, (newData) => {
   if (newData?.messages) {
     messages.value = newData.messages;
+  }
+  if (newData?.price) {
+    price.value = Math.round(newData.price.price * 100) / 100;
+  }
+  if (newData?.powerConsumption) {
+    powerConsumption.value = newData.powerConsumption;
   }
 });
 </script>

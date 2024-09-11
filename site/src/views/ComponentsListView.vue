@@ -1,7 +1,10 @@
 <template>
   <div class="flex">
     <div class="home flex-grow">
-      <GameSelector @game-data-changed="handleGameDataChanged" />
+      <GameSelector
+        @game-data-changed="handleGameDataChanged"
+        @build-accept="handlePartsChanged"
+      />
       <CompatibilityMessages
         :parts="selected"
         :style="{
@@ -31,7 +34,12 @@
           </thead>
           <tbody>
             <tr v-for="part in partsList" :key="part.type">
-              <ComponentsListItem @delete-part="handleDelete" :part="part" />
+              <ComponentsListItem
+                @delete-part="handlePartsChanged"
+                :part="part"
+                :type="part.type"
+                :key="selected?.[part.type]"
+              />
             </tr>
           </tbody>
         </table>
@@ -62,8 +70,10 @@ const maxWidth = computed(() => {
     : undefined;
 });
 
-function handleDelete(selectedParts: any) {
+function handlePartsChanged(selectedParts: any) {
   selected.value = selectedParts;
+
+  console.log(selectedParts);
 }
 
 function handleGameDataChanged(gameData: any) {
@@ -71,14 +81,14 @@ function handleGameDataChanged(gameData: any) {
 }
 
 const partsList = [
-  { type: "cpus", label: "CPU", multiple: false },
-  { type: "cpu-coolers", label: "CPU Cooler", multiple: false },
-  { type: "gpus", label: "GPU", multiple: false },
-  { type: "cases", label: "Case", multiple: false },
-  { type: "case-fans", label: "Case Fan", multiple: true },
-  { type: "hard-drives", label: "Storage", multiple: true },
-  { type: "memories", label: "Memory", multiple: true },
-  { type: "motherboards", label: "Motherboard", multiple: false },
-  { type: "power-supplies", label: "Power Supply", multiple: false },
+  { type: "cpus", multiple: false },
+  { type: "cpu-coolers", multiple: false },
+  { type: "gpus", multiple: false },
+  { type: "cases", multiple: false },
+  { type: "case-fans", multiple: true },
+  { type: "hard-drives", multiple: true },
+  { type: "memories", multiple: true },
+  { type: "motherboards", multiple: false },
+  { type: "power-supplies", multiple: false },
 ];
 </script>

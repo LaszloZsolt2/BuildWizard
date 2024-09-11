@@ -4,6 +4,36 @@ import Gpus from "../models/Gpus";
 import Memories from "../models/Memories";
 import HardDrives from "../models/HardDrives";
 import { BenchmarkedSystemRequirement, Benchmark } from "../types/benchmark";
+import SystemRequirements from "../models/SystemRequirements";
+
+export const MAX_CPU_BENCHMARK = 133;
+export const MAX_GPU_BENCHMARK = 370;
+
+export const storagePerformance = {
+  "M.2 PCIe 5.0 X4": 100,
+  "M.2 PCIe 4.0 X4": 90,
+  "M.2 PCIe 3.0 X4": 80,
+  "M.2 PCIe 5.0 X2": 85,
+  "M.2 PCIe 4.0 X8": 95,
+  "M.2 PCIe 3.0 X2": 70,
+  "M.2 PCIe 2.0 X4": 60,
+  "PCIe x16": 100,
+  "PCIe x8": 85,
+  "PCIe x4": 80,
+  "PCIe x2": 70,
+  "PCIe x1": 60,
+  "SAS 12.0 Gb/s": 75,
+  "SAS 6.0 Gb/s": 60,
+  "SAS 3.0 Gb/s": 50,
+  "SATA 6.0 Gb/s": 50,
+  "SATA 3.0 Gb/s": 40,
+  "SATA 1.5 Gb/s": 30,
+  "M.2 SATA": 55,
+  mSATA: 45,
+  "U.2": 70,
+  "PATA 100": 20,
+  "PATA 44-Pin 100": 15,
+};
 
 export async function getBenchmark(
   component: string,
@@ -303,4 +333,22 @@ export async function combineSystemRequirements(
     benchmarks,
     requirementsMet,
   };
+}
+
+export async function getCombinedSystemRequirements(req: any) {
+  let combinedSystemRequirements: BenchmarkedSystemRequirement | undefined;
+  for (const id of req.query.ids as string[]) {
+    const systemRequirement = await SystemRequirements.findById(id);
+    if (systemRequirement) {
+      const benchmarks =
+        await getSystemRequirementBenchmarks(systemRequirement);
+      combinedSystemRequirements = await combineSystemRequirements(
+        { systemRequirement, benchmarks },
+        combinedSystemRequirements,
+        req.query.components
+      );
+    }
+  }
+
+  return combinedSystemRequirements;
 }

@@ -6,11 +6,14 @@ import {
   checkCaseMotherboardCompatibility,
   checkCasePowerSupplyCompatibility,
   checkCaseStorageCompatibility,
+  checkCpuCoolerCompatibilty,
   checkCpuMotherboardCompatibility,
   checkMemoryCompatibility,
   checkMotherboardMemoryCompatibility,
   hasAllNecessaryParts,
 } from "../utils/compatibilityChecks";
+import { getBuildPrice, getPowerConsumption } from "../utils/pcBuilder";
+import { PartType } from "../types/partType";
 
 const router = express.Router();
 
@@ -44,6 +47,7 @@ router.get("/", async (req, res) => {
     messages.push(...checkCasePowerSupplyCompatibility(components));
     messages.push(...checkCaseStorageCompatibility(components));
     messages.push(...checkBottleneck(components));
+    messages.push(...checkCpuCoolerCompatibilty(components));
 
     if (!messages.length) {
       messages.push({
@@ -66,7 +70,31 @@ router.get("/", async (req, res) => {
       }
     });
 
-    res.json({ messages });
+    const price = getBuildPrice(components);
+    let powerConsumption = 0;
+    for (const t of Object.keys(components)) {
+      const type = t as PartType;
+      powerConsumption += getPowerConsumption(components[type], type);
+    }
+
+    if (components["power-supplies"]) {
+      if (powerConsumption > components["power-supplies"].wattage) {
+        messages.push({
+          message: `Your power supply does not have enough wattage to power all of your components. Choose a power supply with at least ${powerConsumption} W.`,
+          severity: "error",
+        });
+      } else if (
+        powerConsumption * 1.3 >
+        components["power-supplies"].wattage
+      ) {
+        messages.push({
+          message: `Your power supply is barely enough to power all of your components. Consider adding a more powerful power supply (${powerConsumption * 1.5} W recommended).`,
+          severity: "warn",
+        });
+      }
+    }
+
+    res.json({ messages, price, powerConsumption });
   } catch (err: unknown) {
     if (err instanceof Error) {
       res.status(500).json({ message: err.message });

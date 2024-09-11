@@ -2,6 +2,7 @@ import express from "express";
 import SystemRequirements from "../models/SystemRequirements";
 import {
   combineSystemRequirements,
+  getCombinedSystemRequirements,
   getSystemRequirementBenchmarks,
 } from "../utils/benchmark";
 import { BenchmarkedSystemRequirement } from "../types/benchmark";
@@ -51,21 +52,7 @@ router.get("/search", async (req, res) => {
 
 router.get("/combined", async (req, res) => {
   try {
-    let combinedSystemRequirements: BenchmarkedSystemRequirement | undefined;
-    for (const id of req.query.ids as string[]) {
-      const systemRequirement = await SystemRequirements.findById(id);
-      if (systemRequirement) {
-        const benchmarks =
-          await getSystemRequirementBenchmarks(systemRequirement);
-        combinedSystemRequirements = await combineSystemRequirements(
-          { systemRequirement, benchmarks },
-          combinedSystemRequirements,
-          req.query.components
-        );
-      }
-    }
-
-    res.json(combinedSystemRequirements);
+    res.json(await getCombinedSystemRequirements(req));
   } catch (err: unknown) {
     if (err instanceof Error) {
       res.status(500).json({ message: err.message });
