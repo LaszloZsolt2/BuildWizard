@@ -1,5 +1,11 @@
 import express from "express";
 import Motherboards from "../models/Motherboards";
+import { ComponentsType } from "../types/componentsType";
+import {
+  caseMotherboardCompatibility,
+  socketRamSpeeds,
+} from "../utils/compatibilityChecks";
+import { getPartList, transformComponents } from "../utils/partData";
 
 const router = express.Router();
 
@@ -37,13 +43,36 @@ router.get("/search", async (req, res) => {
     const startIndex = (page - 1) * limit;
     const searchLimit = suggestionsOnly ? 10 : limit;
 
-    const filter = {
-      name: { $regex: query, $options: "i" },
-    };
+    let filter = {} as any;
+    if (query?.length) {
+      filter = {
+        name: { $regex: query, $options: "i" },
+      };
+    }
 
-    const total = suggestionsOnly
-      ? await Motherboards.countDocuments(filter)
-      : 0;
+    if (req.query.compatibilityFilter === "true") {
+      const components = await getPartList(
+        transformComponents(req.query.components as ComponentsType)
+      );
+
+      if (components?.cpus?.socket) {
+        filter.socket = { $eq: components.cpus.socket };
+      } else if (components?.memories?.[0]?.speed?.[0]) {
+        const memoryType = components.memories[0].speed[0];
+        const sockets = Object.keys(socketRamSpeeds).filter(
+          (socket) => socketRamSpeeds[socket] === memoryType
+        );
+        filter.socket = { $in: sockets };
+      }
+
+      if (components?.cases?.type) {
+        filter.form_factor = {
+          $in: caseMotherboardCompatibility[components.cases.type],
+        };
+      }
+    }
+
+    const total = await Motherboards.countDocuments(filter);
     const motherboards = await Motherboards.find(filter)
       .skip(startIndex)
       .limit(searchLimit);

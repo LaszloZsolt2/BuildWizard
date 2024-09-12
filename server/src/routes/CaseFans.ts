@@ -35,11 +35,12 @@ router.get("/search", async (req, res) => {
     const startIndex = (page - 1) * limit;
     const searchLimit = suggestionsOnly ? 10 : limit;
 
-    const filter = {
-      name: { $regex: query, $options: "i" },
-    };
+    let filter = {} as any;
+    if (query?.length) {
+      filter.name = { $regex: query, $options: "i" };
+    }
 
-    const total = suggestionsOnly ? await CaseFan.countDocuments(filter) : 0;
+    const total = await CaseFan.countDocuments(filter);
     const caseFans = await CaseFan.find(filter)
       .skip(startIndex)
       .limit(searchLimit);

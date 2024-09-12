@@ -1,5 +1,14 @@
 import express from "express";
 import PowerSupplies from "../models/PowerSupplies";
+import { ComponentsType } from "../types/componentsType";
+import {
+  socketRamSpeeds,
+  caseMotherboardCompatibility,
+  casePowerSupplyCompatibility,
+} from "../utils/compatibilityChecks";
+import { getPartList, transformComponents } from "../utils/partData";
+import { getPowerConsumption } from "../utils/pcBuilder";
+import { PartType } from "../types/partType";
 
 const router = express.Router();
 
@@ -37,13 +46,33 @@ router.get("/search", async (req, res) => {
     const startIndex = (page - 1) * limit;
     const searchLimit = suggestionsOnly ? 10 : limit;
 
-    const filter = {
-      name: { $regex: query, $options: "i" },
-    };
+    let filter = {} as any;
+    if (query?.length) {
+      filter = {
+        name: { $regex: query, $options: "i" },
+      };
+    }
 
-    const total = suggestionsOnly
-      ? await PowerSupplies.countDocuments(filter)
-      : 0;
+    if (req.query.compatibilityFilter === "true") {
+      const components = await getPartList(
+        transformComponents(req.query.components as ComponentsType)
+      );
+
+      if (components?.cases?.type) {
+        filter.type = {
+          $in: casePowerSupplyCompatibility[components.cases.type],
+        };
+      }
+
+      let powerConsumption = 0;
+      for (const k in components) {
+        const key = k as PartType;
+        powerConsumption += getPowerConsumption(components[key], key);
+      }
+      filter.wattage = { $gte: powerConsumption * 1.3 };
+    }
+
+    const total = await PowerSupplies.countDocuments(filter);
     const powerSupplies = await PowerSupplies.find(filter)
       .skip(startIndex)
       .limit(searchLimit);

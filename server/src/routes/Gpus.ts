@@ -1,5 +1,6 @@
 import express from "express";
 import Gpus from "../models/Gpus";
+import { getCombinedSystemRequirements } from "../utils/benchmark";
 
 const router = express.Router();
 
@@ -35,11 +36,38 @@ router.get("/search", async (req, res) => {
     const startIndex = (page - 1) * limit;
     const searchLimit = suggestionsOnly ? 10 : limit;
 
-    const filter = {
-      name: { $regex: query, $options: "i" },
-    };
+    let filter = {} as any;
+    if (query?.length) {
+      filter = {
+        $or: [
+          { name: { $regex: query, $options: "i" } },
+          { chipset: { $regex: query, $options: "i" } },
+        ],
+      };
+    }
 
-    const total = suggestionsOnly ? await Gpus.countDocuments(filter) : 0;
+    if (req.query.systemRequirementsFilter !== "off" && req.query.ids) {
+      const systemRequirements = await getCombinedSystemRequirements(req);
+      const benchmark =
+        req.query.systemRequirementsFilter === "recommended"
+          ? systemRequirements?.benchmarks?.recGpuBenchmark
+          : systemRequirements?.benchmarks?.minGpuBenchmark;
+
+      const vram =
+        req.query.systemRequirementsFilter === "recommended"
+          ? systemRequirements?.systemRequirement?.recommended?.vram
+          : systemRequirements?.systemRequirement?.minimum?.vram;
+
+      if (benchmark) {
+        filter.benchmark = { $gte: benchmark };
+      }
+
+      if (vram) {
+        filter.memory = { $gte: vram };
+      }
+    }
+
+    const total = await Gpus.countDocuments(filter);
     const gpus = await Gpus.find(filter).skip(startIndex).limit(searchLimit);
 
     if (suggestionsOnly) {

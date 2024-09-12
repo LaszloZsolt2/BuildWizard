@@ -5,6 +5,7 @@ import router from "../../site/src/router";
 import PrimeVue from "primevue/config";
 import Aura from "@primevue/themes/aura";
 import { setTheme } from "../../site/src/utils/primeVueTheme";
+import ToastService from "primevue/toastservice";
 import "./style.css";
 
 createApp(App)
@@ -17,5 +18,6 @@ createApp(App)
       },
     },
   })
+  .use(ToastService)
   .mount("#app")
   .$nextTick(setTheme);

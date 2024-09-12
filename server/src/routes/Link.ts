@@ -88,7 +88,6 @@ router.post("/", async (req: Request, res: Response) => {
     const newLink = new Links(linkData);
     const savedLink = await newLink.save(); // Only call save once
 
-    console.log("Saved link:", savedLink);
     res.status(201).json(savedLink);
   } catch (err: unknown) {
     console.error("Error saving link:", err);

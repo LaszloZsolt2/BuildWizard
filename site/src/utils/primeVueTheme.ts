@@ -56,6 +56,8 @@ const colors = {
 
   // ToggleSwitch colors
   "--p-toggleswitch-handle-disabled-background": "var(--p-neutral-600)",
+  "--p-toggleswitch-handle-checked-background": "var(--p-neutral-300)",
+  "--p-toggleswitch-background": "var(--p-neutral-700)",
 
   // Button colors
   "--p-button-primary-color": "var(--p-neutral-200)",
@@ -68,7 +70,7 @@ const colors = {
   "--p-button-text-secondary-hover-background": "var(--p-neutral-600)",
   "--p-button-text-secondary-active-background": "var(--p-neutral-500)",
   "--p-button-text-secondary-active-color": "var(--p-neutral-100)",
-  "--p-button-text-secondary-color": "var(--p-neutral-100)",
+  "--p-button-text-secondary-color": "var(--p-neutral-400)",
   "--p-button-secondary-active-background": "var(--p-neutral-500)",
   "--p-button-secondary-active-color": "var(--p-neutral-200)",
   "--p-button-secondary-active-border-color": "var(--p-neutral-500)",
@@ -105,7 +107,6 @@ const colors = {
   "--p-button-contrast-active-background": "var(--p-neutral-100)",
 
   "--p-button-raised-shadow": "var(--p-red-500)",
-  "--p-button-text-secondary-color": "var(--p-neutral-400)",
 
   // Input colors
   "--p-inputtext-background": "var(--p-neutral-900)",
@@ -128,6 +129,27 @@ const colors = {
   "--p-dialog-background": "var(--p-neutral-900)",
   "--p-dialog-border-color": "var(--p-neutral-700)",
   "--p-dialog-color": "var(--p-neutral-100)",
+
+  // Select colors
+  "--p-select-background": "var(--p-neutral-900)",
+  "--p-select-color": "var(--p-neutral-200)",
+  "--p-select-border-color": "var(--p-neutral-700)",
+  "--p-select-option-color": "var(--p-neutral-200)",
+  "--p-select-option-focus-color": "var(--p-neutral-100)",
+  "--p-select-placeholder-color": "var(--p-neutral-400)",
+  "--p-select-focus-border-color": "var(--p-violet-500)",
+  "--p-select-overlay-background": "var(--p-neutral-800)",
+  "--p-select-item-hover-background": "var(--p-neutral-800)",
+  "--p-select-item-focus-background": "var(--p-neutral-700)",
+  "--p-select-item-color": "var(--p-neutral-200)",
+  "--p-select-option-focus-background": "var(--p-neutral-700)",
+  "--p-select-option-hover-background": "var(--p-neutral-700)",
+  "--p-select-option-selected-focus-color": "var(--p-neutral-200)",
+  "--p-select-option-selected-focus-background": "var(--p-neutral-800)",
+  "--p-select-option-selected-background": "var(--p-neutral-800)",
+  "--p-select-option-selected-color": "var(--p-neutral-200)",
+  "--p-select-disabled-background": "var(--p-neutral-600)",
+  "--p-select-disabled-color": "var(--p-neutral-400)",
 };
 
 export function setTheme() {

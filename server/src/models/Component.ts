@@ -1,5 +1,4 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
-import type { ComponentBase } from "/home/zsolt/buildwizard/BuildWizard/site/src/types/componentBase.d.ts";
 
 interface ComponentDocument extends Document {
   _id: string;

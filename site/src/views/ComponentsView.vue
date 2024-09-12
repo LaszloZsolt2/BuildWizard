@@ -1,7 +1,43 @@
 <template>
   <div class="flex">
     <div class="components text-white p-5 flex-grow">
-      <Search :type="props.type" @search="handleSearch" />
+      <div class="flex items-end">
+        <div class="flex-grow">
+          <div class="flex items-center">
+            <div class="flex flex-col mr-2 -mt-5">
+              <div
+                class="text-neutral-400 font-bold mb-1"
+                :style="{ fontSize: '.78rem' }"
+              >
+                System requirements filter
+              </div>
+              <Select
+                v-model="systemRequirementsFilter"
+                :options="systemRequirementFilterOptions"
+                @update:modelValue="
+                  handleSystemRequirementsFilterChange($event)
+                "
+                :disabled="!games.length"
+                placeholder="System requirements filter"
+                class="h-10 w-64"
+              />
+            </div>
+            <BaseButton
+              @click="toggleCompatibilityFilter"
+              text
+              rounded
+              severity="secondary"
+            >
+              <BaseToggle
+                v-model="isCompatibilityFilterEnabled"
+                class="pointer-events-none"
+              />
+              <span class="font-bold mt-1"> Compatibility filter </span>
+            </BaseButton>
+          </div>
+        </div>
+        <Search :type="props.type" @search="handleSearch" />
+      </div>
       <ul v-if="!fetchError && paginatedData.length">
         <table
           class="mx-0 my-5 w-full bg-neutral-800 text-white border-separate border-spacing-0"
@@ -44,11 +80,8 @@
                   <div v-if="key === 'price_data'">
                     {{ item[key][0].price }} lei
                   </div>
-                  <div
-                    v-else-if="key === 'image'"
-                    class="h-12 w-12 flex items-center"
-                  >
-                    <img :src="item[key]" class="object-contain rounded-md" />
+                  <div v-else-if="key === 'image'">
+                    <img :src="item[key]" class="h-12 w-20 object-contain" />
                   </div>
                   <BenchmarkBar
                     v-else-if="key === 'benchmark'"
@@ -148,6 +181,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import BaseButton from "../components/BaseButton.vue";
+import BaseToggle from "../components/BaseToggle.vue";
 import Checkbox from "../components/Checkbox.vue";
 import { useRouter } from "vue-router";
 import useFetch from "../composables/useFetch";
@@ -157,6 +191,9 @@ import CaretIcon from "@/assets/icons/caret.svg";
 import Modal from "../components/Modal.vue";
 import BenchmarkBar from "../components/BenchmarkBar.vue";
 import Search from "../components/SearchComponents.vue";
+import { buildQueryParams } from "../utils/buildQueryParams";
+import Select from "primevue/select";
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const props = defineProps<{ type: string }>();
 const router = useRouter();
@@ -168,13 +205,42 @@ const currentPage = ref(1);
 const itemsPerPage = ref(10);
 const searchQuery = ref("");
 const data = ref<any>(0);
+const isCompatibilityFilterEnabled = ref(
+  localStorage.getItem("compatibilityFilter") === "true"
+);
+const selectedGames = ref(JSON.parse(localStorage.getItem("games") || "[]"));
+const games = computed(() => selectedGames.value.map((game: any) => game._id));
+const systemRequirementsFilter = ref<string>(
+  localStorage.getItem("systemRequirementsFilter") || "Off"
+);
+const systemRequirementFilterOptions = ["Off", "Minimum", "Recommended"];
+const requirementsFilter = computed(() =>
+  systemRequirementsFilter.value.toLowerCase()
+);
 
 const fetchUrl = computed(() => {
-  return searchQuery.value
-    ? `http://localhost:5000/api/${props.type}/search?q=${encodeURIComponent(
+  const selectedParts = JSON.parse(
+    localStorage.getItem("selectedComponents") || "{}"
+  );
+  const simplifiedParts = Object.keys(selectedParts).reduce((acc: any, key) => {
+    if (Array.isArray(selectedParts[key])) {
+      acc[key] = selectedParts[key].map((part: any) => part._id);
+    } else {
+      acc[key] = selectedParts[key]._id;
+    }
+    return acc;
+  }, {});
+
+  return searchQuery.value ||
+    isCompatibilityFilterEnabled.value ||
+    requirementsFilter.value !== "off"
+    ? `${apiBaseUrl}/${props.type}/search?q=${encodeURIComponent(
         searchQuery.value
-      )}&page=${currentPage.value}&limit=${itemsPerPage.value}`
-    : `http://localhost:5000/api/${props.type}?page=${currentPage.value}&limit=${itemsPerPage.value}`;
+      )}&page=${currentPage.value}&limit=${itemsPerPage.value}&compatibilityFilter=${isCompatibilityFilterEnabled.value}&systemRequirementsFilter=${requirementsFilter.value}&${buildQueryParams(
+        games.value,
+        simplifiedParts
+      )}`
+    : `${apiBaseUrl}/${props.type}?page=${currentPage.value}&limit=${itemsPerPage.value}`;
 });
 
 const { fetchedData, fetchError, isLoading } = useFetch(fetchUrl);
@@ -375,14 +441,30 @@ const prevPage = () => {
     currentPage.value -= 1;
   }
 };
+
 const handleSearch = (query: string) => {
   searchQuery.value = query;
   currentPage.value = 1;
 };
 
+const toggleCompatibilityFilter = () => {
+  isCompatibilityFilterEnabled.value = !isCompatibilityFilterEnabled.value;
+  currentPage.value = 1;
+  localStorage.setItem(
+    "compatibilityFilter",
+    JSON.stringify(isCompatibilityFilterEnabled.value)
+  );
+};
+
+const handleSystemRequirementsFilterChange = (value: string) => {
+  systemRequirementsFilter.value = value;
+  currentPage.value = 1;
+  localStorage.setItem("systemRequirementsFilter", value);
+  handleSearch(searchQuery.value);
+};
+
 watch(fetchedData, (newValue) => {
   if (newValue) {
-    console.log(newValue);
     data.value = newValue;
   }
 });

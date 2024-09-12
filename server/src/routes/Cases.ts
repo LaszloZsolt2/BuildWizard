@@ -1,5 +1,11 @@
 import express from "express";
 import Cases from "../models/Cases";
+import { getPartList, transformComponents } from "../utils/partData";
+import { ComponentsType } from "../types/componentsType";
+import {
+  caseMotherboardCompatibility,
+  casePowerSupplyCompatibility,
+} from "../utils/compatibilityChecks";
 
 const router = express.Router();
 
@@ -35,11 +41,45 @@ router.get("/search", async (req, res) => {
     const startIndex = (page - 1) * limit;
     const searchLimit = suggestionsOnly ? 10 : limit;
 
-    const filter = {
-      name: { $regex: query, $options: "i" },
-    };
+    let filter = {} as any;
+    if (query?.length) {
+      filter.name = { $regex: query, $options: "i" };
+    }
 
-    const total = suggestionsOnly ? await Cases.countDocuments(filter) : 0;
+    if (req.query.compatibilityFilter === "true") {
+      const components = await getPartList(
+        transformComponents(req.query.components as ComponentsType)
+      );
+
+      if (components?.["hard-drives"]) {
+        const bayCount = components["hard-drives"].filter(
+          (drive: any) => drive.form_factor == 3.5 || drive.form_factor == 2.5
+        ).length;
+        filter.internal_35_bays = { $gte: bayCount };
+      }
+
+      let caseFormFactors = Object.keys(caseMotherboardCompatibility);
+
+      if (components?.motherboards?.form_factor) {
+        caseFormFactors = caseFormFactors.filter((formFactor) =>
+          caseMotherboardCompatibility[formFactor].includes(
+            components.motherboards.form_factor
+          )
+        );
+      }
+
+      if (components?.["power-supplies"]?.type) {
+        caseFormFactors = caseFormFactors.filter((formFactor) =>
+          casePowerSupplyCompatibility[formFactor].includes(
+            components["power-supplies"].type
+          )
+        );
+      }
+
+      filter.type = { $in: caseFormFactors };
+    }
+
+    const total = await Cases.countDocuments(filter);
     const cases = await Cases.find(filter).skip(startIndex).limit(searchLimit);
 
     if (suggestionsOnly) {

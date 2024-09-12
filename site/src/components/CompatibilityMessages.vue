@@ -141,7 +141,7 @@ watch(fetchedData, (newData) => {
   if (newData?.price) {
     price.value = Math.round(newData.price.price * 100) / 100;
   }
-  if (newData?.powerConsumption) {
+  if (newData) {
     powerConsumption.value = newData.powerConsumption;
   }
 });
