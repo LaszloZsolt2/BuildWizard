@@ -1,5 +1,7 @@
+import { Types } from "mongoose";
+
 export interface ComponentBase {
-  _id: string;
+  _id: Types.ObjectId;
   name: string;
   price_data?: any;
 }

@@ -18,8 +18,9 @@
           maxWidth: maxWidth,
         }"
       >
+        <Linkbar @build-load="handlePartsChanged" />
         <table
-          class="mx-4 my-4 w-full bg-neutral-800 rounded-lg overflow-hidden shadow-md"
+          class="mx-4 mb-10 w-full bg-neutral-800 rounded-lg overflow-hidden shadow-md"
         >
           <thead>
             <tr class="bg-neutral-700 text-white">
@@ -59,6 +60,7 @@ import SystemRequirementsSidebar from "../components/SystemRequirementsSidebar.v
 import ComponentsListItem from "../components/ComponentsListItem.vue";
 import CompatibilityMessages from "../components/CompatibilityMessages.vue";
 import { useScreenSize } from "../composables/useScreenSize";
+import Linkbar from "../components/Link.vue";
 import { computed, ref } from "vue";
 
 const selected = ref<any>(null);
@@ -66,14 +68,22 @@ const games = ref<any>(null);
 const { screenWidth } = useScreenSize();
 const maxWidth = computed(() => {
   return screenWidth.value < 768
-    ? `calc(${screenWidth.value}px - ${games.value?.length ? `${screenWidth.value * 0.175}px` : "2rem"})`
+    ? `calc(${screenWidth.value}px - ${
+        games.value?.length ? `${screenWidth.value * 0.175}px` : "2rem"
+      })`
     : undefined;
 });
 
 function handlePartsChanged(selectedParts: any) {
+  if (!selectedParts) {
+    selectedParts = JSON.parse(
+      localStorage.getItem("selectedComponents") || "{}"
+    );
+  }
+
   selected.value = selectedParts;
 
-  console.log(selectedParts);
+  console.log("selectedParts:", selectedParts);
 }
 
 function handleGameDataChanged(gameData: any) {

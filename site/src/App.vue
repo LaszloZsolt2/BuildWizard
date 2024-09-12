@@ -8,6 +8,6 @@ import MainLayout from "./layouts/MainLayout.vue";
 
 <style>
 body {
-  @apply bg-neutral-900;
+  @apply bg-neutral-900 text-neutral-200;
 }
 </style>

@@ -34,6 +34,26 @@ const colors = {
   "--p-message-contrast-color": "var(--p-neutral-300)",
   "--p-message-contrast-shadow": "var(--p-neutral-500)",
 
+  "--p-message-warn-background":
+    "color-mix(in srgb, var(--p-yellow-500), transparent 84%)",
+  "--p-message-warn-border-color":
+    "color-mix(in srgb, var(--p-yellow-700), transparent 64%)",
+
+  "--p-message-error-background":
+    "color-mix(in srgb, var(--p-red-500), transparent 84%)",
+  "--p-message-error-border-color":
+    "color-mix(in srgb, var(--p-red-700), transparent 64%)",
+
+  "--p-message-success-background":
+    "color-mix(in srgb, var(--p-green-500), transparent 84%)",
+  "--p-message-success-border-color":
+    "color-mix(in srgb, var(--p-green-700), transparent 64%)",
+
+  "--p-message-secondary-background": "var(--p-neutral-800)",
+  "--p-message-secondary-border-color":
+    "color-mix(in srgb, var(--p-neutral-600), transparent 64%)",
+  "--p-message-secondary-color": "var(--p-neutral-400)",
+
   // ToggleSwitch colors
   "--p-toggleswitch-handle-disabled-background": "var(--p-neutral-600)",
 
@@ -44,6 +64,20 @@ const colors = {
   "--p-button-primary-background": "var(--p-violet-700)",
   "--p-button-primary-hover-background": "var(--p-violet-600)",
   "--p-button-primary-active-background": "var(--p-violet-500)",
+
+  "--p-button-text-secondary-hover-background": "var(--p-neutral-600)",
+  "--p-button-text-secondary-active-background": "var(--p-neutral-500)",
+  "--p-button-text-secondary-active-color": "var(--p-neutral-100)",
+  "--p-button-text-secondary-color": "var(--p-neutral-100)",
+  "--p-button-secondary-active-background": "var(--p-neutral-500)",
+  "--p-button-secondary-active-color": "var(--p-neutral-200)",
+  "--p-button-secondary-active-border-color": "var(--p-neutral-500)",
+  "--p-button-secondary-background": "var(--p-neutral-700)",
+  "--p-button-secondary-color": "var(--p-neutral-300)",
+  "--p-button-secondary-border-color": "var(--p-neutral-600)",
+  "--p-button-secondary-hover-border-color": "var(--p-neutral-500)",
+  "--p-button-secondary-hover-color": "var(--p-neutral-200)",
+  "--p-button-secondary-hover-background": "var(--p-neutral-600)",
 
   "--p-button-success-color": "var(--p-neutral-200)",
   "--p-button-success-hover-color": "var(--p-neutral-100)",
@@ -71,6 +105,29 @@ const colors = {
   "--p-button-contrast-active-background": "var(--p-neutral-100)",
 
   "--p-button-raised-shadow": "var(--p-red-500)",
+  "--p-button-text-secondary-color": "var(--p-neutral-400)",
+
+  // Input colors
+  "--p-inputtext-background": "var(--p-neutral-900)",
+  "--p-inputtext-border-color": "var(--p-neutral-700)",
+  "--p-inputtext-color": "var(--p-neutral-100)",
+  "--p-inputtext-placeholder-color": "var(--p-neutral-400)",
+
+  "--p-autocomplete-overlay-background": "var(--p-neutral-900)",
+  "--p-autocomplete-option-focus-background": "var(--p-neutral-800)",
+  "--p-autocomplete-option-color": "var(--p-neutral-200)",
+  "--p-autocomplete-option-focus-color": "var(--p-neutral-100)",
+  "--p-autocomplete-overlay-border-color": "var(--p-neutral-700)",
+  "--p-autocomplete-overlay-color": "var(--p-neutral-300)",
+
+  // Skeleton colors
+  "--p-skeleton-background": "rgba(51, 51, 51, 0.7)",
+  "--p-skeleton-animation-background": "rgba(64, 64, 64, 0.7)",
+
+  // Dialog colors
+  "--p-dialog-background": "var(--p-neutral-900)",
+  "--p-dialog-border-color": "var(--p-neutral-700)",
+  "--p-dialog-color": "var(--p-neutral-100)",
 };
 
 export function setTheme() {

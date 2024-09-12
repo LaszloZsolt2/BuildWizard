@@ -16,6 +16,7 @@ import systemRequirementRouter from "./routes/SystemRequirements";
 import compatibilityRouter from "./routes/Compatibility";
 import buildRouter from "./routes/Build";
 import { updatePriceData } from "./scraper/price/updatePriceData";
+import links from "./routes/Link";
 import { getAllParts } from "./utils/partData";
 
 dotenv.config();
@@ -71,6 +72,7 @@ app.use("/api/motherboards", motherBoardRouter);
 app.use("/api/power-supplies", powerSuppliesRouter);
 app.use("/api/system-requirements", systemRequirementRouter);
 app.use("/api/compatibility", compatibilityRouter);
+app.use("/api/links", links);
 app.use("/api/build", buildRouter);
 
 app.listen(PORT, () => {
