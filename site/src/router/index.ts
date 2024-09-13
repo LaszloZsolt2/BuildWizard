@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import PrimeSampleView from "../views/PrimeSampleView.vue";
 import ComponentsView from "../views/ComponentsView.vue";
 import ComponentsListView from "../views/ComponentsListView.vue";
+import Compare from "../views/Compare.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -19,6 +20,12 @@ const routes: Array<RouteRecordRaw> = [
     path: "/",
     name: "home",
     component: ComponentsListView,
+    props: (route) => ({ type: route.query.type }),
+  },
+  {
+    path: "/compare",
+    name: "compare",
+    component: Compare,
     props: (route) => ({ type: route.query.type }),
   },
 ];

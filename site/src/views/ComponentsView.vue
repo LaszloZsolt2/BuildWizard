@@ -39,6 +39,13 @@
         <Search :type="props.type" @search="handleSearch" />
       </div>
       <ul v-if="!fetchError && paginatedData.length">
+        <Button
+          v-if="isCompareButtonVisible"
+          @click="goToComparePage"
+          class="my-5 bg-green-800 text-white p-3 rounded border border-transparent hover:bg-green-700 hover:border-white hover:border-1 transition-all duration-100"
+        >
+          Compare
+        </Button>
         <table
           class="mx-0 my-5 w-full bg-neutral-800 text-white border-separate border-spacing-0"
         >
@@ -69,7 +76,11 @@
               class="hover:bg-neutral-700"
             >
               <td class="border-b border-neutral-400 px-6 py-4">
-                <Checkbox v-model="item.selected" :binary="true" />
+                <Checkbox
+                  v-model="item.selected"
+                  :binary="true"
+                  @change="handleCheckboxChange(item)"
+                />
               </td>
               <td
                 v-for="key in sortedKeys"
@@ -109,14 +120,8 @@
                   />
                 </div>
               </td>
-
               <td class="border-b border-neutral-400 px-6 py-4">
-                <BaseButton
-                  @click="handleAddClick(item)"
-                  class="bg-blue-500 text-white hover:bg-blue-600"
-                >
-                  Add
-                </BaseButton>
+                <BaseButton @click="handleAddClick(item)"> Add </BaseButton>
               </td>
             </tr>
           </tbody>
@@ -176,6 +181,14 @@
       />
     </template>
   </Modal>
+  <Modal
+    v-model="errorDialogVisible"
+    header="Selection Limit"
+    modal
+    :breakpoints="{ '1199px': '50vw', '575px': '75vw' }"
+  >
+    <p>You can only select up to {{ maxSelection }} items.</p>
+  </Modal>
 </template>
 
 <script setup lang="ts">
@@ -200,6 +213,47 @@ const router = useRouter();
 const emit = defineEmits<{
   (event: "add", data: { name: string; price: number }): void;
 }>();
+const selectedComponents = ref<SelectableComponent[]>([]);
+const maxSelection = 5;
+const errorDialogVisible = ref(false);
+
+const goToComparePage = () => {
+  selectedComponents.value = paginatedData.value.filter(
+    (item: SelectableComponent) => item.selected
+  );
+
+  if (selectedComponents.value.length > maxSelection) {
+    alert(`You can only select up to ${maxSelection} items.`);
+    return;
+  }
+
+  // Save selected components to local storage
+  localStorage.setItem(
+    "compareComponents",
+    JSON.stringify({
+      [props.type]: selectedComponents.value,
+    })
+  );
+
+  // Navigate to compare page without query parameters
+  router.push({
+    name: "compare",
+    query: {
+      type: props.type,
+    },
+  });
+};
+
+interface SelectableComponent extends ComponentBase {
+  selected: boolean;
+}
+
+const isCompareButtonVisible = computed(() => {
+  const selectedCount = paginatedData.value.filter(
+    (item: SelectableComponent) => item.selected
+  ).length;
+  return selectedCount >= 2;
+});
 
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
@@ -468,4 +522,31 @@ watch(fetchedData, (newValue) => {
     data.value = newValue;
   }
 });
+
+const handleCheckboxChange = (item: SelectableComponent) => {
+  const selectedCount = paginatedData.value.filter(
+    (item: SelectableComponent) => item.selected
+  ).length;
+
+  if (selectedCount > maxSelection) {
+    item.selected = false;
+    errorDialogVisible.value = true;
+  }
+};
+
+watch(
+  () => paginatedData.value,
+  () => {
+    const selectedCount = paginatedData.value.filter(
+      (item: SelectableComponent) => item.selected
+    ).length;
+
+    if (selectedCount > maxSelection) {
+      paginatedData.value
+        .filter((item: SelectableComponent) => item.selected)
+        .slice(maxSelection)
+        .forEach((item: SelectableComponent) => (item.selected = false));
+    }
+  }
+);
 </script>
