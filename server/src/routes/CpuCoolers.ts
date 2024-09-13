@@ -1,5 +1,7 @@
 import express from "express";
 import CpuCoolers from "../models/CpuCoolers";
+import { getPartList, transformComponents } from "../utils/partData";
+import { ComponentsType } from "../types/componentsType";
 
 const router = express.Router();
 
@@ -35,11 +37,22 @@ router.get("/search", async (req, res) => {
     const startIndex = (page - 1) * limit;
     const searchLimit = suggestionsOnly ? 10 : limit;
 
-    const filter = {
-      name: { $regex: query, $options: "i" },
-    };
+    let filter = {} as any;
+    if (query?.length) {
+      filter.name = { $regex: query, $options: "i" };
+    }
 
-    const total = suggestionsOnly ? await CpuCoolers.countDocuments(filter) : 0;
+    if (req.query.compatibilityFilter === "true") {
+      const components = await getPartList(
+        transformComponents(req.query.components as ComponentsType)
+      );
+
+      if (components?.cpus?.tdp) {
+        filter.tdp = { $gte: components.cpus.tdp };
+      }
+    }
+
+    const total = await CpuCoolers.countDocuments(filter);
     const cpuCoolers = await CpuCoolers.find(filter)
       .skip(startIndex)
       .limit(searchLimit);

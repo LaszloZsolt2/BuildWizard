@@ -235,6 +235,7 @@ function onModalClose() {
   isModalOpen.value = false;
   buildUrl.value = "";
   selectedBuild.value = null;
+  fetchedBuilds.value = null;
 }
 
 function onBuildAccept() {

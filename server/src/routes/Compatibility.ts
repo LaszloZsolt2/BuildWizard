@@ -35,7 +35,11 @@ router.get("/", async (req, res) => {
         message: "You have no parts selected",
         severity: "warn",
       });
-      res.json({ messages });
+      res.json({
+        messages,
+        price: { price: 0, isPriceForAllParts: false },
+        powerConsumption: 0,
+      });
       return;
     }
 
@@ -48,27 +52,6 @@ router.get("/", async (req, res) => {
     messages.push(...checkCaseStorageCompatibility(components));
     messages.push(...checkBottleneck(components));
     messages.push(...checkCpuCoolerCompatibilty(components));
-
-    if (!messages.length) {
-      messages.push({
-        message: "All of your parts are compatible",
-        severity: "success",
-      });
-    }
-
-    messages.sort((a, b) => {
-      if (a.severity === "error") {
-        return -1;
-      } else if (b.severity === "error") {
-        return 1;
-      } else if (a.severity === "warn") {
-        return -1;
-      } else if (b.severity === "warn") {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
 
     const price = getBuildPrice(components);
     let powerConsumption = 0;
@@ -93,6 +76,27 @@ router.get("/", async (req, res) => {
         });
       }
     }
+
+    if (!messages.length) {
+      messages.push({
+        message: "All of your parts are compatible",
+        severity: "success",
+      });
+    }
+
+    messages.sort((a, b) => {
+      if (a.severity === "error") {
+        return -1;
+      } else if (b.severity === "error") {
+        return 1;
+      } else if (a.severity === "warn") {
+        return -1;
+      } else if (b.severity === "warn") {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
 
     res.json({ messages, price, powerConsumption });
   } catch (err: unknown) {

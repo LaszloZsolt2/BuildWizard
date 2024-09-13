@@ -17,6 +17,7 @@ import { ref, watch, defineProps, defineEmits, computed } from "vue";
 import useFetch from "../composables/useFetch";
 import { debounce } from "lodash";
 import Search from "../components/SearchableSelector.vue";
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const componentQuery = ref("");
 const filteredComponents = ref<any[]>([]);
@@ -36,7 +37,7 @@ const fetchUrl = computed(() => {
     console.error("no type.");
     return "";
   }
-  return `http://localhost:5000/api/${props.type}/search?q=${encodeURIComponent(
+  return `${apiBaseUrl}/${props.type}/search?q=${encodeURIComponent(
     componentQuery.value
   )}&suggestions=true`;
 });

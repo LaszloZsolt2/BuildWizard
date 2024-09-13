@@ -697,11 +697,15 @@ export function getPowerConsumption(part: any, type: PartType) {
   }
 
   if (type === "hard-drives") {
-    return part.length || 0;
+    return part.length * 5 || 0;
   }
 
   if (type === "memories") {
-    return part[0]?.modules?.[0] * 5 || 0;
+    let modules = 0;
+    part.forEach((memory: any) => {
+      modules += memory.modules[0];
+    });
+    return modules * 5 || 0;
   }
 
   if (type === "motherboards") {

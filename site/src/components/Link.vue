@@ -10,8 +10,14 @@
         class="w-full p-2 border border-violet-800 rounded-md bg-neutral-700 text-neutral-200 focus:outline-none"
       />
     </div>
-    <Button @click="copyAndSaveLink">Copy Link</Button>
+    <Button @click="copyAndSaveLink">
+      <div class="px-1 inline">
+        <CopyIcon class="w-4 h-4 mr-2 inline" />
+        <span class="font-bold"> Copy Link </span>
+      </div>
+    </Button>
   </div>
+  <Toast />
 </template>
 
 <script setup lang="ts">
@@ -22,10 +28,13 @@ import axios from "axios";
 import { onMounted } from "vue";
 import useFetch from "../composables/useFetch";
 import router from "../router";
+import CopyIcon from "@/assets/icons/copy.svg";
+import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
-axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.baseURL = apiBaseUrl.replace("/api", "");
 
 const generateLink = () => {
   const baseUrl = window.location.origin;
@@ -40,6 +49,7 @@ const link = ref(generateLink());
 const sharedLink = ref("");
 const { fetchedData, fetchError, isLoading } = useFetch(sharedLink);
 const emit = defineEmits(["build-load"]);
+const toast = useToast();
 
 const copyAndSaveLink = async () => {
   try {
@@ -74,7 +84,12 @@ const copyAndSaveLink = async () => {
 
     if (response.status === 201) {
       await navigator.clipboard.writeText(link.value);
-      alert("Link copied to clipboard and saved successfully!");
+      toast.add({
+        severity: "success",
+        summary: "Success",
+        detail: "Link copied to clipboard and saved successfully!",
+        life: 3000,
+      });
     } else {
       throw new Error("Failed to save link");
     }
@@ -135,7 +150,7 @@ watch(fetchedData, () => {
 
     localStorage.setItem("selectedComponents", JSON.stringify(simplifiedBuild));
     emit("build-load", simplifiedBuild);
-    window.location.href = "/";
+    router.push("/");
   }
 });
 

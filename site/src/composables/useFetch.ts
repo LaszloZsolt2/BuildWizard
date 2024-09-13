@@ -8,7 +8,7 @@ export default function useFetch(url: Ref<string>) {
   const fetchData = async () => {
     isLoading.value = true;
     try {
-      const response = await fetch(url.value);
+      const response = await fetch(url.value, { mode: "cors" });
       if (response.ok) {
         fetchedData.value = await response.json();
         fetchError.value = null;

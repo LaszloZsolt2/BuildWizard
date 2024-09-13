@@ -3,7 +3,6 @@ import Gpus from "../../models/Gpus";
 import { getComponentUrl } from "./componentUrl";
 import { getComponentDetails } from "./componentDetails";
 import { ComponentWebshopDetails } from "../../types/webshop";
-import pLimit from "p-limit";
 import Memories from "../../models/Memories";
 import Motherboards from "../../models/Motherboards";
 import CpuCoolers from "../../models/CpuCoolers";
@@ -12,10 +11,8 @@ import CaseFan from "../../models/CaseFans";
 import HardDrives from "../../models/HardDrives";
 import PowerSupplies from "../../models/PowerSupplies";
 
-const CONCURRENCY_LIMIT = 2;
 const BATCH_SIZE = 100;
 const DELAY_MS = 900000;
-const limit = pLimit(CONCURRENCY_LIMIT);
 
 const categories = {
   cpus: ["procesoare"],
@@ -41,37 +38,35 @@ async function updateComponentData(
       continue;
     }
 
-    await limit(async () => {
-      try {
-        const searchQuery = getSearchQuery(component);
-        const componentUrl = await getComponentUrl(
-          searchQuery,
-          categories[type as keyof typeof categories]
-        );
-        console.log("Updating price data for component:", searchQuery);
-        if (!componentUrl) throw new Error("Component URL not found");
+    try {
+      const searchQuery = getSearchQuery(component);
+      const componentUrl = await getComponentUrl(
+        searchQuery,
+        categories[type as keyof typeof categories]
+      );
+      console.log("Updating price data for component:", searchQuery);
+      if (!componentUrl) throw new Error("Component URL not found");
 
-        const componentDetails = (await getComponentDetails(
-          componentUrl
-        )) as ComponentWebshopDetails;
-        if (!componentDetails) throw new Error("Component details not found");
+      const componentDetails = (await getComponentDetails(
+        componentUrl
+      )) as ComponentWebshopDetails;
+      if (!componentDetails) throw new Error("Component details not found");
 
-        const priceData = componentDetails.offers;
+      const priceData = componentDetails.offers;
 
-        component.price_data = priceData;
-        component.image = componentDetails.componentImage;
-        await component.save();
+      component.price_data = priceData;
+      component.image = componentDetails.componentImage;
+      await component.save();
 
-        console.log(`Updated price data for component: ${searchQuery}`);
-      } catch (error) {
-        // component.price_data = null;
-        // component.image = null;
-        // await component.save();
-        console.error(
-          `Price not found for component ${getSearchQuery(component)}`
-        );
-      }
-    });
+      console.log(`Updated price data for component: ${searchQuery}`);
+    } catch (error) {
+      // component.price_data = null;
+      // component.image = null;
+      // await component.save();
+      console.error(
+        `Price not found for component ${getSearchQuery(component)}`
+      );
+    }
 
     processedCount++;
     if (processedCount % BATCH_SIZE === 0) {

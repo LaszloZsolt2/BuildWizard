@@ -1,5 +1,9 @@
 import express from "express";
 import Memories from "../models/Memories";
+import { getPartList, transformComponents } from "../utils/partData";
+import { ComponentsType } from "../types/componentsType";
+import { socketRamSpeeds } from "../utils/compatibilityChecks";
+import { getCombinedSystemRequirements } from "../utils/benchmark";
 
 const router = express.Router();
 
@@ -35,19 +39,45 @@ router.get("/search", async (req, res) => {
     const startIndex = (page - 1) * limit;
     const searchLimit = suggestionsOnly ? 10 : limit;
 
-    const filter = {
-      name: { $regex: query, $options: "i" },
-    };
+    let filter = {} as any;
+    if (query?.length) {
+      filter = {
+        name: { $regex: query, $options: "i" },
+      };
+    }
 
-    const total = suggestionsOnly ? await Memories.countDocuments(filter) : 0;
+    if (req.query.compatibilityFilter === "true") {
+      const components = await getPartList(
+        transformComponents(req.query.components as ComponentsType)
+      );
+
+      const socket =
+        components?.cpus?.socket || components?.motherboards?.socket;
+      if (socket) {
+        const ramSpeed = socketRamSpeeds[socket];
+        if (ramSpeed) {
+          filter["speed.0"] = ramSpeed;
+        }
+      }
+    }
+
+    const total = await Memories.countDocuments(filter);
     const memories = await Memories.find(filter)
       .skip(startIndex)
       .limit(searchLimit);
 
     if (suggestionsOnly) {
       return res.json({
-        suggestions: memories.map((memorie) => memorie.name),
+        suggestions: memories.map((memory) => memory.name),
       });
+    }
+
+    if (req.query.systemRequirementsFilter !== "off" && req.query.ids) {
+      const systemRequirements = await getCombinedSystemRequirements(req);
+      const ram =
+        req.query.systemRequirementsFilter === "recommended"
+          ? systemRequirements?.systemRequirement?.recommended?.ram
+          : systemRequirements?.systemRequirement?.minimum?.ram;
     }
 
     res.json({

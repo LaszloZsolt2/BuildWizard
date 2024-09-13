@@ -166,3 +166,20 @@ if (process.env.NODE_ENV === "development") {
 }
 
 export { getAllParts };
+
+export function transformComponents(components: ComponentsType) {
+  const transformed = {} as ComponentsType;
+
+  for (const k in components) {
+    const key = k as PartType;
+    const value = components[key];
+
+    if (Array.isArray(value)) {
+      transformed[key] = value.map((id) => ({ _id: id }));
+    } else {
+      transformed[key] = { _id: value };
+    }
+  }
+
+  return transformed;
+}

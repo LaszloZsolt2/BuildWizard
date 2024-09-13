@@ -4,6 +4,7 @@ import path from "path";
 import svgLoader from "vite-svg-loader";
 
 export default defineConfig({
+  base: "/buildwizard/",
   plugins: [vue(), svgLoader()],
   resolve: {
     alias: {
