@@ -50,147 +50,9 @@
         <div v-for="(value, key) in component" :key="key" class="mb-3">
           <div v-if="!hiddenKeys.includes(key as string)">
             <strong class="text-lg font-medium">{{ formatKey(key) }}:</strong>
-            <span
-              v-if="typeof value === 'number'"
-              :class="{
-                'text-green-400':
-                  (key === 'tdp' && props.type !== 'cpu-coolers') ||
-                  key === 'length' ||
-                  key === 'cas_latency' ||
-                  key === 'first_word_latency'
-                    ? value === minValues[key]
-                    : value === maxValues[key],
-                'text-red-600':
-                  (key === 'tdp' && props.type !== 'cpu-coolers') ||
-                  key === 'length' ||
-                  key === 'cas_latency' ||
-                  key === 'first_word_latency'
-                    ? value === maxValues[key]
-                    : value === minValues[key],
-                'text-orange-400':
-                  (key !== 'tdp' && typeof value === 'number') ||
-                  key === 'length' ||
-                  key === 'cas_latency' ||
-                  key === 'first_word_latency'
-                    ? value !== maxValues[key] && value !== minValues[key]
-                    : (key === 'tdp' && typeof value === 'number') ||
-                      key === 'length'
-                    ? value !== minValues[key] && value !== maxValues[key]
-                    : false,
-              }"
-              class="ml-2"
-            >
+            <span :class="getTextColor(value, key as any)" class="ml-2">
               {{ formatValue(value, key as string, props.type) }}
             </span>
-            <span
-              v-else-if="key === 'smt' || key === 'pwm' || key === 'type'"
-              :class="{
-                'text-green-400': value === true || value === SSD,
-                'text-red-600': value === false,
-              }"
-              class="ml-2"
-            >
-              {{ formatValue(value, key as string, props.type) }}
-            </span>
-            <span
-              v-else-if="
-                (typeof value === 'number' || Array.isArray(value)) &&
-                key === 'noise_level'
-              "
-              :class="{
-                'text-green-400': Array.isArray(value)
-                  ? value[0] === minValues2[key]
-                  : value === maxValues2[key],
-                'text-red-600': Array.isArray(value)
-                  ? value[0] === maxValues2[key]
-                  : value === minValues2[key],
-                'text-orange-400': Array.isArray(value)
-                  ? value[0] !== minValues2[key] && value[0] !== maxValues2[key]
-                  : value !== maxValues2[key] && value !== minValues2[key],
-              }"
-              class="ml-2"
-            >
-              {{ formatValue(value, key as string, props.type) }}
-            </span>
-            <span
-              v-else-if="
-                ((typeof value === 'number' || Array.isArray(value)) &&
-                  key === 'airflow') ||
-                key === 'speed'
-              "
-              :class="{
-                'text-green-400': Array.isArray(value)
-                  ? value[value.length - 1] === maxValues[key]
-                  : value === minValues[key],
-                'text-red-600': Array.isArray(value)
-                  ? value[value.length - 1] === minValues[key]
-                  : value === maxValues[key],
-                'text-orange-400': Array.isArray(value)
-                  ? value[value.length - 1] !== minValues[key] &&
-                    value[value.length - 1] !== maxValues[key]
-                  : value !== minValues[key] && value !== maxValues[key],
-              }"
-              class="ml-2"
-            >
-              {{ formatValue(value, key as string, props.type) }}
-            </span>
-            <span
-              v-else-if="
-                (typeof value === 'number' || Array.isArray(value)) &&
-                key === 'modules'
-              "
-              :class="{
-                'text-green-400': Array.isArray(value)
-                  ? value.reduce((acc, num) => acc * num, 1) === maxValues3[key]
-                  : value === maxValues3[key],
-                'text-red-600': Array.isArray(value)
-                  ? value.reduce((acc, num) => acc * num, 1) === minValues3[key]
-                  : value === minValues3[key],
-                'text-orange-400': Array.isArray(value)
-                  ? value.reduce((acc, num) => acc * num, 1) !==
-                      minValues3[key] &&
-                    value.reduce((acc, num) => acc * num, 1) !== maxValues3[key]
-                  : value !== minValues3[key] && value !== maxValues3[key],
-              }"
-              class="ml-2"
-            >
-              {{ formatValue(value, key as string, props.type) }}
-            </span>
-            <span
-              v-else-if="typeof value === 'string' && key === 'interface'"
-              :class="{
-                'text-green-400':
-                  rankInterface(value) ===
-                  Math.max(
-                    ...selectedComponents.map((c) => rankInterface(c.interface))
-                  ),
-                'text-red-600':
-                  rankInterface(value) ===
-                  Math.min(
-                    ...selectedComponents.map((c) => rankInterface(c.interface))
-                  ),
-                'text-orange-400':
-                  rankInterface(value) !==
-                    Math.min(
-                      ...selectedComponents.map((c) =>
-                        rankInterface(c.interface)
-                      )
-                    ) &&
-                  rankInterface(value) !==
-                    Math.max(
-                      ...selectedComponents.map((c) =>
-                        rankInterface(c.interface)
-                      )
-                    ),
-              }"
-              class="ml-2"
-            >
-              {{ value }}
-            </span>
-
-            <span v-else class="ml-2">{{
-              formatValue(value, key as string, props.type)
-            }}</span>
           </div>
         </div>
       </div>
@@ -235,6 +97,70 @@ const filteredComponents = computed<ComponentBase[]>(() =>
     return filtered as ComponentBase;
   })
 );
+
+const getTextColor = (value: any, key: string) => {
+  if (typeof value === "number") {
+    if (
+      (key === "tdp" && props.type !== "cpu-coolers") ||
+      key === "length" ||
+      key === "cas_latency" ||
+      key === "first_word_latency"
+    ) {
+      return value === minValues.value[key]
+        ? "text-green-400"
+        : value === maxValues.value[key]
+        ? "text-red-600"
+        : "text-orange-400";
+    }
+    return value === maxValues.value[key]
+      ? "text-green-400"
+      : value === minValues.value[key]
+      ? "text-red-600"
+      : "text-orange-400";
+  } else if (Array.isArray(value)) {
+    if (key === "noise_level") {
+      return value[0] === minValues2.value[key]
+        ? "text-green-400"
+        : value[0] === maxValues2.value[key]
+        ? "text-red-600"
+        : "text-orange-400";
+    } else if (key === "airflow" || key === "speed") {
+      return value[value.length - 1] === maxValues.value[key]
+        ? "text-green-400"
+        : value[value.length - 1] === minValues.value[key]
+        ? "text-red-600"
+        : "text-orange-400";
+    } else if (key === "modules") {
+      const product = value.reduce((acc, num) => acc * num, 1);
+      return product === maxValues3.value[key]
+        ? "text-green-400"
+        : product === minValues3.value[key]
+        ? "text-red-600"
+        : "text-orange-400";
+    }
+  } else if (typeof value === "string" && key === "interface") {
+    const rankedValue = rankInterface(value);
+    const maxRank = Math.max(
+      ...selectedComponents.value.map((c) => rankInterface(c.interface))
+    );
+    const minRank = Math.min(
+      ...selectedComponents.value.map((c) => rankInterface(c.interface))
+    );
+    return rankedValue === maxRank
+      ? "text-green-400"
+      : rankedValue === minRank
+      ? "text-red-600"
+      : "text-orange-400";
+  } else if (key === "smt" || key === "pwm" || key === "type") {
+    return value === true || value === SSD
+      ? "text-green-400"
+      : value === false
+      ? "text-red-600"
+      : "";
+  }
+
+  return "";
+};
 
 const numericValues = computed<{ [key: string]: number[] }>(() => {
   const values: { [key: string]: number[] } = {};

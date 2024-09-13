@@ -4,6 +4,15 @@
       <div class="flex items-end">
         <div class="flex-grow">
           <div class="flex items-center">
+            <BaseButton
+              label="Secondary button"
+              severity="secondary"
+              class="my-4 mr-5"
+              v-if="isCompareButtonVisible"
+              @click="goToComparePage"
+            >
+              Compare
+            </BaseButton>
             <div class="flex flex-col mr-2 -mt-5">
               <div
                 class="text-neutral-400 font-bold mb-1"
@@ -39,13 +48,6 @@
         <Search :type="props.type" @search="handleSearch" />
       </div>
       <ul v-if="!fetchError && paginatedData.length">
-        <Button
-          v-if="isCompareButtonVisible"
-          @click="goToComparePage"
-          class="my-5 bg-green-800 text-white p-3 rounded border border-transparent hover:bg-green-700 hover:border-white hover:border-1 transition-all duration-100"
-        >
-          Compare
-        </Button>
         <table
           class="mx-0 my-5 w-full bg-neutral-800 text-white border-separate border-spacing-0"
         >
@@ -288,7 +290,11 @@ const fetchUrl = computed(() => {
     requirementsFilter.value !== "off"
     ? `${apiBaseUrl}/${props.type}/search?q=${encodeURIComponent(
         searchQuery.value
-      )}&page=${currentPage.value}&limit=${itemsPerPage.value}&compatibilityFilter=${isCompatibilityFilterEnabled.value}&systemRequirementsFilter=${requirementsFilter.value}&${buildQueryParams(
+      )}&page=${currentPage.value}&limit=${
+        itemsPerPage.value
+      }&compatibilityFilter=${
+        isCompatibilityFilterEnabled.value
+      }&systemRequirementsFilter=${requirementsFilter.value}&${buildQueryParams(
         games.value,
         simplifiedParts
       )}`
