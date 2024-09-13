@@ -55,19 +55,23 @@
               :class="{
                 'text-green-400':
                   (key === 'tdp' && props.type !== 'cpu-coolers') ||
-                  key === 'length'
+                  key === 'length' ||
+                  key === 'cas_latency' ||
+                  key === 'first_word_latency'
                     ? value === minValues[key]
                     : value === maxValues[key],
                 'text-red-600':
                   (key === 'tdp' && props.type !== 'cpu-coolers') ||
                   key === 'length' ||
-                  key === 'price_per_gb'
+                  key === 'cas_latency' ||
+                  key === 'first_word_latency'
                     ? value === maxValues[key]
                     : value === minValues[key],
                 'text-orange-400':
                   (key !== 'tdp' && typeof value === 'number') ||
                   key === 'length' ||
-                  key === 'price_per_gb'
+                  key === 'cas_latency' ||
+                  key === 'first_word_latency'
                     ? value !== maxValues[key] && value !== minValues[key]
                     : (key === 'tdp' && typeof value === 'number') ||
                       key === 'length'
@@ -91,20 +95,18 @@
             <span
               v-else-if="
                 (typeof value === 'number' || Array.isArray(value)) &&
-                key !== 'rpm' &&
-                key !== 'airflow' &&
-                key !== 'speed'
+                key === 'noise_level'
               "
               :class="{
                 'text-green-400': Array.isArray(value)
-                  ? value[0] === minValues[key]
-                  : value === maxValues[key],
+                  ? value[0] === minValues2[key]
+                  : value === maxValues2[key],
                 'text-red-600': Array.isArray(value)
-                  ? value[0] === maxValues[key]
-                  : value === minValues[key],
+                  ? value[0] === maxValues2[key]
+                  : value === minValues2[key],
                 'text-orange-400': Array.isArray(value)
-                  ? value[0] !== minValues[key] && value[0] !== maxValues[key]
-                  : value !== maxValues[key] && value !== minValues[key],
+                  ? value[0] !== minValues2[key] && value[0] !== maxValues2[key]
+                  : value !== maxValues2[key] && value !== minValues2[key],
               }"
               class="ml-2"
             >
@@ -118,18 +120,72 @@
               "
               :class="{
                 'text-green-400': Array.isArray(value)
-                  ? value[1] === maxValues[key]
+                  ? value[value.length - 1] === maxValues[key]
                   : value === minValues[key],
                 'text-red-600': Array.isArray(value)
-                  ? value[1] === minValues[key]
+                  ? value[value.length - 1] === minValues[key]
                   : value === maxValues[key],
                 'text-orange-400': Array.isArray(value)
-                  ? value[1] !== minValues[key] && value[1] !== maxValues[key]
+                  ? value[value.length - 1] !== minValues[key] &&
+                    value[value.length - 1] !== maxValues[key]
                   : value !== minValues[key] && value !== maxValues[key],
               }"
               class="ml-2"
             >
               {{ formatValue(value, key as string, props.type) }}
+            </span>
+            <span
+              v-else-if="
+                (typeof value === 'number' || Array.isArray(value)) &&
+                key === 'modules'
+              "
+              :class="{
+                'text-green-400': Array.isArray(value)
+                  ? value.reduce((acc, num) => acc * num, 1) === maxValues3[key]
+                  : value === maxValues3[key],
+                'text-red-600': Array.isArray(value)
+                  ? value.reduce((acc, num) => acc * num, 1) === minValues3[key]
+                  : value === minValues3[key],
+                'text-orange-400': Array.isArray(value)
+                  ? value.reduce((acc, num) => acc * num, 1) !==
+                      minValues3[key] &&
+                    value.reduce((acc, num) => acc * num, 1) !== maxValues3[key]
+                  : value !== minValues3[key] && value !== maxValues3[key],
+              }"
+              class="ml-2"
+            >
+              {{ formatValue(value, key as string, props.type) }}
+            </span>
+            <span
+              v-else-if="typeof value === 'string' && key === 'interface'"
+              :class="{
+                'text-green-400':
+                  rankInterface(value) ===
+                  Math.max(
+                    ...selectedComponents.map((c) => rankInterface(c.interface))
+                  ),
+                'text-red-600':
+                  rankInterface(value) ===
+                  Math.min(
+                    ...selectedComponents.map((c) => rankInterface(c.interface))
+                  ),
+                'text-orange-400':
+                  rankInterface(value) !==
+                    Math.min(
+                      ...selectedComponents.map((c) =>
+                        rankInterface(c.interface)
+                      )
+                    ) &&
+                  rankInterface(value) !==
+                    Math.max(
+                      ...selectedComponents.map((c) =>
+                        rankInterface(c.interface)
+                      )
+                    ),
+              }"
+              class="ml-2"
+            >
+              {{ value }}
             </span>
 
             <span v-else class="ml-2">{{
@@ -180,12 +236,46 @@ const filteredComponents = computed<ComponentBase[]>(() =>
   })
 );
 
-const numericValues = computed(() => {
+const numericValues = computed<{ [key: string]: number[] }>(() => {
   const values: { [key: string]: number[] } = {};
 
   selectedComponents.value.forEach((component) => {
     Object.entries(component).forEach(([key, value]) => {
-      if (Array.isArray(value) && value.length > 0) {
+      if (Array.isArray(value)) {
+        if (!values[key]) values[key] = [];
+        values[key].push(value[value.length - 1]);
+      } else if (typeof value === "number") {
+        if (!values[key]) values[key] = [];
+        values[key].push(value);
+      }
+    });
+  });
+
+  return values;
+});
+
+const maxValues = computed<{ [key: string]: number }>(() => {
+  const max: { [key: string]: number } = {};
+  Object.entries(numericValues.value).forEach(([key, values]) => {
+    max[key] = Math.max(...values);
+  });
+  return max;
+});
+
+const minValues = computed<{ [key: string]: number }>(() => {
+  const min: { [key: string]: number } = {};
+  Object.entries(numericValues.value).forEach(([key, values]) => {
+    min[key] = Math.min(...values);
+  });
+  return min;
+});
+
+const numericValues2 = computed<{ [key: string]: number[] }>(() => {
+  const values: { [key: string]: number[] } = {};
+
+  selectedComponents.value.forEach((component) => {
+    Object.entries(component).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
         if (!values[key]) values[key] = [];
         values[key].push(value[0]);
       } else if (typeof value === "number") {
@@ -198,18 +288,57 @@ const numericValues = computed(() => {
   return values;
 });
 
-const maxValues = computed(() => {
+const maxValues2 = computed<{ [key: string]: number }>(() => {
   const max: { [key: string]: number } = {};
-  Object.entries(numericValues.value).forEach(([key, values]) => {
+  Object.entries(numericValues2.value).forEach(([key, values]) => {
     max[key] = Math.max(...values);
   });
   return max;
 });
 
-const minValues = computed(() => {
+const minValues2 = computed<{ [key: string]: number }>(() => {
   const min: { [key: string]: number } = {};
-  Object.entries(numericValues.value).forEach(([key, values]) => {
+  Object.entries(numericValues2.value).forEach(([key, values]) => {
     min[key] = Math.min(...values);
+  });
+  return min;
+});
+
+const numericValues3 = computed<{ [key: string]: number[] }>(() => {
+  const values: { [key: string]: number[] } = {};
+
+  selectedComponents.value.forEach((component) => {
+    Object.entries(component).forEach(([key, value]) => {
+      if (Array.isArray(value) && value.length > 0) {
+        const product = value.reduce((acc, num) => acc * num, 1);
+        if (!values[key]) values[key] = [];
+        values[key].push(product);
+      } else if (typeof value === "number") {
+        if (!values[key]) values[key] = [];
+        values[key].push(value);
+      }
+    });
+  });
+
+  return values;
+});
+
+const maxValues3 = computed<{ [key: string]: number }>(() => {
+  const max: { [key: string]: number } = {};
+  Object.entries(numericValues3.value).forEach(([key, values]) => {
+    if (values.length > 0) {
+      max[key] = Math.max(...values);
+    }
+  });
+  return max;
+});
+
+const minValues3 = computed<{ [key: string]: number }>(() => {
+  const min: { [key: string]: number } = {};
+  Object.entries(numericValues3.value).forEach(([key, values]) => {
+    if (values.length > 0) {
+      min[key] = Math.min(...values);
+    }
   });
   return min;
 });
@@ -258,29 +387,33 @@ const handleAddClick = (item: ComponentBase) => {
   });
 };
 
-const performanceValues: Record<string, number> = {
-  "M.2 PCIe 5.0 X4": 100,
-  "M.2 PCIe 4.0 X4": 90,
-  "M.2 PCIe 3.0 X4": 80,
-  "M.2 PCIe 5.0 X2": 85,
-  "M.2 PCIe 4.0 X8": 95,
-  "M.2 PCIe 3.0 X2": 70,
-  "M.2 PCIe 2.0 X4": 60,
-  "PCIe x16": 100,
-  "PCIe x8": 85,
-  "PCIe x4": 80,
-  "PCIe x2": 70,
-  "PCIe x1": 60,
-  "SAS 12.0 Gb/s": 75,
-  "SAS 6.0 Gb/s": 60,
-  "SAS 3.0 Gb/s": 50,
-  "SATA 6.0 Gb/s": 50,
-  "SATA 3.0 Gb/s": 40,
-  "SATA 1.5 Gb/s": 30,
-  "M.2 SATA": 55,
-  mSATA: 45,
-  "U.2": 70,
-  "PATA 100": 20,
-  "PATA 44-Pin 100": 15,
-};
+function rankInterface(interfaceType: string): number {
+  const rankings: Record<string, number> = {
+    "M.2 PCIe 5.0 X4": 100,
+    "M.2 PCIe 4.0 X4": 90,
+    "M.2 PCIe 3.0 X4": 80,
+    "M.2 PCIe 5.0 X2": 85,
+    "M.2 PCIe 4.0 X8": 95,
+    "M.2 PCIe 3.0 X2": 70,
+    "M.2 PCIe 2.0 X4": 60,
+    "PCIe x16": 100,
+    "PCIe x8": 85,
+    "PCIe x4": 80,
+    "PCIe x2": 70,
+    "PCIe x1": 60,
+    "SAS 12.0 Gb/s": 75,
+    "SAS 6.0 Gb/s": 60,
+    "SAS 3.0 Gb/s": 50,
+    "SATA 6.0 Gb/s": 50,
+    "SATA 3.0 Gb/s": 40,
+    "SATA 1.5 Gb/s": 30,
+    "M.2 SATA": 55,
+    mSATA: 45,
+    "U.2": 70,
+    "PATA 100": 20,
+    "PATA 44-Pin 100": 15,
+  };
+
+  return rankings[interfaceType] ?? 100;
+}
 </script>
