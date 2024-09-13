@@ -101,6 +101,7 @@
                   />
                   <div v-else>
                     {{ formatValue(item[key], key, props.type) }}
+                    {{ formatValue(item[key], key, props.type) }}
                   </div>
                 </div>
                 <div
@@ -130,21 +131,23 @@
       <p v-if="fetchError" class="text-red-500 mt-4">Error: {{ fetchError }}</p>
 
       <div class="flex justify-center items-center mt-5">
-        <BaseButton
-          @click="prevPage"
-          :disabled="currentPage === 1"
-          class="w-15 h-8"
-        >
-          Back
-        </BaseButton>
-        <span class="p-5">{{ currentPage }} / {{ totalPages }}</span>
-        <BaseButton
-          @click="nextPage"
-          :disabled="currentPage === totalPages"
-          class="w-15 h-8"
-        >
-          Next
-        </BaseButton>
+        <div class="flex justify-center items-center mt-5">
+          <BaseButton
+            @click="prevPage"
+            :disabled="currentPage === 1"
+            class="w-15 h-8"
+          >
+            Back
+          </BaseButton>
+          <span class="p-5">{{ currentPage }} / {{ totalPages }}</span>
+          <BaseButton
+            @click="nextPage"
+            :disabled="currentPage === totalPages"
+            class="w-15 h-8"
+          >
+            Next
+          </BaseButton>
+        </div>
       </div>
     </div>
     <SystemRequirementsSidebar class="flex-1" />
