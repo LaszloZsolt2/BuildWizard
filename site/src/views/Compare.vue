@@ -76,7 +76,7 @@
               }"
               class="ml-2"
             >
-              {{ value }}
+              {{ formatValue(value, key as string, props.type) }}
             </span>
             <span
               v-else-if="key === 'smt' || key === 'pwm' || key === 'type'"
@@ -86,7 +86,7 @@
               }"
               class="ml-2"
             >
-              {{ value }}
+              {{ formatValue(value, key as string, props.type) }}
             </span>
             <span
               v-else-if="
@@ -108,7 +108,7 @@
               }"
               class="ml-2"
             >
-              {{ value }}
+              {{ formatValue(value, key as string, props.type) }}
             </span>
             <span
               v-else-if="
@@ -129,10 +129,12 @@
               }"
               class="ml-2"
             >
-              {{ value }}
+              {{ formatValue(value, key as string, props.type) }}
             </span>
 
-            <span v-else class="ml-2">{{ value }}</span>
+            <span v-else class="ml-2">{{
+              formatValue(value, key as string, props.type)
+            }}</span>
           </div>
         </div>
       </div>
@@ -146,6 +148,7 @@ import Parts from "../components/Parts.vue";
 import BaseButton from "../components/BaseButton.vue";
 import { ComponentBase } from "../types/componentBase";
 import { useRouter } from "vue-router";
+import { formatValue } from "../utils/formatValues";
 
 const selectedComponents = ref<Record<string, any>[]>([]);
 const emit = defineEmits<{
