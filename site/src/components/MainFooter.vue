@@ -3,7 +3,7 @@
     <div
       class="container mx-auto flex flex-col md:flex-row justify-between items-center"
     >
-      <div class="mb-4 md:mb-0">
+      <div class="px-4 md:px-0 mb-4 md:mb-0 text-center">
         <p>&copy; 2024 BuildWizard. Your guide to compatible PC components.</p>
       </div>
       <nav class="flex space-x-4">

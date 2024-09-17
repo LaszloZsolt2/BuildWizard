@@ -7,13 +7,15 @@
         v-model="link"
         type="text"
         readonly
-        class="w-full p-2 border border-violet-800 rounded-md bg-neutral-700 text-neutral-200 focus:outline-none"
+        class="w-full p-2 border text-sm md:text-base border-violet-800 rounded-md bg-neutral-700 text-neutral-200 focus:outline-none"
       />
     </div>
-    <Button @click="copyAndSaveLink">
+    <Button @click="copyAndSaveLink" class="max-h-9 md:max-h-none">
       <div class="px-1 inline">
-        <CopyIcon class="w-4 h-4 mr-2 inline" />
-        <span class="font-bold"> Copy Link </span>
+        <CopyIcon class="w-4 h-4 md:mr-2 inline" />
+        <span v-if="screenWidth > 768" class="text-base font-bold">
+          Copy Link
+        </span>
       </div>
     </Button>
   </div>
@@ -31,6 +33,7 @@ import router from "../router";
 import CopyIcon from "@/assets/icons/copy.svg";
 import Toast from "primevue/toast";
 import { useToast } from "primevue/usetoast";
+import { useScreenSize } from "../composables/useScreenSize";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -48,6 +51,7 @@ const linkId = ref("");
 const link = ref(generateLink());
 const sharedLink = ref("");
 const { fetchedData, fetchError, isLoading } = useFetch(sharedLink);
+const { screenWidth } = useScreenSize();
 const emit = defineEmits(["build-load"]);
 const toast = useToast();
 

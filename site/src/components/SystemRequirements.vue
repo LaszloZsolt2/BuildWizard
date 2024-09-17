@@ -1,6 +1,6 @@
 <template>
   <div class="mt-6">
-    <p class="text-xl font-bold text-neutral-200 capitalize">
+    <p class="text-lg md:text-xl font-bold text-neutral-200 capitalize">
       {{ props.type }}
     </p>
     <div class="pl-4 pt-2">
@@ -29,13 +29,13 @@
                 requirement
               ]"
               :key="component"
-              class="text-neutral-400 ml-4"
+              class="text-sm md:text-base text-neutral-400 ml-4"
             >
               {{ component }}
             </p>
           </div>
           <div v-else>
-            <p class="text-neutral-400 ml-4">
+            <p class="text-sm md:text-base text-neutral-400 ml-4">
               {{ props.systemRequirements[props.type][requirement] }} GB
             </p>
           </div>

@@ -75,3 +75,20 @@ export const formatValue = (value: any, key: string, type: string) => {
 
   return value;
 };
+
+export const formatKey = (key: string) => {
+  const aliases: { [key: string]: string } = {
+    price_data: "price",
+    tdp: "TDP",
+    smt: "SMT",
+    rpm: "RPM",
+    psu: "PSU",
+    internal_35_bays: "internal 3.5 bays",
+    pwm: "PWM",
+  };
+
+  if (aliases[key]) {
+    key = aliases[key];
+  }
+  return key.replace(/_/g, " ");
+};

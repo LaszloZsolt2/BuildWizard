@@ -61,7 +61,7 @@ import ComponentsListItem from "../components/ComponentsListItem.vue";
 import CompatibilityMessages from "../components/CompatibilityMessages.vue";
 import { useScreenSize } from "../composables/useScreenSize";
 import Linkbar from "../components/Link.vue";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const selected = ref<any>(null);
 const games = ref<any>(null);
@@ -86,7 +86,10 @@ function handlePartsChanged(selectedParts: any) {
   console.log("selectedParts:", selectedParts);
 }
 
-function handleGameDataChanged(gameData: any) {
+function handleGameDataChanged(gameData?: any) {
+  if (!gameData?.length) {
+    gameData = JSON.parse(localStorage.getItem("games") || "[]");
+  }
   games.value = gameData;
 }
 
@@ -101,4 +104,8 @@ const partsList = [
   { type: "motherboards", multiple: false },
   { type: "power-supplies", multiple: false },
 ];
+
+onMounted(() => {
+  handleGameDataChanged();
+});
 </script>

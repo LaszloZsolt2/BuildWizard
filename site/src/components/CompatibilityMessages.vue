@@ -5,7 +5,9 @@
   >
     <Transition name="opacity-slide-left">
       <div v-if="messages.length">
-        <h2 class="text-xl font-bold mb-6">Compatibility issues</h2>
+        <h2 class="text-lg md:text-xl font-bold mb-3 md:mb-6">
+          Compatibility issues
+        </h2>
         <TransitionGroup tag="div" name="list">
           <BaseLabel
             v-for="message in messages"
@@ -17,24 +19,28 @@
               <div class="flex-1">
                 <component
                   :is="messageIcons[message.severity]"
-                  class="h-6 w-6 inline-block mr-3 pb-1"
+                  class="h-5 w-5 md:h-6 md:w-6 inline-block mr-2 md:mr-3 pb-1"
                 />
               </div>
-              <div class="font-bold flex-grow">{{ message.message }}</div>
+              <div class="text-sm md:text-base font-bold flex-grow">
+                {{ message.message }}
+              </div>
             </div>
           </BaseLabel>
         </TransitionGroup>
         <div class="border-t-2 border-t-neutral-700 -mx-4 pb-2 px-4">
           <span class="mt-4 mr-6 inline-block">
-            <MoneyIcon class="h-6 w-6 inline-block pb-1 text-violet-500" />
-            <div class="font-bold text-neutral-400 inline">
+            <MoneyIcon
+              class="h-5 w-5 md:h-6 md:w-6 inline-block pb-1 text-violet-500"
+            />
+            <div class="text-sm md:text-base font-bold text-neutral-400 inline">
               Total price: <span class="text-violet-400">{{ price }}</span> lei
             </div>
           </span>
           <br v-if="screenWidth < 768" />
-          <span class="mt-4 inline-block">
+          <span class="mt-2 md:mt-4 inline-block">
             <BoltIcon class="h-5 w-5 inline-block pb-1 text-violet-500" />
-            <div class="font-bold text-neutral-400 inline">
+            <div class="text-sm md:text-base font-bold text-neutral-400 inline">
               Estimated wattage:
               <span class="text-violet-400">{{ powerConsumption }}</span> W
             </div>
