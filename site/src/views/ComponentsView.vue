@@ -4,6 +4,15 @@
       <div class="flex items-end">
         <div class="flex-grow">
           <div class="flex items-center">
+            <BaseButton
+              label="Secondary button"
+              severity="secondary"
+              class="my-4 mr-5"
+              v-if="isCompareButtonVisible"
+              @click="goToComparePage"
+            >
+              Compare
+            </BaseButton>
             <div class="flex flex-col mr-2 -mt-5">
               <div
                 class="text-neutral-400 font-bold mb-1"
@@ -69,7 +78,11 @@
               class="hover:bg-neutral-700"
             >
               <td class="border-b border-neutral-400 px-6 py-4">
-                <Checkbox v-model="item.selected" :binary="true" />
+                <Checkbox
+                  v-model="item.selected"
+                  :binary="true"
+                  @change="handleCheckboxChange(item)"
+                />
               </td>
               <td
                 v-for="key in sortedKeys"
@@ -89,7 +102,7 @@
                     :maxValue="type === 'cpus' ? 133 : 370"
                   />
                   <div v-else>
-                    {{ formatValue(item[key], key) }}
+                    {{ formatValue(item[key], key, props.type) }}
                   </div>
                 </div>
                 <div
@@ -109,21 +122,14 @@
                   />
                 </div>
               </td>
-
               <td class="border-b border-neutral-400 px-6 py-4">
-                <BaseButton
-                  @click="handleAddClick(item)"
-                  class="bg-blue-500 text-white hover:bg-blue-600"
-                >
-                  Add
-                </BaseButton>
+                <BaseButton @click="handleAddClick(item)"> Add </BaseButton>
               </td>
             </tr>
           </tbody>
         </table>
       </ul>
       <p v-if="fetchError" class="text-red-500 mt-4">Error: {{ fetchError }}</p>
-      <p v-if="isLoading" class="mt-4"></p>
 
       <div class="flex justify-center items-center mt-5">
         <BaseButton
@@ -176,6 +182,14 @@
       />
     </template>
   </Modal>
+  <Modal
+    v-model="errorDialogVisible"
+    header="Selection Limit"
+    modal
+    :breakpoints="{ '1199px': '50vw', '575px': '75vw' }"
+  >
+    <p>You can only select up to {{ maxSelection }} items.</p>
+  </Modal>
 </template>
 
 <script setup lang="ts">
@@ -190,6 +204,7 @@ import SystemRequirementsSidebar from "../components/SystemRequirementsSidebar.v
 import CaretIcon from "@/assets/icons/caret.svg";
 import Modal from "../components/Modal.vue";
 import BenchmarkBar from "../components/BenchmarkBar.vue";
+import { formatValue } from "../utils/formatValues";
 import Search from "../components/SearchComponents.vue";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import Select from "primevue/select";
@@ -200,6 +215,45 @@ const router = useRouter();
 const emit = defineEmits<{
   (event: "add", data: { name: string; price: number }): void;
 }>();
+const selectedComponents = ref<SelectableComponent[]>([]);
+const maxSelection = 5;
+const errorDialogVisible = ref(false);
+
+const goToComparePage = () => {
+  selectedComponents.value = paginatedData.value.filter(
+    (item: SelectableComponent) => item.selected
+  );
+
+  if (selectedComponents.value.length > maxSelection) {
+    alert(`You can only select up to ${maxSelection} items.`);
+    return;
+  }
+
+  localStorage.setItem(
+    "compareComponents",
+    JSON.stringify({
+      [props.type]: selectedComponents.value,
+    })
+  );
+
+  router.push({
+    name: "compare",
+    query: {
+      type: props.type,
+    },
+  });
+};
+
+interface SelectableComponent extends ComponentBase {
+  selected: boolean;
+}
+
+const isCompareButtonVisible = computed(() => {
+  const selectedCount = paginatedData.value.filter(
+    (item: SelectableComponent) => item.selected
+  ).length;
+  return selectedCount >= 2;
+});
 
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
@@ -236,7 +290,11 @@ const fetchUrl = computed(() => {
     requirementsFilter.value !== "off"
     ? `${apiBaseUrl}/${props.type}/search?q=${encodeURIComponent(
         searchQuery.value
-      )}&page=${currentPage.value}&limit=${itemsPerPage.value}&compatibilityFilter=${isCompatibilityFilterEnabled.value}&systemRequirementsFilter=${requirementsFilter.value}&${buildQueryParams(
+      )}&page=${currentPage.value}&limit=${
+        itemsPerPage.value
+      }&compatibilityFilter=${
+        isCompatibilityFilterEnabled.value
+      }&systemRequirementsFilter=${requirementsFilter.value}&${buildQueryParams(
         games.value,
         simplifiedParts
       )}`
@@ -306,84 +364,6 @@ const formatKey = (key: string) => {
     key = aliases[key];
   }
   return key.replace(/_/g, " ");
-};
-
-const formatValue = (value: any, key: string) => {
-  const formatArrayValue = (suffix: string) => {
-    if (!value.length) {
-      return "N/A";
-    } else if (value.length === 1) {
-      return `${value[0]} ${suffix}`;
-    } else {
-      return `${value[0]} - ${value[1]} ${suffix}`;
-    }
-  };
-
-  if (!value) {
-    return "N/A";
-  }
-
-  if (key === "tdp" || key === "psu" || key === "wattage") {
-    return `${value} W`;
-  }
-
-  if (key === "smt" || key === "pwm") {
-    return value ? "Yes" : "No";
-  }
-
-  if (key === "boost_clock" || key === "core_clock") {
-    return `${value} ${props.type === "cpus" ? "GHz" : "MHz"}`;
-  }
-
-  if (key === "rpm") {
-    return formatArrayValue("RPM");
-  }
-
-  if (key === "noise_level") {
-    return formatArrayValue("dB");
-  }
-
-  if (key === "size" || key === "length") {
-    return `${value} mm`;
-  }
-
-  if (key === "memory" || key === "capacity" || key === "max_memory") {
-    return `${value} GB`;
-  }
-
-  if (key === "external_volume") {
-    return `${value} L`;
-  }
-
-  if (key === "airflow") {
-    return formatArrayValue("CFM");
-  }
-
-  if (key === "cache") {
-    return `${value} MB`;
-  }
-
-  if (key === "speed") {
-    if (!value.length || value.length !== 2) {
-      return "N/A";
-    } else {
-      return `DDR${value[0]} ${value[1]} MHz`;
-    }
-  }
-
-  if (key === "modules") {
-    if (!value.length || value.length !== 2) {
-      return "N/A";
-    } else {
-      return `${value[0]} x ${value[1]} GB`;
-    }
-  }
-
-  if (key === "first_word_latency") {
-    return `${value} ns`;
-  }
-
-  return value;
 };
 
 const handleAddClick = (item: ComponentBase) => {
@@ -468,4 +448,31 @@ watch(fetchedData, (newValue) => {
     data.value = newValue;
   }
 });
+
+const handleCheckboxChange = (item: SelectableComponent) => {
+  const selectedCount = paginatedData.value.filter(
+    (item: SelectableComponent) => item.selected
+  ).length;
+
+  if (selectedCount > maxSelection) {
+    item.selected = false;
+    errorDialogVisible.value = true;
+  }
+};
+
+watch(
+  () => paginatedData.value,
+  () => {
+    const selectedCount = paginatedData.value.filter(
+      (item: SelectableComponent) => item.selected
+    ).length;
+
+    if (selectedCount > maxSelection) {
+      paginatedData.value
+        .filter((item: SelectableComponent) => item.selected)
+        .slice(maxSelection)
+        .forEach((item: SelectableComponent) => (item.selected = false));
+    }
+  }
+);
 </script>
