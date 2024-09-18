@@ -296,6 +296,11 @@ const {
 const { fetchedData, fetchError, isLoading } = useFetch(gameSearchUrl);
 
 watch(fetchedData, (data) => {
+  data?.forEach((game: any) => {
+    if (selectedGames.value.filter((g: any) => g._id === game._id).length) {
+      game.name = `✓‎ ‎ ${game.name}`;
+    }
+  });
   filteredGames.value = data || [];
 });
 

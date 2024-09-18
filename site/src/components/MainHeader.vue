@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full fixed z-50">
+  <div class="w-full fixed z-50 bg-neutral-900">
     <nav
       :class="[
         'bg-neutral-800 m-2 md:m-4 rounded-lg flex content-start p-3 md:p-4 shadow-lg transition-all duration-500',
@@ -64,7 +64,6 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import BarsIcon from "@/assets/icons/bars.svg";
 import CompletedBuildsIcon from "@/assets/icons/completedBuilds.svg";
 import BuildIcon from "@/assets/icons/build.svg";
-import CascadeSelect from "primevue/cascadeselect";
 
 const isNavbarOpen = ref(false);
 
