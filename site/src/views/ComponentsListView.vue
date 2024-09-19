@@ -7,9 +7,8 @@
       />
       <CompatibilityMessages
         :parts="selected"
-        :style="{
-          maxWidth: maxWidth,
-        }"
+        :maxWidth="maxWidth"
+        @build-load="handlePartsChanged"
       />
       <div
         id="components-list"
@@ -18,7 +17,6 @@
           maxWidth: maxWidth,
         }"
       >
-        <Linkbar @build-load="handlePartsChanged" />
         <table
           class="mx-4 mb-10 w-full bg-neutral-800 rounded-lg overflow-hidden shadow-md"
         >
@@ -60,7 +58,6 @@ import SystemRequirementsSidebar from "../components/SystemRequirementsSidebar.v
 import ComponentsListItem from "../components/ComponentsListItem.vue";
 import CompatibilityMessages from "../components/CompatibilityMessages.vue";
 import { useScreenSize } from "../composables/useScreenSize";
-import Linkbar from "../components/Link.vue";
 import { computed, onMounted, ref } from "vue";
 
 const selected = ref<any>(null);
