@@ -24,185 +24,190 @@
           <span class="font-bold mt-1"> Search </span>
         </BaseButton>
       </div>
-      <TransitionGroup tag="div" name="list-small">
-        <div
-          v-if="isSearchOpen || !isMobile"
-          class="flex flex-col-reverse md:flex-row items-start md:items-end -ml-10 md:ml-0 -mt-6 md:mt-0 scale-75 md:scale-100 transition-all overflow-clip"
-        >
-          <div class="flex-grow">
-            <div class="flex flex-col md:flex-row items-start md:items-center">
-              <BaseButton
-                label="Secondary button"
-                severity="secondary"
-                class="my-4 mr-5"
-                v-if="isCompareButtonVisible && !isMobile"
-                @click="goToComparePage"
+      <div
+        v-if="isSearchOpen || !isMobile"
+        class="flex flex-col-reverse md:flex-row items-start md:items-end -ml-10 md:ml-0 -mt-6 md:mt-0 scale-75 md:scale-100 transition-all overflow-clip"
+      >
+        <div class="flex-grow">
+          <div class="flex flex-col md:flex-row items-start md:items-center">
+            <BaseButton
+              label="Secondary button"
+              severity="secondary"
+              class="my-4 mr-5"
+              v-if="isCompareButtonVisible && !isMobile"
+              @click="goToComparePage"
+            >
+              Compare
+            </BaseButton>
+            <div class="flex flex-col mr-2 -mt-5">
+              <div
+                class="text-neutral-400 font-bold mb-1"
+                :style="{ fontSize: '.78rem' }"
               >
-                Compare
-              </BaseButton>
-              <div class="flex flex-col mr-2 -mt-5">
-                <div
-                  class="text-neutral-400 font-bold mb-1"
-                  :style="{ fontSize: '.78rem' }"
-                >
-                  System requirements filter
-                </div>
-                <Select
-                  v-model="systemRequirementsFilter"
-                  :options="systemRequirementFilterOptions"
-                  @update:modelValue="
-                    handleSystemRequirementsFilterChange($event)
-                  "
-                  :disabled="!games.length"
-                  placeholder="System requirements filter"
-                  class="h-10 w-64 mb-2 md:mb-0"
-                />
+                System requirements filter
               </div>
-              <BaseButton
-                @click="toggleCompatibilityFilter"
-                text
-                rounded
-                severity="secondary"
-                class="mb-2 md:mb-0 -ml-2 md:ml-0"
-              >
-                <BaseToggle
-                  v-model="isCompatibilityFilterEnabled"
-                  class="pointer-events-none"
-                />
-                <span class="font-bold mt-1"> Compatibility filter </span>
-              </BaseButton>
+              <Select
+                v-model="systemRequirementsFilter"
+                :options="systemRequirementFilterOptions"
+                @update:modelValue="
+                  handleSystemRequirementsFilterChange($event)
+                "
+                :disabled="!games.length"
+                placeholder="System requirements filter"
+                class="h-10 w-64 mb-2 md:mb-0"
+              />
             </div>
+            <BaseButton
+              @click="toggleCompatibilityFilter"
+              text
+              rounded
+              severity="secondary"
+              class="mb-2 md:mb-0 -ml-2 md:ml-0"
+            >
+              <BaseToggle
+                v-model="isCompatibilityFilterEnabled"
+                class="pointer-events-none"
+              />
+              <span class="font-bold mt-1"> Compatibility filter </span>
+            </BaseButton>
           </div>
-          <Search
-            :type="props.type"
-            @search="handleSearch"
-            class="mb-8 md:mb-0"
-          />
         </div>
-        <ul v-if="!fetchError && paginatedData.length">
-          <table
-            v-if="!isMobile"
-            class="mx-0 my-5 w-full bg-neutral-800 text-white border-separate border-spacing-0"
-          >
-            <thead>
-              <tr>
-                <th
-                  class="border-b border-neutral-400 px-6 py-3 text-left bg-neutral-700"
-                ></th>
-                <th
-                  v-for="(key, index) in sortedKeys"
-                  :key="index"
-                  class="border-b border-neutral-400 px-6 py-3 text-left bg-neutral-700 capitalize text-nowrap"
-                >
-                  <div>
-                    {{ formatKey(key) }}
-                  </div>
-                </th>
-                <th
-                  class="border-b border-neutral-400 px-6 py-3 text-left bg-neutral-700"
-                ></th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr
-                v-for="item in paginatedData"
-                :key="item._id"
-                class="hover:bg-neutral-700"
-              >
-                <td class="border-b border-neutral-400 px-6 py-4">
-                  <Checkbox
-                    v-model="item.selected"
-                    :binary="true"
-                    @change="handleCheckboxChange(item)"
-                  />
-                </td>
-                <td
-                  v-for="key in sortedKeys"
-                  :key="key"
-                  class="border-b border-neutral-400 px-6 py-4"
-                >
-                  <div v-if="item[key]">
-                    <div v-if="key === 'price_data'">
-                      {{ item[key][0].price }} lei
-                    </div>
-                    <div v-else-if="key === 'image'">
-                      <img :src="item[key]" class="h-12 w-20 object-contain" />
-                    </div>
-                    <BenchmarkBar
-                      v-else-if="key === 'benchmark'"
-                      :value="item[key]"
-                      :maxValue="type === 'cpus' ? 133 : 370"
-                    />
-                    <div v-else>
-                      {{ formatValue(item[key], key) }}
-                    </div>
-                  </div>
-                  <div
-                    v-if="key === 'store' && item['price_data']"
-                    class="text-nowrap"
-                  >
-                    <a :href="item['price_data'][0].url">
-                      <img
-                        :src="item['price_data'][0].logo"
-                        :alt="item['price_data'][0].shop"
-                        class="h-12 w-20 object-contain inline"
-                      />
-                    </a>
-                    <CaretIcon
-                      @click="modalData = item"
-                      class="h-12 text-neutral-500 hover:text-neutral-200 inline rotate-90 p-3 transition-all"
-                    />
-                  </div>
-                </td>
-
-                <td class="border-b border-neutral-400 px-6 py-4">
-                  <BaseButton
-                    @click="handleAddClick(item)"
-                    class="bg-blue-500 text-white hover:bg-blue-600"
-                  >
-                    Add
-                  </BaseButton>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div v-else>
-            <MobileComponentCard
-              v-for="item in paginatedData"
-              :part="item"
-              :key="item._id"
-              @select="handleCheckboxChange(item)"
-              @store-modal-open="modalData = $event"
-              @add="handleAddClick"
-              :keys="sortedKeys"
-              :type="type"
-            />
-          </div>
-        </ul>
-        <p v-if="fetchError" class="text-red-500 mt-4">
-          Error: {{ fetchError }}
+        <Search
+          :type="props.type"
+          @search="handleSearch"
+          class="mb-8 md:mb-0"
+        />
+      </div>
+      <Transition name="opacity-slide-left">
+        <p v-if="isLoading" class="mt-4">
+          <ComponentsLoader />
         </p>
-        <p v-if="isLoading" class="mt-4"></p>
+        <div v-else>
+          <ul v-if="!fetchError && paginatedData.length">
+            <table
+              v-if="!isMobile"
+              class="mx-0 my-5 w-full bg-neutral-800 text-white border-separate border-spacing-0"
+            >
+              <thead>
+                <tr>
+                  <th
+                    class="border-b border-neutral-400 px-6 py-3 text-left bg-neutral-700"
+                  ></th>
+                  <th
+                    v-for="(key, index) in sortedKeys"
+                    :key="index"
+                    class="border-b border-neutral-400 px-6 py-3 text-left bg-neutral-700 capitalize text-nowrap"
+                  >
+                    <div>
+                      {{ formatKey(key) }}
+                    </div>
+                  </th>
+                  <th
+                    class="border-b border-neutral-400 px-6 py-3 text-left bg-neutral-700"
+                  ></th>
+                </tr>
+              </thead>
 
-        <div class="flex justify-center items-center mt-5">
-          <BaseButton
-            @click="prevPage"
-            :disabled="currentPage === 1"
-            class="w-15 h-8"
-          >
-            Back
-          </BaseButton>
-          <span class="p-5">{{ currentPage }} / {{ totalPages }}</span>
-          <BaseButton
-            @click="nextPage"
-            :disabled="currentPage === totalPages"
-            class="w-15 h-8"
-          >
-            Next
-          </BaseButton>
+              <tbody>
+                <tr
+                  v-for="item in paginatedData"
+                  :key="item._id"
+                  class="hover:bg-neutral-700"
+                >
+                  <td class="border-b border-neutral-400 px-6 py-4">
+                    <Checkbox
+                      v-model="item.selected"
+                      :binary="true"
+                      @change="handleCheckboxChange(item)"
+                    />
+                  </td>
+                  <td
+                    v-for="key in sortedKeys"
+                    :key="key"
+                    class="border-b border-neutral-400 px-6 py-4"
+                  >
+                    <div v-if="item[key]">
+                      <div v-if="key === 'price_data'">
+                        {{ item[key][0].price }} lei
+                      </div>
+                      <div v-else-if="key === 'image'">
+                        <img
+                          :src="item[key]"
+                          class="h-12 w-20 object-contain"
+                        />
+                      </div>
+                      <BenchmarkBar
+                        v-else-if="key === 'benchmark'"
+                        :value="item[key]"
+                        :maxValue="type === 'cpus' ? 133 : 370"
+                      />
+                      <div v-else>
+                        {{ formatValue(item[key], key) }}
+                      </div>
+                    </div>
+                    <div
+                      v-if="key === 'store' && item['price_data']"
+                      class="text-nowrap"
+                    >
+                      <a :href="item['price_data'][0].url">
+                        <img
+                          :src="item['price_data'][0].logo"
+                          :alt="item['price_data'][0].shop"
+                          class="h-12 w-20 object-contain inline"
+                        />
+                      </a>
+                      <CaretIcon
+                        @click="modalData = item"
+                        class="h-12 text-neutral-500 hover:text-neutral-200 inline rotate-90 p-3 transition-all"
+                      />
+                    </div>
+                  </td>
+
+                  <td class="border-b border-neutral-400 px-6 py-4">
+                    <BaseButton
+                      @click="handleAddClick(item)"
+                      class="bg-blue-500 text-white hover:bg-blue-600"
+                    >
+                      Add
+                    </BaseButton>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-else>
+              <MobileComponentCard
+                v-for="item in paginatedData"
+                :part="item"
+                :key="item._id"
+                @select="handleCheckboxChange(item)"
+                @store-modal-open="modalData = $event"
+                @add="handleAddClick"
+                :keys="sortedKeys"
+                :type="type"
+              />
+            </div>
+          </ul>
         </div>
-      </TransitionGroup>
+      </Transition>
+      <p v-if="fetchError" class="text-red-500 mt-4">Error: {{ fetchError }}</p>
+
+      <div class="flex justify-center items-center mt-5">
+        <BaseButton
+          @click="prevPage"
+          :disabled="currentPage === 1"
+          class="w-15 h-8"
+        >
+          Back
+        </BaseButton>
+        <span class="p-5">{{ currentPage }} / {{ totalPages }}</span>
+        <BaseButton
+          @click="nextPage"
+          :disabled="currentPage === totalPages"
+          class="w-15 h-8"
+        >
+          Next
+        </BaseButton>
+      </div>
     </div>
     <SystemRequirementsSidebar class="flex-1" />
   </div>
@@ -266,6 +271,7 @@ import { buildQueryParams } from "../utils/buildQueryParams";
 import Select from "primevue/select";
 import { useScreenSize } from "../composables/useScreenSize";
 import MobileComponentCard from "../components/MobileComponentCard.vue";
+import ComponentsLoader from "../components/loaders/ComponentsLoader.vue";
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const props = defineProps<{ type: string }>();

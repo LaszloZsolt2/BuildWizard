@@ -300,7 +300,7 @@ watch(fetchedLink, () => {
 });
 </script>
 
-<style scoped>
+<style>
 .opacity-slide-left-enter-active {
   @apply transition-all duration-200 delay-200;
 }
