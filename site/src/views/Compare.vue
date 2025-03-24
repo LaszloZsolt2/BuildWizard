@@ -12,7 +12,7 @@
     </p>
     <div
       v-if="filteredComponents.length"
-      class="flex justify-center gap-4 my-12"
+      class="flex flex-col items-center md:flex-row justify-center gap-4 my-12"
     >
       <div
         v-for="component in filteredComponents"
@@ -109,34 +109,34 @@ const getTextColor = (value: any, key: string) => {
       return value === minValues.value[key]
         ? "text-green-400"
         : value === maxValues.value[key]
-        ? "text-red-600"
-        : "text-orange-400";
+          ? "text-red-600"
+          : "text-orange-400";
     }
     return value === maxValues.value[key]
       ? "text-green-400"
       : value === minValues.value[key]
-      ? "text-red-600"
-      : "text-orange-400";
+        ? "text-red-600"
+        : "text-orange-400";
   } else if (Array.isArray(value)) {
     if (key === "noise_level") {
       return value[0] === minValues2.value[key]
         ? "text-green-400"
         : value[0] === maxValues2.value[key]
-        ? "text-red-600"
-        : "text-orange-400";
+          ? "text-red-600"
+          : "text-orange-400";
     } else if (key === "airflow" || key === "speed") {
       return value[value.length - 1] === maxValues.value[key]
         ? "text-green-400"
         : value[value.length - 1] === minValues.value[key]
-        ? "text-red-600"
-        : "text-orange-400";
+          ? "text-red-600"
+          : "text-orange-400";
     } else if (key === "modules") {
       const product = value.reduce((acc, num) => acc * num, 1);
       return product === maxValues3.value[key]
         ? "text-green-400"
         : product === minValues3.value[key]
-        ? "text-red-600"
-        : "text-orange-400";
+          ? "text-red-600"
+          : "text-orange-400";
     }
   } else if (typeof value === "string" && key === "interface") {
     const rankedValue = rankInterface(value);
@@ -149,14 +149,14 @@ const getTextColor = (value: any, key: string) => {
     return rankedValue === maxRank
       ? "text-green-400"
       : rankedValue === minRank
-      ? "text-red-600"
-      : "text-orange-400";
+        ? "text-red-600"
+        : "text-orange-400";
   } else if (key === "smt" || key === "pwm" || key === "type") {
     return value === true || value === SSD
       ? "text-green-400"
       : value === false
-      ? "text-red-600"
-      : "";
+        ? "text-red-600"
+        : "";
   }
 
   return "";

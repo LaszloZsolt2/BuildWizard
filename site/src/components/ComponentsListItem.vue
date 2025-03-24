@@ -1,7 +1,7 @@
 <template>
   <template v-if="part.multiple">
     <!-- <tr v-for="p in selected[part.type]" class=""> -->
-    <td class="px-1 py-2 md:p-3 w-1/12">
+    <td class="px-1 py-2 md:p-3 w-1/12 scale-90 md:scale-100">
       <Parts :type="part.type">
         <div class="text-xs md:text-base">
           {{ partLabels[part.type as PartType] }}
@@ -9,15 +9,15 @@
       </Parts>
     </td>
     <td
-      class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-xs md:text-base text-white text-center"
+      class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-2xs md:text-base text-white text-center"
     >
-      <div v-for="p in selected[part.type]" class="my-8">
+      <div v-for="p in selected[part.type]" class="my-8 -ml-2 md:ml-0">
         {{ p.name || "" }}
       </div>
     </td>
 
     <td
-      class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-xs md:text-base text-white text-center"
+      class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-2xs md:text-base text-white text-center"
     >
       <div v-for="p in selected[part.type]" class="my-8">
         <div v-if="p?.price_data">{{ p?.price_data[0].price }} lei</div>
@@ -25,7 +25,7 @@
       </div>
     </td>
     <td
-      class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-xs md:text-base text-center"
+      class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-xs md:text-base text-center scale-75 md:scale-100"
     >
       <div v-for="p in selected[part.type]" class="my-8">
         <div v-if="p?.price_data" class="text-nowrap">
@@ -45,14 +45,14 @@
       </div>
     </td>
     <td class="text-right">
-      <div v-for="p in selected[part.type]" class="my-8">
+      <div v-for="p in selected[part.type]" class="my-8 pl-4 md:pl-0">
         <Delete :type="part.type" @delete="handleDelete(part.type, p)" />
       </div>
     </td>
     <!-- </tr> -->
   </template>
   <template v-else>
-    <td class="px-1 py-2 md:p-3 w-1/12">
+    <td class="px-1 py-2 md:p-3 w-1/12 scale-90 md:scale-100">
       <Parts :type="part.type">
         <div class="text-xs md:text-base">
           {{ partLabels[part.type as PartType] }}
@@ -60,21 +60,25 @@
       </Parts>
     </td>
     <td
-      class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-xs md:text-base text-white text-center"
+      class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-2xs md:text-base text-white text-center"
     >
-      {{ selected[part.type]?.name || "" }}
-      {{ chipsetText }}
+      <span class="-ml-2 md:ml-0">
+        {{ selected[part.type]?.name || "" }}
+        {{ chipsetText }}
+      </span>
     </td>
 
     <td
-      class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-xs md:text-base text-white text-center"
+      class="px-1 py-2 md:p-3 max-w-2 md:max-w-none text-2xs md:text-base text-white text-center"
     >
       <div v-if="selected[part.type]?.price">
         {{ selected[part.type].price[0]?.price }} lei
       </div>
       <div v-else-if="selected[part.type]">N/A</div>
     </td>
-    <td class="px-1 py-2 md:p-3 w-12 md:w-48 text-xs md:text-base text-center">
+    <td
+      class="px-1 py-2 md:p-3 w-12 md:w-48 text-xs md:text-base text-center scale-75 md:scale-100"
+    >
       <div v-if="selected[part.type]?.price" class="text-nowrap">
         <a :href="selected[part.type].price[0]?.url">
           <img
@@ -90,7 +94,7 @@
       </div>
       <div v-else-if="selected[part.type]">N/A</div>
     </td>
-    <td class="text-right">
+    <td class="text-right pl-4 md:pl-0">
       <Delete
         v-if="selected[part.type]"
         :type="part.type"

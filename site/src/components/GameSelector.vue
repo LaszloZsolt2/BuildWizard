@@ -17,21 +17,27 @@
       <BaseButton
         @click="scrollToBuilder"
         text
+        rounded
         severity="secondary"
-        class="text-xl font-bold text-neutral-200 m-1 mb-8 xl:mb-0 xl:m-5"
+        class="text-xl font-bold text-neutral-200 m-1 ml-2 md:ml-1 mb-8 xl:mb-0 xl:m-5"
       >
-        Build manually instead
-        <DownArrowIcon class="ml-2 h-6 inline-block" />
+        <div class="md:mx-2">
+          <span class="text-sm md:text-xl"> Build manually instead </span>
+          <DownArrowIcon class="ml-2 h-4 md:h-6 inline-block" />
+        </div>
       </BaseButton>
     </div>
 
     <div class="flex flex-col xl:items-end">
       <div class="flex flex-col xl:flex-row flex-1">
         <div
-          class="right flex-1 2xl:min-w-96 xl:max-w-96 mx-3 mt-4 content-top"
+          class="right flex-1 2xl:min-w-96 xl:max-w-96 mx-3 -mt-4 md:mt-4 content-top"
         >
           <TransitionGroup tag="div" name="list">
-            <div class="text-neutral-200 font-bold text-lg" key="select-label">
+            <div
+              class="text-neutral-200 font-bold text-md md:text-lg"
+              key="select-label"
+            >
               Select games and software
             </div>
             <SearchableSelector
@@ -54,15 +60,19 @@
               severity="secondary"
               @click="removeGame(game)"
             >
-              {{ game.name }}
-              <TrashIcon class="m-1 h-4 inline-block" />
+              <span class="text-xs mt-0.5 md:text-base">
+                {{ game.name }}
+              </span>
+              <TrashIcon class="md:m-1 h-3 md:h-4 inline-block" />
             </BaseButton>
           </TransitionGroup>
         </div>
         <div
           class="right flex-1 2xl:min-w-96 xl:max-w-96 mx-3 mt-4 content-top"
         >
-          <div class="text-neutral-200 font-bold text-lg">Set a budget</div>
+          <div class="text-neutral-200 font-bold text-md md:text-lg">
+            Set a budget
+          </div>
           <BaseInput
             v-model="budget"
             class="block mt-3 mb-2"
@@ -106,7 +116,7 @@
     class="overflow-x-hidden transition-all"
   >
     <template #header
-      ><h1 class="text-3xl mt-2">Build suggestions</h1></template
+      ><h1 class="text-xl md:text-3xl mt-2">Build suggestions</h1></template
     >
     <div>
       <Transition name="list">
@@ -286,6 +296,11 @@ const {
 const { fetchedData, fetchError, isLoading } = useFetch(gameSearchUrl);
 
 watch(fetchedData, (data) => {
+  data?.forEach((game: any) => {
+    if (selectedGames.value.filter((g: any) => g._id === game._id).length) {
+      game.name = `✓‎ ‎ ${game.name}`;
+    }
+  });
   filteredGames.value = data || [];
 });
 
@@ -303,14 +318,29 @@ onMounted(() => {
   scale: 0.95;
 }
 .list-enter-active,
-.list-leave-active {
+.list-leave-active,
+.list-small-enter-active,
+.list-small-leave-active {
   transition: all 0.3s;
 }
 .list-leave-active {
   position: absolute;
 }
 
-.list-move {
+.list-move,
+.list-small-move {
   transition: all 0.3s;
+}
+
+.list-small-enter-from,
+.list-small-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+  scale: 0.5;
+}
+
+.list-small-leave-active {
+  position: absolute;
+  width: 0;
 }
 </style>

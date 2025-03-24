@@ -32,8 +32,8 @@
       <div class="content p-8 pl-10 min-w-96 w-full overflow-y-scroll h-full">
         <Transition name="opacity-slide-right">
           <div v-if="systemRequirements">
-            <h2 class="text-xl font-bold">System requirements</h2>
-            <p class="text-neutral-400 ml-2 my-2">
+            <h2 class="text-lg md:text-xl font-bold">System requirements</h2>
+            <p class="text-sm md:text-base text-neutral-400 ml-2 my-2">
               {{
                 currentGames &&
                 getFirstNStrings(
@@ -55,9 +55,9 @@
             <div class="pl-0 pt-2">
               <ul class="list-inside pl-5">
                 <li class="mb-2">
-                  <p class="font-bold">Storage</p>
+                  <p class="mb-2 font-bold">Storage</p>
                   <div>
-                    <p class="text-neutral-400 ml-4">
+                    <p class="text-sm md:text-base text-neutral-400 ml-4">
                       <ReqirementsMet
                         :met="systemRequirements.requirementsMet.space"
                       />
@@ -111,7 +111,10 @@ const panelStateWidths = {
   },
 };
 
-const panelState = ref<keyof typeof panelStateWidths>("hidden");
+const panelState = ref<keyof typeof panelStateWidths>(
+  (localStorage.getItem("panelState") as keyof typeof panelStateWidths) ||
+    "hidden"
+);
 const systemRequirements = ref<any>(null);
 const currentGames = ref<any[]>([]);
 const { screenWidth } = useScreenSize();
@@ -153,6 +156,9 @@ watch(() => props.gameData, handleGameDataChanged, { immediate: true });
 watch(() => props.parts, handleGameDataChanged, { immediate: true });
 watch(fetchedData, (data) => {
   systemRequirements.value = data;
+});
+watch(panelState, (state) => {
+  localStorage.setItem("panelState", state);
 });
 </script>
 
