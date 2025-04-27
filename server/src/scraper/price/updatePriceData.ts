@@ -12,7 +12,7 @@ import HardDrives from "../../models/HardDrives";
 import PowerSupplies from "../../models/PowerSupplies";
 
 const BATCH_SIZE = 100;
-const DELAY_MS = 900000;
+const DELAY_MS = 60000;
 
 const categories = {
   cpus: ["procesoare"],

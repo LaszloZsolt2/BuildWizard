@@ -5,7 +5,9 @@
     :style="{
       maxWidth:
         screenWidth < 768
-          ? `calc(${screenWidth}px - ${selectedGames.length ? `${screenWidth * 0.175}px` : '2rem'})`
+          ? `calc(${screenWidth}px - ${
+              selectedGames.length ? `${screenWidth * 0.175}px` : '2rem'
+            })`
           : undefined,
     }"
   >
@@ -45,6 +47,7 @@
               v-model="gameQuery"
               :suggestions="filteredGames"
               @option-select="onGameSelect"
+              @keydown="handleKeyDown"
               placeholder="Search..."
               class="block my-3"
               :minLength="0"
@@ -87,7 +90,9 @@
           <div
             class="-mt-16 pt-1 text-neutral-400 pointer-events-none text-nowrap w-4"
             :style="{
-              transform: `translateX(${budget.toString().length * 0.575 + 1}rem)`,
+              transform: `translateX(${
+                budget.toString().length * 0.575 + 1
+              }rem)`,
               opacity: budget ? 1 : 0,
             }"
           >
@@ -211,6 +216,13 @@ function onGameSelect(game: any) {
   emit("game-data-changed", currentGames);
 }
 
+function handleKeyDown(event: KeyboardEvent) {
+  if (event.key === "Enter" && filteredGames.value.length > 0) {
+    const firstGame = filteredGames.value[0];
+    onGameSelect({ value: firstGame });
+  }
+}
+
 function removeGame(game: any) {
   const currentGames = JSON.parse(localStorage.getItem("games") || "[]");
   const newGames = currentGames.filter((g: any) => g._id !== game._id);
@@ -235,9 +247,10 @@ function onBuild() {
     localStorage.getItem("selectedComponents") || "{}"
   );
   const ids = selectedGames.value.map((g: any) => g._id);
-  buildUrl.value = `${apiBaseUrl}/build/?${buildQueryParams(ids, removePriceField(components))}${
-    budget.value ? `&budget=${budget.value}` : ""
-  }`;
+  buildUrl.value = `${apiBaseUrl}/build/?${buildQueryParams(
+    ids,
+    removePriceField(components)
+  )}${budget.value ? `&budget=${budget.value}` : ""}`;
   isModalOpen.value = true;
 }
 
@@ -282,7 +295,9 @@ function onBuildAccept() {
 
 watch(gameQuery, (newQuery) => {
   if (newQuery) {
-    gameSearchUrl.value = `${apiBaseUrl}/system-requirements/search?q=${encodeURIComponent(newQuery)}`;
+    gameSearchUrl.value = `${apiBaseUrl}/system-requirements/search?q=${encodeURIComponent(
+      newQuery
+    )}`;
   } else {
     gameSearchUrl.value = "";
   }

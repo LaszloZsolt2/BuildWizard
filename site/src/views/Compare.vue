@@ -1,12 +1,13 @@
 <template>
   <div class="max-w-6xl mx-auto p-3">
-    <td class="px-1 py-2 md:p-3 text-neutral-100 flex justify-center">
+    <div class="px-1 py-2 md:p-3 text-neutral-100 flex justify-center">
       <Parts :type="type">
         <div class="text-xs mx-4 text-center md:text-base">
           {{ type }}
         </div>
       </Parts>
-    </td>
+    </div>
+
     <p class="text-3xl font-bold text-white text-center mb-6">
       Compare Selected {{ props.type }}
     </p>
@@ -30,7 +31,7 @@
           <h2 class="text-3xl font-semibold mb-4 text-center">
             {{ component.name }}
           </h2>
-          <td class="py-3">
+          <div class="py-3">
             <div class="flex items-center justify-between">
               <BaseButton @click="handleAddClick(component)"> Add </BaseButton>
               <div
@@ -44,7 +45,7 @@
                 </div>
               </div>
             </div>
-          </td>
+          </div>
         </div>
 
         <div v-for="(value, key) in component" :key="key" class="mb-3">
@@ -109,34 +110,34 @@ const getTextColor = (value: any, key: string) => {
       return value === minValues.value[key]
         ? "text-green-400"
         : value === maxValues.value[key]
-          ? "text-red-600"
-          : "text-orange-400";
+        ? "text-red-600"
+        : "text-orange-400";
     }
     return value === maxValues.value[key]
       ? "text-green-400"
       : value === minValues.value[key]
-        ? "text-red-600"
-        : "text-orange-400";
+      ? "text-red-600"
+      : "text-orange-400";
   } else if (Array.isArray(value)) {
     if (key === "noise_level") {
       return value[0] === minValues2.value[key]
         ? "text-green-400"
         : value[0] === maxValues2.value[key]
-          ? "text-red-600"
-          : "text-orange-400";
+        ? "text-red-600"
+        : "text-orange-400";
     } else if (key === "airflow" || key === "speed") {
       return value[value.length - 1] === maxValues.value[key]
         ? "text-green-400"
         : value[value.length - 1] === minValues.value[key]
-          ? "text-red-600"
-          : "text-orange-400";
+        ? "text-red-600"
+        : "text-orange-400";
     } else if (key === "modules") {
       const product = value.reduce((acc, num) => acc * num, 1);
       return product === maxValues3.value[key]
         ? "text-green-400"
         : product === minValues3.value[key]
-          ? "text-red-600"
-          : "text-orange-400";
+        ? "text-red-600"
+        : "text-orange-400";
     }
   } else if (typeof value === "string" && key === "interface") {
     const rankedValue = rankInterface(value);
@@ -149,14 +150,14 @@ const getTextColor = (value: any, key: string) => {
     return rankedValue === maxRank
       ? "text-green-400"
       : rankedValue === minRank
-        ? "text-red-600"
-        : "text-orange-400";
+      ? "text-red-600"
+      : "text-orange-400";
   } else if (key === "smt" || key === "pwm" || key === "type") {
     return value === true || value === SSD
       ? "text-green-400"
       : value === false
-        ? "text-red-600"
-        : "";
+      ? "text-red-600"
+      : "";
   }
 
   return "";

@@ -1,4 +1,10 @@
 {
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "types": ["cypress"]
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
