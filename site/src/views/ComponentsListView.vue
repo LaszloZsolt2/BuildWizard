@@ -91,15 +91,15 @@ function handleGameDataChanged(gameData?: any) {
 }
 
 const partsList = [
-  { type: "cpus", multiple: false },
-  { type: "cpu-coolers", multiple: false },
-  { type: "gpus", multiple: false },
-  { type: "cases", multiple: false },
-  { type: "case-fans", multiple: true },
-  { type: "hard-drives", multiple: true },
-  { type: "memories", multiple: true },
-  { type: "motherboards", multiple: false },
-  { type: "power-supplies", multiple: false },
+  { type: "cpus", multiple: false, label: "CPUs" },
+  { type: "cpu-coolers", multiple: false, label: "CPU Coolers" },
+  { type: "gpus", multiple: false, label: "GPUs" },
+  { type: "cases", multiple: false, label: "Cases" },
+  { type: "case-fans", multiple: true, label: "Case Fans" },
+  { type: "hard-drives", multiple: true, label: "Hard Drives" },
+  { type: "memories", multiple: true, label: "Memories" },
+  { type: "motherboards", multiple: false, label: "Motherboards" },
+  { type: "power-supplies", multiple: false, label: "Power Supplies" },
 ];
 
 onMounted(() => {

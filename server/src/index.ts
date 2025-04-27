@@ -44,7 +44,7 @@ db.on("connected", () => {
   console.log(`Database name: ${db.name}`);
 
   // update price data every 24 hours
-  setInterval(updatePriceData, 86400000);
+  setInterval(updatePriceData, 7200000);
 
   // keep the parts cache up to date
   if (process.env.NODE_ENV === "production") {

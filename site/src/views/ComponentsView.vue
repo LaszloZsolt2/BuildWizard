@@ -272,6 +272,8 @@ import Select from "primevue/select";
 import { useScreenSize } from "../composables/useScreenSize";
 import MobileComponentCard from "../components/MobileComponentCard.vue";
 import ComponentsLoader from "../components/loaders/ComponentsLoader.vue";
+import { nextTick } from "vue";
+
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const props = defineProps<{ type: string }>();
@@ -500,14 +502,15 @@ watch(fetchedData, (newValue) => {
 });
 
 const handleCheckboxChange = (item: SelectableComponent) => {
-  console.log(item.selected);
   const selectedCount = paginatedData.value.filter(
-    (item: SelectableComponent) => item.selected
+    (c: SelectableComponent) => c.selected
   ).length;
 
   if (selectedCount > maxSelection) {
-    item.selected = false;
-    errorDialogVisible.value = true;
+    nextTick(() => {
+      item.selected = false;
+      errorDialogVisible.value = true;
+    });
   }
 };
 
