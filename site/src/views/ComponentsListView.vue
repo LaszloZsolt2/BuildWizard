@@ -59,6 +59,21 @@ import ComponentsListItem from "../components/ComponentsListItem.vue";
 import CompatibilityMessages from "../components/CompatibilityMessages.vue";
 import { useScreenSize } from "../composables/useScreenSize";
 import { computed, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+import { watch } from "vue";
+
+const route = useRoute();
+
+watch(
+  () => route.fullPath,
+  () => {
+    const storedData = localStorage.getItem("selectedComponents");
+    if (storedData) {
+      selected.value = JSON.parse(storedData);
+      console.log("Frissítve route változáskor:", selected.value);
+    }
+  }
+);
 
 const selected = ref<any>(null);
 const games = ref<any>(null);

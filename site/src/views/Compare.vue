@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-6xl mx-auto p-3">
+  <div class="w-full px-4 md:px-12 overflow-x-hidden">
     <div class="px-1 py-2 md:p-3 text-neutral-100 flex justify-center">
       <Parts :type="type">
         <div class="text-xs mx-4 text-center md:text-base">
@@ -11,49 +11,55 @@
     <p class="text-3xl font-bold text-white text-center mb-6">
       Compare Selected {{ props.type }}
     </p>
+
     <div
       v-if="filteredComponents.length"
-      class="flex flex-col items-center md:flex-row justify-center gap-4 my-12"
+      class="my-12 overflow-x-auto md:overflow-x-hidden"
     >
       <div
-        v-for="component in filteredComponents"
-        :key="component._id"
-        class="bg-neutral-700 p-12 border border-neutral-500 rounded-lg shadow-lg max-w-xs flex-shrink-0 text-neutral-100"
+        class="flex flex-row gap-4 overflow-x-auto px-4 w-full"
+        :class="{
+          'justify-center': filteredComponents.length <= 4,
+          'justify-evenly': filteredComponents.length > 4,
+        }"
       >
-        <div class="border-b-2 border-b-neutral-400 -mx-10 px-12 mb-6">
-          <div v-if="component.image" class="mb-4">
-            <img
-              :src="component.image"
-              class="h-32 w-full object-contain mx-auto"
-            />
-          </div>
+        <div
+          v-for="component in filteredComponents"
+          :key="component._id"
+          class="bg-neutral-700 p-6 border border-neutral-500 rounded-lg shadow-lg w-80 flex-shrink-0 text-neutral-100 min-h-[650px]"
+        >
+          <div class="border-b-2 border-b-neutral-400 -mx-4 px-6 mb-6">
+            <div v-if="component.image" class="mb-4">
+              <img
+                :src="component.image"
+                class="h-32 w-full object-contain mx-auto"
+              />
+            </div>
 
-          <h2 class="text-3xl font-semibold mb-4 text-center">
-            {{ component.name }}
-          </h2>
-          <div class="py-3">
-            <div class="flex items-center justify-between">
-              <BaseButton @click="handleAddClick(component)"> Add </BaseButton>
-              <div
-                v-if="component.price_data"
-                class="ml-4 border-b-neutral-400"
-              >
-                <div>
-                  <strong class="text-lg font-medium">Lowest Price:</strong>
-                  <br />
-                  <span>{{ component.price_data[0]?.price }} lei</span>
+            <h2 class="text-2xl font-semibold mb-4 text-center">
+              {{ component.name }}
+            </h2>
+            <div class="py-3">
+              <div class="flex items-start justify-start gap-2">
+                <BaseButton @click="handleAddClick(component)">Add</BaseButton>
+                <div class="leading-tight">
+                  <div class="text-lg font-medium">Lowest Price:</div>
+                  <div class="text-lg">
+                    {{ component.price_data[0]?.price }} lei
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div v-for="(value, key) in component" :key="key" class="mb-3">
-          <div v-if="!hiddenKeys.includes(key as string)">
-            <strong class="text-lg font-medium">{{ formatKey(key) }}:</strong>
-            <span :class="getTextColor(value, key as any)" class="ml-2">
-              {{ formatValue(value, key as string, props.type) }}
-            </span>
+          <div v-for="(value, key) in component" :key="key" class="mb-2">
+            <div v-if="!hiddenKeys.includes(key as string)">
+              <strong class="text-lg font-medium">{{ formatKey(key) }}:</strong>
+
+              <span :class="getTextColor(value, key as any)" class="ml-2">
+                {{ formatValue(value, key as string, props.type) }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -90,13 +96,11 @@ const formatKey = (key: string | number) => {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
-const hiddenKeys = ["image", "price", "price_data", "name"];
+const hiddenKeys = ["image", "price", "price_data", "name", "_id"];
 const filteredComponents = computed<ComponentBase[]>(() =>
-  selectedComponents.value.map((component) => {
-    const { selected, __v, _id, power_consumption, price_per_gb, ...filtered } =
-      component;
-    return filtered as ComponentBase;
-  })
+  selectedComponents.value.map(
+    ({ selected, __v, ...rest }) => rest as ComponentBase
+  )
 );
 
 const getTextColor = (value: any, key: string) => {
@@ -107,6 +111,13 @@ const getTextColor = (value: any, key: string) => {
       key === "cas_latency" ||
       key === "first_word_latency"
     ) {
+      return value === minValues.value[key]
+        ? "text-green-400"
+        : value === maxValues.value[key]
+        ? "text-red-600"
+        : "text-orange-400";
+    }
+    if (key === "power_consumption") {
       return value === minValues.value[key]
         ? "text-green-400"
         : value === maxValues.value[key]
@@ -277,7 +288,7 @@ type Props = {
 const props = defineProps<Props>();
 
 const handleAddClick = (item: ComponentBase) => {
-  emit("add", { name: item.name, price: item.price_data[0]?.price });
+  emit("add", { name: item.name, price: item.price_data });
 
   const selectedComponents = JSON.parse(
     localStorage.getItem("selectedComponents") || "{}"
@@ -299,18 +310,19 @@ const handleAddClick = (item: ComponentBase) => {
       price: item.price_data,
       _id: item._id,
     };
+
+    if (props.type === "gpus") {
+      selectedComponents["gpus"].chipset = (item as any).chipset;
+    }
   }
+
   localStorage.setItem(
     "selectedComponents",
     JSON.stringify(selectedComponents)
   );
+
   router.push({
     name: "home",
-    query: {
-      type: props.type,
-      name: item.name,
-      price: item.price_data[0]?.price?.toString(),
-    },
   });
 };
 
