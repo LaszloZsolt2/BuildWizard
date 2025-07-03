@@ -71,7 +71,7 @@ let getAllParts: () => Promise<ComponentsType>;
 
 // store cached parts data in a file so that the data is not lost when the server restarts (while in development)
 if (process.env.NODE_ENV === "development") {
-  const CACHE_DURATION_MS = 10000000000000000000;
+  const CACHE_DURATION_MS = 300000;
   const CACHE_FILE_PATH = path.join(__dirname, "partsCache.json");
 
   function readCacheFromFile(): {
@@ -126,7 +126,7 @@ if (process.env.NODE_ENV === "development") {
   };
 } else if (process.env.NODE_ENV === "production") {
   // store cached parts data in memory
-  const CACHE_DURATION_MS = 3600000;
+  const CACHE_DURATION_MS = 300000; // 5 minutes
   let cachedData: ComponentsType | null = null;
   let lastFetchedTime: number | null = null;
 

@@ -43,8 +43,7 @@ db.on("connected", () => {
   console.log(`Connected to MongoDB at ${db.host}:${db.port}`);
   console.log(`Database name: ${db.name}`);
 
-  // update price data every 24 hours
-  setInterval(updatePriceData, 7200000);
+  startPriceUpdateCycle();
 
   // keep the parts cache up to date
   if (process.env.NODE_ENV === "production") {
@@ -78,5 +77,22 @@ app.use("/api/build", buildRouter);
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+function startPriceUpdateCycle() {
+  setTimeout(async () => {
+    console.log("Price update started...");
+    try {
+      await updatePriceData();
+      console.log("Price update finished. Waiting 24 hours for next run...");
+    } catch (error) {
+      console.error("Price update failed:", error);
+      console.log("Still waiting 24 hours before retrying...");
+    }
+
+    setTimeout(() => {
+      startPriceUpdateCycle();
+    }, 86400000);
+  }, 60000000); //60000
+}
 
 export default app;

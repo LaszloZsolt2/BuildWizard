@@ -7,14 +7,14 @@ const RAWG_API_KEY = process.env.RAWG_API_KEY;
 const RAWG_BASE_URL = "https://api.rawg.io/api";
 const MONGO_URI = process.env.MONGO_URI!;
 const COLLECTION_NAME = "system-requirements";
-const TOTAL_PAGES = 2; // növeld, ha több játék kell
+const TOTAL_PAGES = 8;
 
 console.log("RAWG_API_KEY:", RAWG_API_KEY);
 
 async function fetchAllGames() {
   let allGames: any[] = [];
   for (let page = 1; page <= TOTAL_PAGES; page++) {
-    console.log(`🔄 Lekérés: ${page}. oldal`);
+    console.log(` Lekérés: ${page}. oldal`);
     const res = await axios.get(`${RAWG_BASE_URL}/games`, {
       params: {
         key: RAWG_API_KEY,
@@ -27,7 +27,6 @@ async function fetchAllGames() {
   return allGames;
 }
 const knownVRAMs: Record<string, number> = {
-  // NVIDIA GeForce sorozat
   "GeForce GTX 750 Ti": 2,
   "GeForce GTX 760": 2,
   "GeForce GTX 770": 2,
@@ -55,7 +54,6 @@ const knownVRAMs: Record<string, number> = {
   "GeForce RTX 4080": 16,
   "GeForce RTX 4090": 24,
 
-  // AMD Radeon sorozat
   "Radeon RX 460": 2,
   "Radeon RX 470": 4,
   "Radeon RX 480": 8,
@@ -81,7 +79,6 @@ const knownVRAMs: Record<string, number> = {
   "Radeon RX 7900 XT": 20,
   "Radeon RX 7900 XTX": 24,
 
-  // Régebbi modellek
   "Radeon R9 280": 3,
   "Radeon R9 290": 4,
   "Radeon R9 380": 2,
@@ -93,7 +90,6 @@ const knownVRAMs: Record<string, number> = {
   "GeForce 8800": 0.512,
   "Radeon X1900": 0.256,
 
-  // Intel integrált megoldások
   "Intel HD Graphics 4000": 0.128,
   "Intel HD Graphics 5000": 0.256,
   "Intel UHD Graphics 620": 0.5,
@@ -103,11 +99,31 @@ const knownVRAMs: Record<string, number> = {
 
 function estimateVRAMFromGPU(gpuName?: string): number | undefined {
   if (!gpuName) return undefined;
+
   for (const key in knownVRAMs) {
     if (gpuName.toLowerCase().includes(key.toLowerCase())) {
       return knownVRAMs[key];
     }
   }
+
+  const lowerGpu = gpuName.toLowerCase();
+
+  if (lowerGpu.includes("geforce") && lowerGpu.includes("32 mb")) {
+    return 0.031;
+  }
+
+  if (lowerGpu.includes("geforce")) {
+    return 0.5;
+  }
+
+  if (lowerGpu.includes("radeon")) {
+    return 0.5;
+  }
+
+  if (lowerGpu.includes("intel")) {
+    return 0.128;
+  }
+
   return undefined;
 }
 
@@ -134,7 +150,6 @@ async function fetchGameDetail(gameId: number) {
 
   const { minimum, recommended, space } = parseRequirements(pcReqs);
 
-  // Ha minden info hiányzik, ne mentsük
   if (isEmptyRequirements(minimum) && isEmptyRequirements(recommended))
     return null;
 
@@ -144,7 +159,7 @@ async function fetchGameDetail(gameId: number) {
     type: "game",
     minimum,
     recommended,
-    space, // külön mezőként tároljuk a storage-ot
+    space,
   };
 }
 
@@ -159,6 +174,22 @@ function extractNumberSmart(
   return undefined;
 }
 
+function extractRamFromText(text: string): number | null {
+  const ramRegexes = [
+    /(?:Memory|RAM):?\s*(\d+)\s*(GB|MB)/i,
+    /(\d+)\s*(GB|MB)\s*(?:RAM|memory)/i,
+  ];
+  for (const regex of ramRegexes) {
+    const match = regex.exec(text);
+    if (match) {
+      const value = parseInt(match[1], 10);
+      const unit = match[2].toUpperCase();
+      return unit === "MB" ? +(value / 1024).toFixed(1) : value;
+    }
+  }
+  return null;
+}
+
 function parseSingleRequirement(text?: string) {
   if (!text) {
     return {
@@ -169,41 +200,80 @@ function parseSingleRequirement(text?: string) {
     };
   }
 
-  const cpu = extractComponent(text, /(?:CPU|Processor):?\s*([^\n\r]+)/i);
-  const gpu = extractComponent(
+  const cpuRaw = extractComponent(text, /(?:CPU|Processor):?\s*([^\n\r]+)/i);
+  const gpuRaw = extractComponent(
     text,
     /(?:GPU|Graphics|Video Card):?\s*([^\n\r]+)/i
   );
 
-  const ram =
-    extractNumberSmart(text, [
-      /(?:Memory|RAM):?\s*(\d+)\s*GB/i,
-      /(\d+)\s*GB\s*(?:RAM|memory)/i,
-    ]) ?? null;
+  const cpu = cpuRaw ? normalizeCPUDescription(cpuRaw) : [];
 
-  const vram =
-    extractNumberSmart(text, [/(?:VRAM):?\s*(\d+)\s*GB/i]) ??
-    estimateVRAMFromGPU(gpu ?? undefined) ??
-    null;
+  const ramMatch = extractNumberSmart(text, [
+    /(?:Memory|RAM):?\s*(\d+)\s*GB/i,
+    /(\d+)\s*GB\s*(?:RAM|memory)/i,
+  ]);
 
-  const space =
-    extractNumberSmart(text, [
-      /(?:Storage|Disk Space|Hard Drive|Available Space):?\s*(\d+)\s*GB/i,
-      /(\d+)\s*GB\s*(?:storage|space|disk)/i,
-    ]) ?? null;
+  const ram = ramMatch ?? extractRamFromText(text) ?? null;
+
+  let vram = null;
+  const vramMatch = text.match(/(?:VRAM):?\s*(\d+)\s*(GB|MB)/i);
+
+  if (vramMatch) {
+    const value = parseInt(vramMatch[1], 10);
+    const unit = vramMatch[2].toUpperCase();
+    vram = unit === "MB" ? +(value / 1024).toFixed(1) : value;
+  } else {
+    vram = estimateVRAMFromGPU(gpuRaw ?? undefined) ?? null;
+  }
+
+  if (vram === null) {
+    vram = estimateVRAMFromGPU(gpuRaw ?? undefined) ?? null;
+  }
+
+  const spaceMatch = extractNumberSmart(text, [
+    /(?:Storage|Disk|Hard Drive(?: Space)?|Install Size):?\s*(\d+)\s*(GB|MB)/i,
+    /(\d+)\s*(GB|MB)\s*(?:available)?\s*(?:space|disk)?/i,
+  ]);
+
+  let space = null;
+  if (spaceMatch !== undefined) {
+    const match = /(\d+)\s*(GB|MB)/i.exec(text);
+    if (match) {
+      const value = parseInt(match[1], 10);
+      const unit = match[2].toUpperCase();
+      space = unit === "MB" ? +(value / 1024).toFixed(1) : value;
+    }
+  }
 
   return {
-    cpu: cpu ? [cpu] : [],
-    gpu: gpu ? [gpu] : [],
+    cpu,
+    gpu: gpuRaw ? [gpuRaw.trim()] : [],
     ram,
     vram,
     space,
   };
+  console.log(" Parsed:", { cpu, gpu: gpuRaw, ram, vram, space });
 }
 
 function parseRequirements(req?: { minimum?: string; recommended?: string }) {
   const minParsed = parseSingleRequirement(req?.minimum);
   const recParsed = parseSingleRequirement(req?.recommended);
+
+  if (isEmptyRequirements(minParsed) && !isEmptyRequirements(recParsed)) {
+    Object.assign(minParsed, recParsed);
+  } else if (
+    !isEmptyRequirements(minParsed) &&
+    isEmptyRequirements(recParsed)
+  ) {
+    Object.assign(recParsed, minParsed);
+  }
+
+  if (minParsed.ram === null && recParsed.ram !== null) {
+    minParsed.ram = recParsed.ram;
+  }
+  if (recParsed.ram === null && minParsed.ram !== null) {
+    recParsed.ram = minParsed.ram;
+  }
 
   const commonSpace = minParsed.space ?? recParsed.space ?? null;
 
@@ -227,10 +297,30 @@ function extractNumber(text: string, regex: RegExp): number | undefined {
   return match ? parseInt(match[1], 10) : undefined;
 }
 
+function normalizeCPUDescription(cpuText: string): string[] {
+  const results: string[] = [];
+
+  const modelMatches = cpuText.match(
+    /((Intel|AMD)[^,;\n\r()]+(?:\d{3,4}[A-Z]*|[FX][\d-]+)?)/gi
+  );
+  if (modelMatches) {
+    return modelMatches.map((cpu) => cpu.trim());
+  }
+
+  if (/true\s+dual\s+core/i.test(cpuText)) {
+    results.push("Dual Core (Intel/AMD)");
+  }
+  if (/quad\s+core/i.test(cpuText)) {
+    results.push("Quad Core (Intel/AMD)");
+  }
+
+  return results.length ? results : [cpuText.trim()];
+}
+
 async function saveToMongo(data: any[]) {
   const client = new MongoClient(MONGO_URI);
   await client.connect();
-  const db = client.db(); // Alapértelmezett adatbázis a URI-ból
+  const db = client.db();
   const collection = db.collection(COLLECTION_NAME);
 
   for (const game of data) {
@@ -240,7 +330,7 @@ async function saveToMongo(data: any[]) {
         { $set: game },
         { upsert: true }
       );
-      console.log(`✅ Mentve: ${game.name}`);
+      console.log(` Mentve: ${game.name}`);
     }
   }
 
