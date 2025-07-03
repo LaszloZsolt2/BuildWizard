@@ -1,0 +1,42 @@
+{
+  "name": "my-vue-app",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@primevue/themes": "^4.0.4",
+    "axios": "^1.7.4",
+    "dotenv": "^16.4.5",
+    "lodash": "^4.17.21",
+    "mongodb": "^6.8.0",
+    "pinia": "^3.0.2",
+    "primevue": "^4.0.4",
+    "util": "^0.12.5",
+    "uuid": "^10.0.0",
+    "vue": "^3.4.37",
+    "vue-router": "^4.4.3",
+    "vuetify": "^3.8.1"
+  },
+  "devDependencies": {
+    "@cypress/vue": "^6.0.2",
+    "@cypress/webpack-dev-server": "^4.0.2",
+    "@types/cypress": "^1.1.6",
+    "@types/lodash": "^4.17.7",
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-vue": "^5.2.3",
+    "@vue/test-utils": "^2.4.6",
+    "autoprefixer": "^10.4.20",
+    "cypress": "^14.2.1",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.10",
+    "typescript": "^5.8.3",
+    "vite": "^6.2.5",
+    "vite-svg-loader": "^5.1.0",
+    "vitest": "^3.1.1",
+    "vue-tsc": "^2.0.29"
+  }
+}
