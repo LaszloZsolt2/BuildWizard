@@ -1,6 +1,6 @@
 <template>
-  <div class="flex">
-    <div class="components text-white p-5 flex-grow">
+  <div class="flex flex-col lg:flex-row">
+    <div class="components text-white p-5 flex-grow w-full">
       <BaseButton
         label="Secondary button"
         severity="secondary"
@@ -26,7 +26,7 @@
       </div>
       <div
         v-if="isSearchOpen || !isMobile"
-        class="flex flex-col-reverse md:flex-row items-start md:items-end -ml-10 md:ml-0 -mt-6 md:mt-0 scale-75 md:scale-100 transition-all overflow-clip"
+        class="flex flex-col-reverse md:flex-row items-start md:items-end gap-4 md:gap-8 overflow-x-auto"
       >
         <div class="flex-grow">
           <div class="flex flex-col md:flex-row items-start md:items-center">
@@ -84,107 +84,109 @@
         </p>
         <div v-else>
           <ul v-if="!fetchError && paginatedData.length">
-            <table
-              v-if="!isMobile"
-              class="mx-0 my-5 w-full bg-neutral-800 text-white border-separate border-spacing-0"
-            >
-              <thead>
-                <tr>
-                  <th
-                    class="border-b border-neutral-400 px-6 py-3 text-left bg-neutral-700"
-                  ></th>
-                  <th
-                    v-for="(key, index) in sortedKeys"
-                    :key="index"
-                    class="border-b border-neutral-400 px-6 py-3 text-left bg-neutral-700 capitalize text-nowrap"
-                  >
-                    <div>
-                      {{ formatKey(key) }}
-                    </div>
-                  </th>
-                  <th
-                    class="border-b border-neutral-400 px-6 py-3 text-left bg-neutral-700"
-                  ></th>
-                </tr>
-              </thead>
+            <div class="overflow-x-auto">
+              <table
+                v-if="!isMobile"
+                class="min-w-full mx-0 my-5 bg-neutral-800 text-white border-separate border-spacing-0"
+              >
+                <thead>
+                  <tr>
+                    <th
+                      class="border-b border-neutral-400 px-6 py-3 text-left bg-neutral-700"
+                    ></th>
+                    <th
+                      v-for="(key, index) in sortedKeys"
+                      :key="index"
+                      class="border-b border-neutral-400 px-6 py-3 text-left bg-neutral-700 capitalize text-nowrap"
+                    >
+                      <div>
+                        {{ formatKey(key) }}
+                      </div>
+                    </th>
+                    <th
+                      class="border-b border-neutral-400 px-6 py-3 text-left bg-neutral-700"
+                    ></th>
+                  </tr>
+                </thead>
 
-              <tbody>
-                <tr
+                <tbody>
+                  <tr
+                    v-for="item in paginatedData"
+                    :key="item._id"
+                    class="hover:bg-neutral-700"
+                  >
+                    <td class="border-b border-neutral-400 px-6 py-4">
+                      <Checkbox
+                        v-model="item.selected"
+                        :binary="true"
+                        @change="handleCheckboxChange(item)"
+                      />
+                    </td>
+                    <td
+                      v-for="key in sortedKeys"
+                      :key="key"
+                      class="border-b border-neutral-400 px-6 py-4"
+                    >
+                      <div v-if="item[key]">
+                        <div v-if="key === 'price_data'">
+                          {{ item[key][0].price }} lei
+                        </div>
+                        <div v-else-if="key === 'image'">
+                          <img
+                            :src="item[key]"
+                            class="h-12 w-20 object-contain"
+                          />
+                        </div>
+                        <BenchmarkBar
+                          v-else-if="key === 'benchmark'"
+                          :value="item[key]"
+                          :maxValue="type === 'cpus' ? 133 : 370"
+                        />
+                        <div v-else>
+                          {{ formatValue(item[key], key) }}
+                        </div>
+                      </div>
+                      <div
+                        v-if="key === 'store' && item['price_data']"
+                        class="text-nowrap"
+                      >
+                        <a :href="item['price_data'][0].url">
+                          <img
+                            :src="item['price_data'][0].logo"
+                            :alt="item['price_data'][0].shop"
+                            class="h-12 w-20 object-contain inline"
+                          />
+                        </a>
+                        <CaretIcon
+                          @click="modalData = item"
+                          class="h-12 text-neutral-500 hover:text-neutral-200 inline rotate-90 p-3 transition-all"
+                        />
+                      </div>
+                    </td>
+
+                    <td class="border-b border-neutral-400 px-6 py-4">
+                      <BaseButton
+                        @click="handleAddClick(item)"
+                        class="bg-blue-500 text-white hover:bg-blue-600"
+                      >
+                        Add
+                      </BaseButton>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div v-else>
+                <MobileComponentCard
                   v-for="item in paginatedData"
+                  :part="item"
                   :key="item._id"
-                  class="hover:bg-neutral-700"
-                >
-                  <td class="border-b border-neutral-400 px-6 py-4">
-                    <Checkbox
-                      v-model="item.selected"
-                      :binary="true"
-                      @change="handleCheckboxChange(item)"
-                    />
-                  </td>
-                  <td
-                    v-for="key in sortedKeys"
-                    :key="key"
-                    class="border-b border-neutral-400 px-6 py-4"
-                  >
-                    <div v-if="item[key]">
-                      <div v-if="key === 'price_data'">
-                        {{ item[key][0].price }} lei
-                      </div>
-                      <div v-else-if="key === 'image'">
-                        <img
-                          :src="item[key]"
-                          class="h-12 w-20 object-contain"
-                        />
-                      </div>
-                      <BenchmarkBar
-                        v-else-if="key === 'benchmark'"
-                        :value="item[key]"
-                        :maxValue="type === 'cpus' ? 133 : 370"
-                      />
-                      <div v-else>
-                        {{ formatValue(item[key], key) }}
-                      </div>
-                    </div>
-                    <div
-                      v-if="key === 'store' && item['price_data']"
-                      class="text-nowrap"
-                    >
-                      <a :href="item['price_data'][0].url">
-                        <img
-                          :src="item['price_data'][0].logo"
-                          :alt="item['price_data'][0].shop"
-                          class="h-12 w-20 object-contain inline"
-                        />
-                      </a>
-                      <CaretIcon
-                        @click="modalData = item"
-                        class="h-12 text-neutral-500 hover:text-neutral-200 inline rotate-90 p-3 transition-all"
-                      />
-                    </div>
-                  </td>
-
-                  <td class="border-b border-neutral-400 px-6 py-4">
-                    <BaseButton
-                      @click="handleAddClick(item)"
-                      class="bg-blue-500 text-white hover:bg-blue-600"
-                    >
-                      Add
-                    </BaseButton>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div v-else>
-              <MobileComponentCard
-                v-for="item in paginatedData"
-                :part="item"
-                :key="item._id"
-                @select="handleCheckboxChange(item)"
-                @store-modal-open="modalData = $event"
-                @add="handleAddClick"
-                :keys="sortedKeys"
-                :type="type"
-              />
+                  @select="handleCheckboxChange(item)"
+                  @store-modal-open="modalData = $event"
+                  @add="handleAddClick"
+                  :keys="sortedKeys"
+                  :type="type"
+                />
+              </div>
             </div>
           </ul>
         </div>
@@ -209,7 +211,7 @@
         </BaseButton>
       </div>
     </div>
-    <SystemRequirementsSidebar class="flex-1" />
+    <SystemRequirementsSidebar class="hidden lg:block w-1/4" />
   </div>
   <Modal
     v-model="modalData"
@@ -374,7 +376,13 @@ const { fetchedData, fetchError, isLoading } = useFetch(fetchUrl);
 
 const allKeys = computed(() => {
   if (paginatedData.value.length === 0) return [];
-  return Object.keys(paginatedData.value[0]).filter((key) => key !== "_id");
+  const keySet = new Set<string>();
+  paginatedData.value.forEach((item: any) => {
+    Object.keys(item).forEach((key) => {
+      if (key !== "_id") keySet.add(key);
+    });
+  });
+  return Array.from(keySet);
 });
 
 const modalData = ref<any>(null);

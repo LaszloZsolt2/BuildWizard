@@ -34,9 +34,9 @@ async function updateComponentData(
   let processedCount = 0;
 
   for (const component of components) {
-    if (!component.price_data) {
-      continue;
-    }
+    //if (!component.price_data) {
+    // continue;
+    //}
 
     try {
       const searchQuery = getSearchQuery(component);

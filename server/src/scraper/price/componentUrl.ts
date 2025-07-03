@@ -4,7 +4,9 @@ import * as cheerio from "cheerio";
 export function getComponentUrl(query: string, categories: string[]) {
   return axios
     .get(
-      `https://www.compari.ro/CategorySearch.php?st=${encodeURIComponent(query)}`
+      `https://www.compari.ro/CategorySearch.php?st=${encodeURIComponent(
+        query
+      )}`
     )
     .then((response) => {
       const $ = cheerio.load(response.data);

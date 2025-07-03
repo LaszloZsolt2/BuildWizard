@@ -1,26 +1,26 @@
-describe("Tesztelések", () => {
-  it(" Muveletek", () => {
+describe("Testing", () => {
+  it("Operations", () => {
     cy.visit("http://localhost:5173/buildwizard/");
     cy.wait(1000);
 
-    //1. Megkeressük a Motherboard gombot
+    //1. Find Motherboard button
     cy.contains("Motherboard")
       .should("exist")
       .scrollIntoView({ duration: 1500, block: "center" })
       .should("be.visible")
       .click();
 
-    //2. Ellenőrizzük az URL-t
+    //2. Checking the URL
     cy.url().should("include", "motherboard");
     cy.get("table").should("be.visible");
 
-    // Ellenőrizzük, hogy megjelent legalább 1 alkatrész a táblázatban
+    // Checking that at least one component appears in the table
     cy.get("table tbody tr", { timeout: 10000 }).should(
       "have.length.greaterThan",
       0
     );
 
-    // 3. Scroll le és Next, majd Back
+    // 3. Scroll down and click Next, then Back
     cy.scrollTo("bottom", { duration: 800 });
     cy.contains("Next").should("be.visible").click();
     cy.wait(1000);
@@ -28,12 +28,12 @@ describe("Tesztelések", () => {
     cy.contains("Back").should("be.visible").click();
     cy.wait(1000);
 
-    // Scroll vissza a tetejére
+    // Scroll back to the top
     cy.scrollTo("top", { duration: 1000 });
 
     const kijeloltNevek = [];
 
-    //4. A táblázat checkboxait tömb alapján kijelöljük
+    //4. Select the table checkboxes based on an array
     const kijelolendoSorok = [1, 2, 4, 5, 7];
 
     kijelolendoSorok.forEach((index, i) => {
@@ -44,13 +44,13 @@ describe("Tesztelések", () => {
 
       cy.wait(500);
 
-      // Ellenőrzés: checkbox bejelölve
+      // Check: checkbox is selected
       cy.get("table tbody tr")
         .eq(index)
         .find(".p-checkbox")
         .should("have.class", "p-checkbox-checked");
 
-      // Alkatrész nevének eltárolása (3. oszlop - index 2)
+      // Store the component name (3rd column - index 2)
       cy.get("table tbody tr")
         .eq(index)
         .find("td")
@@ -63,38 +63,38 @@ describe("Tesztelések", () => {
           cy.log(`Eltárolt név: ${nev}`);
         });
 
-      // Ha a második checkboxnál járunk, ellenőrizzük a Compare gomb megjelent-e
+      // If we are at the second checkbox, check whether the Compare button is visible
       if (i === 1) {
         cy.contains("button", "Compare").should("be.visible");
       }
     });
 
-    //5. Próbáljunk meg egy újabbat bejelölni , ami túlmegy a kijelölési limiten
+    //5. Try selecting one more item that exceeds the selection limit
     cy.wait(500);
     cy.get("table tbody tr")
       .eq(9)
       .find('input[type="checkbox"]')
       .check({ force: true });
 
-    //6. Ellenőrizzük, hogy megjelent-e a "Selection Limit" üzenet (pl. dialógus)
+    //6. Check if the "Selection Limit" message appeared (e.g. dialog)
     cy.contains("Selection Limit").should("be.visible");
     cy.wait(1000);
-    // Zárjuk be az X gombbal a dialógust
+    // Close the dialog using the X button
     cy.get("button.p-dialog-close-button").click();
     cy.wait(1000);
 
-    //7. Kattintunk a Compare gombra
+    //7. Click the Compare button
     cy.wait(1000);
     cy.contains("button", "Compare").should("be.visible").click();
 
-    //8. Várjuk meg, míg betölt az oldal és a kártyák megjelennek
+    //8. Wait for the page to load and for the cards to appear
     cy.url().should("include", "/compare");
     cy.get(".bg-neutral-700", { timeout: 10000 }).should(
       "have.length.at.least",
       1
     );
 
-    //9. Kijelölt alkatrészek összehasonlítása a kártyákon lévő nevekkel
+    //9. Compare the selected components with the names on the cards
     cy.get(".bg-neutral-700 h2").then(($cards) => {
       const cardNames = [...$cards].map((el) => el.textContent?.trim());
 
@@ -103,7 +103,7 @@ describe("Tesztelések", () => {
       });
     });
 
-    //10. Ellenőrizzük a kártyákon lévő értékek színét min max alapján
+    //10. Check the color of the values on the cards based on min/max
     cy.get(".bg-neutral-700").then(($cards) => {
       const ellenorizSzineketSzamAlapjan = (labelRegex, labelName) => {
         const ertekek = [];
@@ -143,7 +143,7 @@ describe("Tesztelések", () => {
                   cy.get("span").then(($elem) => {
                     const actualClass = $elem.attr("class") || "";
                     cy.log(
-                      `${labelName} (${value}): Elvárt szín: ${expectedClass}, tényleges szín: ${actualClass}`
+                      `${labelName} (${value}): Elvárt szín: ${expectedClass}, actual color: ${actualClass}`
                     );
                     const classes = (actualClass || "").split(" ");
                     const foundColor = classes.find((cls) =>
@@ -164,7 +164,7 @@ describe("Tesztelések", () => {
       ellenorizSzineketSzamAlapjan(/Memory Slots.*?(\d+)/i, "Memory Slots");
     });
 
-    //11. A 2. kártya nevét eltároljuk, mielőtt rákattintunk az Add gombra
+    //11. Store the name of the 2nd card before clicking the Add button
     cy.get(".bg-neutral-700")
       .eq(1)
       .find("h2")
@@ -182,31 +182,31 @@ describe("Tesztelések", () => {
           );
         });
 
-        cy.log(`Add gombra kattintott alkatrész neve: ${nev}`);
+        cy.log(`Name of the component clicked via the Add button: ${nev}`);
 
-        // Kattintunk az Add gombra
+        // Click the Add button
         cy.get(".bg-neutral-700")
           .eq(1)
           .within(() => {
             cy.contains("button", "Add").should("be.visible").click();
           });
-        // Visszatérés után ellenőrzés, hogy az URL /buildwizard
+        // After returning, check that the URL is /buildwizard
         cy.url({ timeout: 10000 }).should("include", "/buildwizard");
 
-        // Várunk kicsit, hogy betöltsön az oldal
+        // Wait a moment for the page to load
         cy.wait(2000);
 
-        // Ellenőrizzük, hogy a táblázat 'Motherboards' sorában benne van a név
+        // Check that the name is present in the 'Motherboards' row of the table
         cy.get("table").should("be.visible");
 
-        // A megfelelő sor keresése a név alapján
+        // Find the corresponding row based on the name
         cy.get("table tbody tr")
           .contains("td", nev)
           .should("exist")
           .and("be.visible");
       });
 
-    //12. Ellenőrizzük, hogy a localStorage-ben is benne van a név
+    //12. Check that the name is also present in localStorage
     cy.get("@motherboardNev").then((expectedNev) => {
       cy.window().then((win) => {
         const stored = win.localStorage.getItem("selectedComponents");
@@ -215,35 +215,35 @@ describe("Tesztelések", () => {
 
         const parsed = JSON.parse(stored);
 
-        // Ellenőrizzük, hogy van-e benne "motherboards" kulcs, és egyezik-e a név
+        // Check if it contains the "motherboards" key and if the name matches
         expect(parsed).to.have.property("motherboards");
         expect(parsed.motherboards).to.have.property("name", expectedNev);
-        cy.log("Motherboard név a localStorage-ben:", parsed.motherboards.name);
+        cy.log("Motherboard name in localStorage:", parsed.motherboards.name);
       });
     });
 
     cy.wait(1500);
 
-    //Memory resz
+    //Memory
 
-    //1. Görgetés lefelé a Memory gomb várható helyére
+    //1. Scroll down to the expected position of the Memory button
     cy.scrollTo("center", 1500, { duration: 1000 });
 
-    //2. Kattintás a Memory gombra
+    //2. Click the Memory button
     cy.get('a[href*="type=memories"]')
       .should("be.visible")
       .click({ force: true });
 
     cy.wait(1000);
 
-    //3. Ellenőrzés: URL és táblázat
+    //3. Check: URL and table
     cy.url().should("include", "memories");
     cy.get("table").should("be.visible");
     cy.get("table tbody tr", { timeout: 10000 }).should(
       "have.length.greaterThan",
       0
     );
-    //4. Keresés a névre
+    //4. Search for the name
     cy.get('input[placeholder*="Search"]')
       .should("be.visible")
       .clear()
@@ -251,30 +251,30 @@ describe("Tesztelések", () => {
 
     cy.wait(1000);
 
-    //5. Ellenőrzés, hogy az eredmény megjelenik
+    //5. Check that the result is displayed
     cy.get("table tbody tr").should(
       "contain.text",
       "Silicon Power GAMING 16 GB"
     );
 
-    //6. A táblázatban a megfelelő sor keresése és az Add gombra kattintás
+    //6. Find the correct row in the table and click the Add button
 
     cy.get("button").contains("Add").first().click({ force: true });
 
-    //7. Ellenőrizzük, hogy visszairányít-e a főoldalra
+    //7. Check whether it redirects to the homepage
 
     cy.url().should("eq", "http://localhost:5173/buildwizard/");
 
     cy.wait(1500);
 
-    //Cpu resz
+    //Cpu
 
-    //1. Görgetés lefelé a CPU gomb várható helyére
+    //1. Scroll down to the expected position of the CPU button
     cy.scrollTo("center", 800, { duration: 1000 });
-    // Most megkeressük és kattintunk a CPU gombra
+    // Now locate and click the CPU button
     cy.get('a[href*="type=cpus"]').should("be.visible").click({ force: true });
 
-    //2. Ellenőrzés: URL és táblázat
+    //2. Check: URL and table
     cy.url().should("include", "cpu");
     cy.get("table").should("be.visible");
     cy.get("table tbody tr", { timeout: 10000 }).should(
@@ -282,7 +282,7 @@ describe("Tesztelések", () => {
       0
     );
 
-    // 3. Scroll le és kétszer Next
+    // 3. Scroll down and click Next twice
     cy.scrollTo("bottom", { duration: 800 });
     cy.contains("Next").should("be.visible").click();
     cy.wait(1000);
@@ -290,7 +290,7 @@ describe("Tesztelések", () => {
     cy.contains("Next").should("be.visible").click();
     cy.wait(1000);
 
-    // 4. Kattintás az Add gombra
+    // 4. Click the Add button
     cy.get("table tbody tr")
       .eq(2)
       .then(($row) => {
@@ -300,12 +300,12 @@ describe("Tesztelések", () => {
         cy.wrap($row).find("button").contains("Add").click({ force: true });
       });
 
-    // 5. Ellenőrizzük, hogy visszairányít-e a főoldalra
+    // 5. Check whether it redirects to the homepage
     cy.url().should("eq", "http://localhost:5173/buildwizard/");
 
-    // 6. CPU név ellenőrzése
+    // 6. Check CPU name
     cy.get("@hozzaadottCpuNev").then((cpuNev) => {
-      cy.log("Ellenőrzött CPU név:", cpuNev);
+      cy.log("Verified CPU name:", cpuNev);
       expect(cpuNev).to.not.be.empty;
 
       cy.contains("table", "CPU")
@@ -315,7 +315,7 @@ describe("Tesztelések", () => {
         });
     });
 
-    // 7. Ellenőrizzük hogy ír összárat és összfogyasztást
+    // 7. Check that total price and total power consumption are displayed
     cy.get("div")
       .contains("Total price")
       .should("be.visible")
@@ -344,26 +344,26 @@ describe("Tesztelések", () => {
 
     cy.wait(1000);
 
-    // 8. Törlés gomb keresése és kattintás
+    // 8. Find and click the Delete button
     cy.get("@hozzaadottCpuNev").then((cpuNev) => {
       cy.contains("table", "CPU")
         .should("be.visible")
         .within(() => {
-          // Kiválasztjuk a megfelelő sort a CPU név alapján
+          // Select the correct row based on the CPU name
           cy.contains("td", cpuNev)
             .parent()
             .find("button[aria-label='Delete']")
             .click({ force: true });
-          // Ellenőrzés, hogy a CPU már nincs a táblázatban
+          // Check that the CPU is no longer in the table
           cy.contains("td", cpuNev).should("not.exist");
         });
     });
 
     cy.wait(1000);
 
-    // 9. Elden Ring keresés + találatra kattintás + Build gombra kattintás
+    // 9. Search for Elden Ring + click on the result + click the Build button
 
-    // Beírjuk az "Elden Ring" szöveget a keresőbe
+    // Type "Elden Ring" into the search bar
     cy.get('input[placeholder="Search..."]')
       .should("be.visible")
       .clear()
@@ -371,10 +371,10 @@ describe("Tesztelések", () => {
 
     cy.wait(500);
 
-    // Megvárjuk, amíg a keresési lista megjelenik
+    // Wait for the search result list to appear
     cy.get('ul[role="listbox"]', { timeout: 8000 }).should("be.visible");
 
-    // Megkeressük és rákattintunk az "Elden Ring" találatra
+    // Find and click on the "Elden Ring" result
     cy.get('ul[role="listbox"] li')
       .contains("Elden Ring")
       .should("be.visible")
@@ -382,7 +382,7 @@ describe("Tesztelések", () => {
 
     cy.wait(1000);
 
-    // Build gomb kattintás
+    // Build button click
     cy.get("button")
       .filter((index, button) => {
         const hasSvg = button.querySelector("svg") !== null;
@@ -397,12 +397,12 @@ describe("Tesztelések", () => {
 
     cy.wait(3000);
 
-    // 10. Build kártyák ellenőrzése
-    // Ellenőrizzük, hogy legalább 3 kártya megjelenik
+    // 10. Check the build cards
+    // Check that at least 3 cards are displayed
     cy.get(".bg-neutral-800.bg-opacity-70")
       .should("have.length", 3)
       .then(($cards) => {
-        // Harmadik kártya alkatrésznevek kinyerése
+        // Extract component names from the third card
         const selectedCard = $cards.eq(2);
         const partNames = [];
         selectedCard.find("p.text-white").each((index, element) => {
@@ -412,19 +412,19 @@ describe("Tesztelések", () => {
           }
         });
 
-        // Kattintás a harmadik kártyára
+        // Click on the third card
         cy.wrap(selectedCard).click({ force: true });
 
         cy.wait(3000);
 
-        // Elfogadjuk a buildet
+        // Accept the build
         cy.contains("button", "Accept build")
           .should("be.visible")
           .click({ force: true });
 
         cy.wait(2000);
 
-        // Ellenőrzés: A kártyákon lévő alkatrésznevek szerepelnek a táblázatban
+        // Check that the component names on the cards appear in the table
         partNames.forEach((partName) => {
           cy.get("table tbody tr td:nth-child(2)").should(
             "contain.text",
@@ -436,7 +436,7 @@ describe("Tesztelések", () => {
     let totalFromTable = 0;
     let totalPriceFromSummary = 0;
 
-    // 11. Összegyűjtjük a táblázatban szereplő árakat és összeadjuk
+    // 11. Collect and sum the prices listed in the table
     cy.get("table tbody tr td:nth-child(3)")
       .each(($cell) => {
         const priceText = $cell.text().trim();
@@ -446,9 +446,9 @@ describe("Tesztelések", () => {
         }
       })
       .then(() => {
-        cy.log("Összeadott árak a táblázatból:", totalFromTable);
+        cy.log("Summed prices from the table:", totalFromTable);
 
-        // Lekérjük a Total price értékét
+        // Retrieve the Total price value
         cy.get("div")
           .contains("Total price")
           .should("be.visible")
@@ -460,17 +460,17 @@ describe("Tesztelések", () => {
               totalPriceText.replace(/[^0-9.]/g, "")
             );
 
-            cy.log("Total price mező értéke:", totalPriceFromSummary);
+            cy.log("Value of the Total price field:", totalPriceFromSummary);
 
-            // Ellenőrzés: ha nem egyezik, figyelmeztessen
+            // Check: if it doesn't match, show a warning
             const difference = Math.abs(totalFromTable - totalPriceFromSummary);
 
             if (difference > 0.01) {
               cy.log(
-                `Figyelmeztetés: Az összeadott árak (${totalFromTable}) és a Total price (${totalPriceFromSummary}) nem egyeznek.`
+                `Warning: The summed prices (${totalFromTable}) and the Total price (${totalPriceFromSummary}) do not match.`
               );
             } else {
-              cy.log("Az árak rendben egyeznek.");
+              cy.log("The prices match correctly.");
             }
           });
       });
